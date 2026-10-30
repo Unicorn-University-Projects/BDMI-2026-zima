@@ -1,15 +1,15 @@
-### 📝 Popis změn
+### Popis změn
 Stručně popište, co tento Pull Request přidává, upravuje nebo opravuje.
 
-### 🏷️ Typ změny
+### Typ změny
 - [ ] Nová funkcionalita (feat)
 - [ ] Oprava chyby (fix)
 - [ ] Úprava konfigurace / refaktoring (chore)
 
-### 🔗 Související úkol
+### Související úkol
 Odkaz na issue nebo číslo úkolu (např. #12).
 
-### ✅ Kontrola před sloučením
+### Kontrola před sloučením
 - [ ] Kód odpovídá pravidlům v README.md
 - [ ] Aplikace se lokálně bez chyb spustí
 - [ ] Nejsou nahrány žádné soubory .env ani citlivé klíče
