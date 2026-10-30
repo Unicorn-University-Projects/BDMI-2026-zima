@@ -1,12 +1,15 @@
-## Popis změn
-<!-- Stručně popiš, co tento PR řeší a jakou funkčnost přidává/opravuje -->
+### 📝 Popis změn
+Stručně popište, co tento Pull Request přidává, upravuje nebo opravuje.
 
-## Typ změny
+### 🏷️ Typ změny
 - [ ] Nová funkcionalita (feat)
 - [ ] Oprava chyby (fix)
-- [ ] Refaktoring / údržba (chore)
+- [ ] Úprava konfigurace / refaktoring (chore)
 
-## Kontrolní seznam před schválením
-- [ ] Kód dodržuje dohodnuté konvence z README.md
-- [ ] Kód jde lokálně sestavit a spustit bez chyb
-- [ ] Změna neobsahuje citlivé údaje ani soubory .env
+### 🔗 Související úkol
+Odkaz na issue nebo číslo úkolu (např. #12).
+
+### ✅ Kontrola před sloučením
+- [ ] Kód odpovídá pravidlům v README.md
+- [ ] Aplikace se lokálně bez chyb spustí
+- [ ] Nejsou nahrány žádné soubory .env ani citlivé klíče
