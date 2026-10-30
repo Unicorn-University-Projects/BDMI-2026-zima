@@ -4,7 +4,7 @@ Backendová část aplikace pro rezervaci sportovišť postavená na mikroservis
 
 ---
 
-## 🏛 Přehled architektury
+## Přehled architektury
 
 * **Architektura:** Mikroservisy v monorepu za společnou API Gateway.
 * **Komunikace:** 
@@ -23,7 +23,7 @@ Backendová část aplikace pro rezervaci sportovišť postavená na mikroservis
 
 ---
 
-## 🛠 Technologický stack
+## Technologický stack
 
 * **Runtime:** Node.js 24 LTS
 * **Framework:** Express.js
@@ -32,7 +32,7 @@ Backendová část aplikace pro rezervaci sportovišť postavená na mikroservis
 
 ---
 
-## 📁 Plánovaná struktura monorepa
+## Plánovaná struktura monorepa
 
 Jednotlivé části backendu budou umístěny do vyhrazených složek v tomto repozitáři:
 
