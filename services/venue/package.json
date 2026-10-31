@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "venue",
   "version": "1.0.0",
   "description": "Venue service - venues and courts",
   "main": "src/server.js",

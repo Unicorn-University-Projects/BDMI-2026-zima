@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "audit",
   "version": "1.0.0",
   "description": "Audit service - changee logs",
   "main": "src/server.js",

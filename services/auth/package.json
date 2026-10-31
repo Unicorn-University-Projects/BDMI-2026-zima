@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "auth",
   "version": "1.0.0",
   "description": "Auth service - users auth",
   "main": "src/server.js",

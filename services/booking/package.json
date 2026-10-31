@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "booking",
   "version": "1.0.0",
   "description": "Booking service - reservations",
   "main": "src/server.js",

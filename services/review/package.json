@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "review",
   "version": "1.0.0",
   "description": "Review service - ratings and reviews of the court",
   "main": "src/server.js",
