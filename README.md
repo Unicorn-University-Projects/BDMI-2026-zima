@@ -46,7 +46,7 @@ Jednotlivé části backendu budou umístěny do vyhrazených složek v tomto re
 │   └── audit/            # Auditní log
 ├── docker-compose.yml    # Lokální orchestrace
 └── README.md
-
+```
 
 
 ## Rezervační systém sportovišť (Frontend)
