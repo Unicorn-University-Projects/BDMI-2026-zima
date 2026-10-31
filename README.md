@@ -46,3 +46,18 @@ Jednotlivé části backendu budou umístěny do vyhrazených složek v tomto re
 │   └── audit/            # Auditní log
 ├── docker-compose.yml    # Lokální orchestrace
 └── README.md
+
+
+
+## Rezervační systém sportovišť (Frontend)
+Frontendová část aplikace postavená na čistém Reactu s nástrojem Vite.
+
+### Spuštění frontendu lokálně:
+1. Přejdete do složky frontend: `cd frontend`
+2. Nainstalujte závislosti: `npm install`
+3. Spusťte aplikaci: `npm run dev`
+
+### Pravidla vývoje pro FE:
+- Veškerý kód uživatelského rozhraní pište výhradně do složky `/frontend`.
+- Pro nové úkoly si vždy vytvořte vlastní větev (branch) z `main` (např. `fe-navigace`).
+- Hotový kód nasazujte formou Pull Requestu ke schválení ostatním členům týmu.
