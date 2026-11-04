@@ -18,6 +18,12 @@ services:
       - "4001:4001"
     networks:
       - backend
+    env_file:
+      - ./services/auth/.env
+    environment:
+      DB_HOST: mysql
+    depends_on:
+      - mysql
 
   venue:
     build: ./services/venue
@@ -47,5 +53,23 @@ services:
     networks:
       - backend
 
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: rezervace_sportovist
+      MYSQL_USER: rezervace_app
+      MYSQL_PASSWORD: ${LOCAL_DB_PASSWORD:-app_local}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./services/auth/db/init.sql:/docker-entrypoint-initdb.d/auth.sql
+    networks:
+      - backend
+
 networks:
   backend:
+
+volumes:
+  mysql_data:
