@@ -3,6 +3,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import bcrypt from "bcryptjs";
 import userDao from "../../dao/user-dao.js";
+import token from "../../token.js";
 
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
@@ -39,7 +40,7 @@ async function registerAbl(req, res) {
     // 2. e-mail musí být unikátní
     const email = dtoIn.email.toLowerCase();
     if (await userDao.getByEmail(email)) {
-      return res.status(400).json({
+      return res.status(409).json({
         code: "user/register/emailAlreadyExists",
         message: "Uživatel s tímto emailem už existuje.",
         params: { email },
@@ -63,15 +64,18 @@ async function registerAbl(req, res) {
       passwordChangedAt: now,
     });
 
-    // 5. dtoOut – bez hashe hesla
+    // 5. dtoOut – token a uživatel bez hashe hesla
     const dtoOut = {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      surName: user.surName,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      termsAcceptedAt: user.termsAcceptedAt,
+      token: token.createToken(user),
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        surName: user.surName,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        termsAcceptedAt: user.termsAcceptedAt,
+      },
     };
     if (unsupportedKeyList.length > 0) {
       dtoOut.warnings = [
@@ -85,7 +89,7 @@ async function registerAbl(req, res) {
     return res.json(dtoOut);
   } catch (e) {
     if (e.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({
+      return res.status(409).json({
         code: "user/register/emailAlreadyExists",
         message: "Uživatel s tímto emailem už existuje.",
         params: {},
