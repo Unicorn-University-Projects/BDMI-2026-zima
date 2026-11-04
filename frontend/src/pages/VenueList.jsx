@@ -23,7 +23,7 @@ export default function VenueList() {
   const [search, setSearch] = useState('');
 
   // Načtení seznamu areálů
-  const venues = useMemo(() => listVenues(), []);
+  const [venues, setVenues] = useState(() => listVenues());
 
   // ==========================================
   // 2. FILTROVÁNÍ AREÁLŮ
