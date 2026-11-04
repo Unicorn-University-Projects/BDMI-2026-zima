@@ -13,6 +13,7 @@ app.get("/health", (req,res) => {
 
 app.use("/user", userController);
 
-app.listen(PORT, () => {
+app.listen(PORT, (error) => {
+    if (error) throw error;
     console.log(`${SERVICE_NAME} bezi, port: ${PORT}`);
 });
