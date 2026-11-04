@@ -27,7 +27,6 @@ async function registerAbl(req, res) {
   try {
     const dtoIn = req.body ?? {};
 
-    // 1. validace dtoIn
     if (!validate(dtoIn)) {
       return res.status(400).json({
         code: "user/register/invalidDtoIn",
@@ -37,7 +36,6 @@ async function registerAbl(req, res) {
     }
     const unsupportedKeyList = Object.keys(dtoIn).filter((key) => !(key in schema.properties));
 
-    // 2. e-mail musí být unikátní
     const email = dtoIn.email.toLowerCase();
     if (await userDao.getByEmail(email)) {
       return res.status(409).json({
@@ -47,10 +45,8 @@ async function registerAbl(req, res) {
       });
     }
 
-    // 3. hash hesla – samotné heslo se nikdy neukládá
     const passwordHash = await bcrypt.hash(dtoIn.password, 10);
 
-    // 4. uložení uživatele
     const now = new Date();
     const user = await userDao.create({
       id: crypto.randomUUID(),
@@ -64,7 +60,6 @@ async function registerAbl(req, res) {
       passwordChangedAt: now,
     });
 
-    // 5. dtoOut – token a uživatel bez hashe hesla
     const dtoOut = {
       token: token.createToken(user),
       user: {

@@ -18,15 +18,12 @@ const schema = {
 
 const validate = ajv.compile(schema);
 
-// Hash, se kterým se porovnává, když uživatel neexistuje – odpověď pak trvá stejně dlouho
-// a podle času nejde poznat, jestli e-mail v systému je.
 const DUMMY_PASSWORD_HASH = bcrypt.hashSync("dummy-password", 10);
 
 async function signInAbl(req, res) {
   try {
     const dtoIn = req.body ?? {};
 
-    // 1. validace dtoIn
     if (!validate(dtoIn)) {
       return res.status(400).json({
         code: "user/signIn/invalidDtoIn",
@@ -36,7 +33,6 @@ async function signInAbl(req, res) {
     }
     const unsupportedKeyList = Object.keys(dtoIn).filter((key) => !(key in schema.properties));
 
-    // 2. ověření e-mailu a hesla – při jakékoli chybě vždy stejná odpověď (analýza 5.1)
     const user = await userDao.getByEmail(dtoIn.email);
     const passwordHash = user?.passwordHash ?? DUMMY_PASSWORD_HASH;
     const passwordMatches = await bcrypt.compare(dtoIn.password, passwordHash);
@@ -48,7 +44,6 @@ async function signInAbl(req, res) {
       });
     }
 
-    // 3. dtoOut – token a uživatel bez hashe hesla
     const dtoOut = {
       token: token.createToken(user),
       user: {
