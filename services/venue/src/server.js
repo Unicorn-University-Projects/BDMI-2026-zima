@@ -10,6 +10,7 @@ app.get("/health", (req,res) => {
     res.json({ status: "ok", service: SERVICE_NAME });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, (error) => {
+    if (error) throw error;
     console.log(`${SERVICE_NAME} bezi, port: ${PORT}`);
 });
