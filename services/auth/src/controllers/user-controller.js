@@ -2,11 +2,15 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import registerAbl from "../abl/user/register-abl.js";
 import signInAbl from "../abl/user/sign-in-abl.js";
+import getMeAbl from "../abl/user/get-me-abl.js";
+import setRoleAbl from "../abl/user/set-role-abl.js";
+import setPasswordAbl from "../abl/user/set-password-abl.js";
+import requestPasswordResetAbl from "../abl/user/request-password-reset-abl.js";
+import resetPasswordAbl from "../abl/user/reset-password-abl.js";
+import signInWithProviderAbl from "../abl/user/sign-in-with-provider-abl.js";
 
 const router = express.Router();
 
-// Ochrana proti zkoušení hesel (analýza 5.1): za 15 minut max. 20 neúspěšných pokusů z jedné IP
-// a 5 na jeden e-mail, pak 429. Úspěšná přihlášení se nepočítají.
 function tooManyAttempts(req, res) {
   res.status(429).json({
     code: "user/signIn/tooManyAttempts",
@@ -32,5 +36,11 @@ const signInEmailLimit = rateLimit({
 
 router.post("/register", registerAbl);
 router.post("/signIn", signInIpLimit, signInEmailLimit, signInAbl);
+router.post("/signInWithProvider", signInWithProviderAbl);
+router.get("/getMe", getMeAbl);
+router.post("/setRole", setRoleAbl);
+router.post("/setPassword", setPasswordAbl);
+router.post("/requestPasswordReset", requestPasswordResetAbl);
+router.post("/resetPassword", resetPasswordAbl);
 
 export default router;
