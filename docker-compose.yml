@@ -5,6 +5,13 @@ services:
       - "4000:4000"
     networks:
       - backend
+    env_file:
+      - ./gateway/.env
+    environment:
+      AUTH_URL: http://auth:4001
+      VENUE_URL: http://venue:4002
+      BOOKING_URL: http://booking:4003
+      REVIEW_URL: http://review:4004
     depends_on:
       - auth
       - venue
@@ -52,6 +59,9 @@ services:
       - "4005:4005"
     networks:
       - backend
+    env_file:
+      - path: ./services/audit/.env
+        required: false
 
   mysql:
     image: mysql:8.0

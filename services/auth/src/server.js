@@ -5,6 +5,7 @@ const SERVICE_NAME = "auth";
 const PORT = process.env.PORT || 4001;
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json());
 
 app.get("/health", (req,res) => {
