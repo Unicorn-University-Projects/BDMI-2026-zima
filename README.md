@@ -37,6 +37,7 @@ Backendová část aplikace pro rezervaci sportovišť postavená na mikroservis
 Jednotlivé části backendu budou umístěny do vyhrazených složek v tomto repozitáři:
 
 ```text
+├── frontend/             # Frontend
 ├── gateway/              # API Gateway
 ├── services/
 │   ├── auth/             # Autentizace a správa identit
