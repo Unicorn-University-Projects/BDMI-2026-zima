@@ -1,184 +1,226 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Barlow:ital,wght@1,800&display=swap');
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+/* ---------- Reset (přebije výchozí styly z Vite šablony) ---------- */
+html, body { margin: 0; padding: 0; display: block; min-height: 100vh; background: #fff; }
+#root { width: 100%; max-width: none; margin: 0; padding: 0; text-align: left; }
+
+.ps {
+  --primary: #7547ec;
+  --primary-dark: #6236d8;
+  --ink: #1b1340;
+  --muted: #6b6788;
+  --line: #8f8ba8;
+  --soft: #ede9fe;
+  --soft-2: #f5f2ff;
+  --danger: #c0182f;
+  --danger-bg: #fdf2f2;
+  --ok: #166534;
+  --ok-bg: #d9f7e3;
+  font-family: 'Outfit', Arial, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+.ps *, .ps *::before, .ps *::after { box-sizing: border-box; font-family: inherit; }
+.ps button { font-family: inherit; }
+
+/* ---------- Logo ---------- */
+.ps-logo { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.ps-logo-mark {
+  width: 28px; height: 28px; border-radius: 8px; background: var(--primary);
+  display: grid; place-items: center; color: #fff;
+}
+.ps-logo-text {
+  font-family: 'Barlow', 'Outfit', sans-serif; font-style: italic; font-weight: 800;
+  font-size: 20px; letter-spacing: .2px; color: var(--ink);
+}
+.ps-logo-text span { color: var(--primary); }
+
+/* ---------- Auth layout ---------- */
+.ps-auth { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; background: #fff; }
+.ps-left { display: flex; flex-direction: column; padding: 40px 48px 32px; min-height: 100vh; min-width: 0; }
+.ps-left-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 0; }
+.ps-form-wrap { width: 100%; max-width: 360px; min-width: 0; }
+.ps-footer { display: flex; gap: 16px; font-size: 12px; color: var(--muted); }
+.ps-footer a { color: var(--muted); text-decoration: none; }
+.ps-footer a:hover { text-decoration: underline; }
+
+.ps-h1 { font-size: 24px; font-weight: 600; margin: 0 0 8px; color: var(--ink); letter-spacing: -.2px; }
+.ps-sub { font-size: 14px; color: var(--muted); margin: 0 0 24px; line-height: 1.45; }
+
+/* ---------- Fields ---------- */
+.ps-field { margin-bottom: 16px; min-width: 0; }
+.ps-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+.ps-input-wrap {
+  position: relative; display: flex; align-items: center; height: 48px;
+  border: 1px solid var(--line); border-radius: 14px; background: #fff;
+  padding: 0 14px; gap: 10px; color: var(--muted); transition: border-color .15s, box-shadow .15s;
+}
+.ps-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(117, 71, 236, .15); }
+.ps-input-wrap.err { border-color: var(--danger); box-shadow: none; }
+.ps-input-wrap.err:focus-within { box-shadow: 0 0 0 3px rgba(192, 24, 47, .12); }
+.ps-input-wrap input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+  font-size: 14px; color: var(--ink); height: 100%;
+}
+.ps-input-wrap input::placeholder { color: #8b87a3; }
+.ps-eye { background: none; border: 0; padding: 4px; margin-right: -4px; cursor: pointer; color: var(--muted); display: grid; place-items: center; }
+.ps-hint { font-size: 11px; color: var(--muted); margin-top: 4px; display: block; }
+.ps-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); column-gap: 12px; }
+.ps-forgot { display: block; width: 100%; text-align: right; font-size: 12px; font-weight: 600; margin: -6px 0 16px; }
+
+/* ---------- Links / buttons ---------- */
+.ps-link { background: none; border: 0; padding: 0; color: var(--primary); font-weight: 600; font-size: inherit; cursor: pointer; text-decoration: none; }
+.ps-link:hover { text-decoration: underline; }
+.ps-btn {
+  width: 100%; height: 48px; border: 0; border-radius: 999px; background: var(--primary);
+  color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s;
+}
+.ps-btn:hover { background: var(--primary-dark); }
+.ps-btn:disabled { opacity: .6; cursor: default; }
+.ps-center { text-align: center; font-size: 12px; color: var(--muted); margin: 16px 0 0; }
+
+.ps-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; font-size: 11px; color: var(--muted); }
+.ps-divider::before, .ps-divider::after { content: ''; flex: 1; height: 1px; background: #ebe8f5; }
+.ps-social {
+  width: 100%; height: 44px; margin-bottom: 10px; border: 1px solid #dcd8ea; border-radius: 999px;
+  background: #fff; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.ps-social:hover { background: #faf9ff; }
+
+/* ---------- Alerts ---------- */
+.ps-alert {
+  display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px;
+  font-size: 12px; line-height: 1.4; margin-bottom: 20px;
+}
+.ps-alert svg { flex: none; margin-top: 1px; }
+.ps-alert.error { background: var(--danger-bg); color: var(--danger); }
+.ps-alert.success { background: var(--ok-bg); color: var(--ok); }
+.ps-alert.info { background: var(--soft); color: #4b3a97; align-items: center; margin-bottom: 20px; }
+
+/* ---------- Role cards ---------- */
+.ps-roles-title { font-size: 12px; font-weight: 600; margin: 20px 0 10px; display: block; }
+.ps-role {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 12px; border-radius: 16px; border: 1px solid transparent; background: #fff;
+  box-shadow: 0 4px 14px rgba(40, 20, 100, .06); margin-bottom: 10px; cursor: pointer;
+}
+.ps-role.active { background: var(--soft); border: 1.5px solid var(--primary); box-shadow: none; }
+.ps-role-ico { width: 36px; height: 36px; border-radius: 10px; background: var(--soft-2); display: grid; place-items: center; color: var(--ink); flex: none; }
+.ps-role.active .ps-role-ico { background: #fff; }
+.ps-role-txt { flex: 1; }
+.ps-role-txt strong { display: block; font-size: 13px; font-weight: 600; color: #0000;}
+.ps-role-txt small { font-size: 11px; color: var(--muted); }
+.ps-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #9d99b5; flex: none; display: grid; place-items: center; background: #fff; }
+.ps-role.active .ps-radio { border-color: var(--primary); background: var(--primary); }
+.ps-role.active .ps-radio::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+
+.ps-check { display: flex; align-items: center; gap: 10px; font-size: 13px; margin: 20px 0; cursor: pointer; }
+.ps-check input { position: absolute; opacity: 0; pointer-events: none; }
+.ps-check-box { width: 18px; height: 18px; border: 1.5px solid #6b6788; border-radius: 4px; display: grid; place-items: center; color: #fff; flex: none; background: #fff; }
+.ps-check input:checked + .ps-check-box { background: var(--primary); border-color: var(--primary); }
+.ps-check input:focus-visible + .ps-check-box { box-shadow: 0 0 0 3px rgba(117, 71, 236, .25); }
+
+/* ---------- Right promo panel ---------- */
+.ps-right {
+  margin: 24px 24px 24px 0; border-radius: 28px; padding: 40px 48px 48px;
+  background: linear-gradient(180deg, #ebe6ff 0%, #f6f3ff 45%, #fff 100%);
+  display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+  position: sticky; top: 24px; align-self: start;
+  height: calc(100vh - 48px); min-height: 560px;
+}
+.ps-illu { width: 100%; max-width: 480px; height: auto; align-self: center; }
+.ps-promo { max-width: 440px; }
+.ps-promo h2 { font-size: 34px; line-height: 1.2; font-weight: 600; margin: 0 0 14px; letter-spacing: -.5px; color: #0000;}
+.ps-promo p { font-size: 13px; color: var(--muted); margin: 0 0 22px; }
+.ps-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.ps-bullets li { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.ps-bullet-ico { width: 32px; height: 32px; border-radius: 10px; background: var(--soft); display: grid; place-items: center; color: var(--primary); flex: none; }
+
+@media (max-width: 900px) {
+  .ps-auth { grid-template-columns: 1fr; }
+  .ps-right { display: none; }
+  .ps-left { padding: 28px 24px; }
 }
 
-.hero {
-  position: relative;
+/* ---------- Home (po přihlášení) ---------- */
+.ps-home { min-height: 100vh; background: linear-gradient(180deg, #efeaff 0%, #f8f6ff 220px, #fff 380px); }
+.ps-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 1px solid #e6e0fb; }
+.ps-nav-left { display: flex; align-items: center; gap: 28px; height: 100%; }
+.ps-tabs { display: flex; gap: 22px; height: 100%; }
+.ps-tab { background: none; border: 0; height: 100%; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 0; }
+.ps-tab.active { color: var(--ink); font-weight: 600; border-bottom-color: var(--primary); }
+.ps-nav-right { display: flex; align-items: center; gap: 16px; }
+.ps-bell { background: none; border: 0; cursor: pointer; color: var(--ink); display: grid; place-items: center; }
+.ps-avatar { background: none; border: 0; font-size: 11px; font-weight: 700; color: var(--primary); cursor: pointer; letter-spacing: .5px; }
+.ps-logout { background: none; border: 0; font-size: 12px; color: var(--muted); cursor: pointer; }
+.ps-logout:hover { color: var(--ink); }
 
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
+.ps-hero { text-align: center; padding: 64px 24px 0; }
+.ps-hero small { display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.ps-hero h1 { font-size: 36px; font-weight: 600; margin: 0 0 40px; letter-spacing: -.5px; }
 
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
+.ps-search {
+  max-width: 640px; margin: 0 auto; background: #fff; border-radius: 24px;
+  padding: 16px 20px 20px; box-shadow: 0 12px 32px rgba(60, 30, 140, .1);
+  display: grid; grid-template-columns: 1fr 1fr 1.1fr auto; gap: 12px; align-items: end; text-align: left;
+}
+.ps-search .ps-label { font-size: 10px; margin-bottom: 4px; }
+.ps-search .ps-input-wrap { height: 38px; border-radius: 12px; padding: 0 10px; }
+.ps-search .ps-input-wrap input, .ps-search select { font-size: 11px; }
+.ps-search select { flex: 1; border: 0; outline: 0; background: transparent; color: var(--ink); height: 100%; appearance: none; cursor: pointer; min-width: 0; }
+.ps-search .ps-btn { width: auto; height: 38px; padding: 0 20px; display: flex; align-items: center; gap: 8px; font-size: 12px; }
 
-  .framework,
-  .vite {
-    position: absolute;
-  }
+.ps-chips { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 24px 0 0; flex-wrap: wrap; }
+.ps-chips > span { font-size: 11px; color: var(--muted); }
+.ps-chip { border: 1px solid #e3dff2; background: #fff; border-radius: 999px; padding: 6px 14px; font-size: 11px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.ps-chip:hover, .ps-chip.active { border-color: var(--primary); color: var(--primary); }
 
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
+.ps-steps { max-width: 640px; margin: 64px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 0 24px 80px; }
+.ps-step-ico { width: 30px; height: 30px; border-radius: 9px; background: var(--soft); color: var(--primary); display: grid; place-items: center; margin-bottom: 18px; }
+.ps-step h3 { font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+.ps-step p { font-size: 10.5px; color: var(--muted); margin: 0; line-height: 1.5; }
 
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
+.ps-toast {
+  position: fixed; right: 40px; bottom: 40px; background: var(--ink); color: #fff; font-size: 11px;
+  padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 12px 28px rgba(27, 19, 64, .3);
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+@media (max-width: 700px) {
+  .ps-search { grid-template-columns: 1fr; }
+  .ps-search .ps-btn { width: 100%; justify-content: center; }
+  .ps-steps { grid-template-columns: 1fr; }
+  .ps-nav { padding: 0 16px; }
 }
 
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+/* ---------- Pomůcka pro vývoj: přepínač obrazovek (jen při npm run dev) ---------- */
+.ps-dev { position: fixed; right: 12px; bottom: 12px; z-index: 50; font-size: 12px; }
+.ps-dev-toggle {
+  background: var(--ink); color: #fff; border: 0; border-radius: 999px; padding: 8px 14px;
+  font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 18px rgba(27, 19, 64, .3);
 }
-
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.ps-dev-list {
+  position: absolute; right: 0; bottom: 42px; background: #fff; border: 1px solid #e3dff2; border-radius: 14px;
+  padding: 8px; display: flex; flex-direction: column; gap: 2px; width: 240px; max-height: 70vh; overflow: auto;
+  box-shadow: 0 12px 32px rgba(27, 19, 64, .18);
 }
+.ps-dev-title { font-size: 11px; color: var(--muted); padding: 6px 8px 4px; }
+.ps-dev-item { background: none; border: 0; text-align: left; padding: 7px 8px; border-radius: 8px; font-size: 12px; color: var(--ink); cursor: pointer; }
+.ps-dev-item:hover { background: var(--soft-2); color: var(--primary); }
 
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+/* ---------- Logo poskytovatele (obrazovka "Ještě jedna věc") ---------- */
+.ps-prov {
+  position: relative; width: 44px; height: 44px; border-radius: 50%; background: #fff;
+  border: 1px solid #e3dff2; display: grid; place-items: center; margin-bottom: 14px;
 }
-
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.ps-prov svg { width: 22px; height: 22px; }
+.ps-prov-check {
+  position: absolute; right: -6px; bottom: -4px; width: 16px; height: 16px; border-radius: 50%;
+  background: #15803d; color: #fff; display: grid; place-items: center; border: 2px solid #fff;
 }
-
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
-}
+.ps-prov-check svg { width: 10px; height: 10px; }
+.ps h1, .ps h2, .ps h3 { color: var(--ink); }
+.ps-promo, .ps-promo h2 { color: var(--ink); }
+.ps-role, .ps-role-txt strong { color: var(--ink); }
+.ps-role-txt small { color: var(--muted); }
