@@ -1,0 +1,85 @@
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "4000:4000"
+    networks:
+      - backend
+    env_file:
+      - ./gateway/.env
+    environment:
+      AUTH_URL: http://auth:4001
+      VENUE_URL: http://venue:4002
+      BOOKING_URL: http://booking:4003
+      REVIEW_URL: http://review:4004
+    depends_on:
+      - auth
+      - venue
+      - booking
+      - review
+      - audit
+
+  auth:
+    build: ./services/auth
+    ports:
+      - "4001:4001"
+    networks:
+      - backend
+    env_file:
+      - ./services/auth/.env
+    environment:
+      DB_HOST: mysql
+    depends_on:
+      - mysql
+
+  venue:
+    build: ./services/venue
+    ports:
+      - "4002:4002"
+    networks:
+      - backend
+
+  booking:
+    build: ./services/booking
+    ports:
+      - "4003:4003"
+    networks:
+      - backend
+
+  review:
+    build: ./services/review
+    ports:
+      - "4004:4004"
+    networks:
+      - backend
+
+  audit:
+    build: ./services/audit
+    ports:
+      - "4005:4005"
+    networks:
+      - backend
+    env_file:
+      - path: ./services/audit/.env
+        required: false
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: rezervace_sportovist
+      MYSQL_USER: rezervace_app
+      MYSQL_PASSWORD: ${LOCAL_DB_PASSWORD:-app_local}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./services/auth/db/init.sql:/docker-entrypoint-initdb.d/auth.sql
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mysql_data:
