@@ -5,97 +5,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../components/Icons';
 import { createVenue } from '../services/venues';
 
-// ==========================================
-// VÝCHOZÍ HODNOTY FORMULÁŘE
-// ==========================================
-
-const initialValues = {
+const initialForm = {
   name: '',
   street: '',
   streetNumber: '',
   city: '',
-  emailAddress: '',
   phoneNumber: '',
+  emailAddress: '',
   operatorNote: ''
 };
-
-// ==========================================
-// KONTROLA VYPLNĚNÝCH ÚDAJŮ
-// ==========================================
-
-function validate(values) {
-  const errors = {};
-
-  const required = {
-    name: 'Zadejte název areálu.',
-    street: 'Zadejte ulici.',
-    streetNumber: 'Zadejte číslo popisné.',
-    city: 'Zadejte město nebo část města.',
-    emailAddress: 'Zadejte kontaktní e-mail.',
-    phoneNumber: 'Zadejte telefonní číslo.'
-  };
-
-  Object.entries(required).forEach(([key, message]) => {
-    if (!values[key].trim()) {
-      errors[key] = message;
-    }
-  });
-
-  const maxLengths = {
-    name: 100,
-    street: 100,
-    streetNumber: 20,
-    city: 100,
-    operatorNote: 500
-  };
-
-  Object.entries(maxLengths).forEach(([key, max]) => {
-    if (values[key].length > max) {
-      errors[key] = `Maximálně ${max} znaků.`;
-    }
-  });
-
-  if (
-    values.emailAddress.trim() &&
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      values.emailAddress.trim()
-    )
-  ) {
-    errors.emailAddress = 'Zadejte platný e-mail.';
-  }
-
-  if (values.phoneNumber.trim()) {
-    const phone = values.phoneNumber.replace(/[\s()-]/g, '');
-
-    if (!/^\+?\d{9,15}$/.test(phone)) {
-      errors.phoneNumber = 'Zadejte platné telefonní číslo.';
-    }
-  }
-
-  return errors;
-}
-
-// ==========================================
-// FORMULÁŘ VYTVOŘENÍ AREÁLU
-// ==========================================
 
 export default function VenueForm() {
   const navigate = useNavigate();
 
-  const [values, setValues] = useState(initialValues);
+  const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
 
-  // Změna hodnoty pole
   function handleChange(event) {
     const { name, value } = event.target;
 
-    setValues((previous) => ({
+    setForm(previous => ({
       ...previous,
       [name]: value
     }));
 
-    setErrors((previous) => ({
+    setErrors(previous => ({
       ...previous,
       [name]: ''
     }));
@@ -103,93 +38,68 @@ export default function VenueForm() {
     setSubmitError('');
   }
 
-  // Vykreslení formulářového pole
-  function renderField({
-    name,
-    label,
-    placeholder,
-    icon,
-    type = 'text',
-    maxLength,
-    required = true
-  }) {
-    const error = errors[name];
+  function validate() {
+    const newErrors = {};
 
-    return (
-      <div className="venue-field">
-        <label htmlFor={name}>
-          {label}
-          {required && (
-            <span className="required"> *</span>
-          )}
-        </label>
+    if (!form.name.trim()) {
+      newErrors.name = 'Vyplň název areálu.';
+    }
 
-        <div
-          className={
-            'venue-input-wrap' +
-            (error ? ' invalid' : '')
-          }
-        >
-          {icon && (
-            <Icon name={icon} size={18} />
-          )}
+    if (!form.street.trim()) {
+      newErrors.street = 'Vyplň ulici.';
+    }
 
-          <input
-            id={name}
-            name={name}
-            type={type}
-            value={values[name]}
-            onChange={handleChange}
-            placeholder={placeholder}
-            maxLength={maxLength}
-            aria-invalid={Boolean(error)}
-            aria-describedby={
-              error ? `${name}-error` : undefined
-            }
-            required={required}
-          />
-        </div>
+    if (!form.streetNumber.trim()) {
+      newErrors.streetNumber = 'Vyplň číslo popisné.';
+    }
 
-        {error && (
-          <span
-            id={`${name}-error`}
-            className="venue-error"
-            role="alert"
-          >
-            {error}
-          </span>
-        )}
-      </div>
-    );
+    if (!form.city.trim()) {
+      newErrors.city = 'Vyplň město nebo část města.';
+    }
+
+    if (!form.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Vyplň telefon.';
+    } else if (
+      !/^\+?[\d\s()-]{9,20}$/.test(form.phoneNumber.trim()) ||
+      form.phoneNumber.replace(/\D/g, '').length < 9
+    ) {
+      newErrors.phoneNumber = 'Zadej platné telefonní číslo.';
+    }
+
+    if (!form.emailAddress.trim()) {
+      newErrors.emailAddress = 'Vyplň e-mail.';
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailAddress.trim())
+    ) {
+      newErrors.emailAddress =
+        'Zadej platný e-mail, např. info@sportparklipa.cz';
+    }
+
+    return newErrors;
   }
 
-  // Odeslání formuláře
   function handleSubmit(event) {
     event.preventDefault();
 
-    const validationErrors = validate(values);
-    setErrors(validationErrors);
+    const newErrors = validate();
+    setErrors(newErrors);
 
-    if (Object.keys(validationErrors).length > 0) {
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
     try {
-      const venue = createVenue({
-        name: values.name.trim(),
-        street: values.street.trim(),
-        streetNumber: values.streetNumber.trim(),
-        city: values.city.trim(),
-        emailAddress: values.emailAddress.trim(),
-        phoneNumber: values.phoneNumber.trim(),
-        operatorNote: values.operatorNote.trim()
+      createVenue({
+        name: form.name.trim(),
+        street: form.street.trim(),
+        streetNumber: form.streetNumber.trim(),
+        city: form.city.trim(),
+        phoneNumber: form.phoneNumber.trim(),
+        emailAddress: form.emailAddress.trim(),
+        operatorNote: form.operatorNote.trim()
       });
 
-      // Přesměrování na detail vytvořeného areálu
-      navigate(`/arealy/${venue.id}`, {
-        state: { created: true }
-      });
-
+      navigate('/arealy', { replace: true });
     } catch (error) {
       setSubmitError(
         error.message || 'Areál se nepodařilo vytvořit.'
@@ -200,36 +110,45 @@ export default function VenueForm() {
   return (
     <div className="venue-form-page">
 
-      {/* ZPĚT NA SEZNAM */}
+      {/* NAVIGACE */}
 
-      <Link to="/arealy" className="venue-back">
-        <Icon name="arrow" size={17} />
-        Zpět na moje areály
+      <Link to="/arealy" className="venue-form-back">
+        <Icon name="arrow" size={16} />
+        Moje areály
       </Link>
 
       {/* NADPIS */}
 
-      <div className="venue-form-heading">
+      <header className="venue-form-heading">
         <h1>Nový areál</h1>
         <p>
-          Vyplňte základní informace o svém areálu.
+          Vyplň základní údaje. Sportoviště přidáš v dalším kroku.
         </p>
-      </div>
+      </header>
 
       {/* KROKY */}
 
-      <div className="venue-steps">
-        <div className="venue-step active">
-          <span>1</span>
-          Areál
+      <div className="venue-form-steps">
+
+        <div className="venue-form-step active">
+          <span className="step-number">1</span>
+          <span>Areál</span>
         </div>
 
-        <div className="venue-step-line" />
+        <span className="venue-step-line" />
 
-        <div className="venue-step">
-          <span>2</span>
-          Sportoviště
+        <div className="venue-form-step">
+          <span className="step-number">2</span>
+          <span>Sportoviště</span>
         </div>
+
+        <span className="venue-step-line" />
+
+        <div className="venue-form-step">
+          <span className="step-number">3</span>
+          <span>Otevírací doba a ceník</span>
+        </div>
+
       </div>
 
       {/* FORMULÁŘ */}
@@ -240,112 +159,244 @@ export default function VenueForm() {
         noValidate
       >
 
-        <h2>Základní údaje</h2>
+        {/* ZÁKLADNÍ ÚDAJE */}
 
-        {renderField({
-          name: 'name',
-          label: 'Název areálu',
-          placeholder: 'Např. Sport Park Lípa',
-          icon: 'venueForm',
-          maxLength: 100
-        })}
+        <section className="venue-form-section">
+
+          <h2>Základní údaje</h2>
+
+          <div className="venue-field">
+
+            <label htmlFor="name">
+              Název areálu <span className="required">*</span>
+            </label>
+
+            <div className={`venue-input ${errors.name ? 'invalid' : ''}`}>
+              <Icon name="venueForm" size={18} />
+
+              <input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Sport Park Lípa"
+                value={form.name}
+                onChange={handleChange}
+                maxLength={100}
+                aria-invalid={Boolean(errors.name)}
+              />
+            </div>
+
+            {errors.name && (
+              <small className="venue-error">{errors.name}</small>
+            )}
+
+          </div>
+
+        </section>
 
         {/* ADRESA */}
 
-        <h2 className="venue-section-title">
-          Adresa
-        </h2>
+        <section className="venue-form-section">
 
-        <p className="venue-section-description">
-          Podle města si sportovci najdou areál ve vyhledávání.
-        </p>
+          <h2>Adresa</h2>
 
-        {renderField({
-          name: 'street',
-          label: 'Ulice',
-          placeholder: 'Např. Lipová',
-          icon: 'pin',
-          maxLength: 100
-        })}
+          <p className="venue-section-description">
+            Podle města tě sportovci najdou ve vyhledávání.
+          </p>
 
-        <div className="venue-fields-two">
-          {renderField({
-            name: 'city',
-            label: 'Město / část města',
-            placeholder: 'Např. Praha 4',
-            maxLength: 100
-          })}
+          <div className="venue-address-row">
 
-          {renderField({
-            name: 'streetNumber',
-            label: 'Číslo popisné / orientační',
-            placeholder: 'Např. 1423/8',
-            maxLength: 20
-          })}
-        </div>
+            <div className="venue-field">
+
+              <label htmlFor="street">
+                Ulice <span className="required">*</span>
+              </label>
+
+              <div className={`venue-input ${errors.street ? 'invalid' : ''}`}>
+                <Icon name="pin" size={17} />
+
+                <input
+                  id="street"
+                  name="street"
+                  type="text"
+                  placeholder="Lipová"
+                  value={form.street}
+                  onChange={handleChange}
+                  maxLength={100}
+                  aria-invalid={Boolean(errors.street)}
+                />
+              </div>
+
+              {errors.street && (
+                <small className="venue-error">{errors.street}</small>
+              )}
+
+            </div>
+
+            <div className="venue-field">
+
+              <label htmlFor="streetNumber">
+                Číslo popisné <span className="required">*</span>
+              </label>
+
+              <div className={`venue-input ${errors.streetNumber ? 'invalid' : ''}`}>
+                <input
+                  id="streetNumber"
+                  name="streetNumber"
+                  type="text"
+                  placeholder="12"
+                  value={form.streetNumber}
+                  onChange={handleChange}
+                  maxLength={20}
+                  aria-invalid={Boolean(errors.streetNumber)}
+                />
+              </div>
+
+              {errors.streetNumber && (
+                <small className="venue-error">
+                  {errors.streetNumber}
+                </small>
+              )}
+
+            </div>
+
+          </div>
+
+          <div className="venue-field">
+
+            <label htmlFor="city">
+              Město / část města <span className="required">*</span>
+            </label>
+
+            <div className={`venue-input ${errors.city ? 'invalid' : ''}`}>
+              <input
+                id="city"
+                name="city"
+                type="text"
+                placeholder="Praha 8"
+                value={form.city}
+                onChange={handleChange}
+                maxLength={100}
+                aria-invalid={Boolean(errors.city)}
+              />
+            </div>
+
+            {errors.city && (
+              <small className="venue-error">{errors.city}</small>
+            )}
+
+          </div>
+
+        </section>
 
         {/* KONTAKT */}
 
-        <h2 className="venue-section-title">
-          Kontaktní údaje
-        </h2>
+        <section className="venue-form-section">
 
-        <p className="venue-section-description">
-          Kontaktní údaje slouží pro komunikaci
-          se sportovci.
-        </p>
+          <h2>Kontakt</h2>
 
-        <div className="venue-fields-two">
-          {renderField({
-            name: 'emailAddress',
-            label: 'Kontaktní e-mail',
-            placeholder: 'rezervace@example.cz',
-            icon: 'mail',
-            type: 'email'
-          })}
+          <p className="venue-section-description">
+            Sportovci ho uvidí u rezervace.
+          </p>
 
-          {renderField({
-            name: 'phoneNumber',
-            label: 'Telefonní číslo',
-            placeholder: '+420 123 456 789',
-            icon: 'phone',
-            type: 'tel'
-          })}
-        </div>
+          <div className="venue-contact-row">
 
-        {/* POZNÁMKA */}
+            <div className="venue-field">
 
-        <h2 className="venue-section-title">
-          Pro sportovce
-        </h2>
+              <label htmlFor="phoneNumber">
+                Telefon <span className="required">*</span>
+              </label>
 
-        <div className="venue-field">
-          <label htmlFor="operatorNote">
-            Poznámka pro sportovce
-            <span className="venue-optional">
-              {' '}(nepovinné)
-            </span>
-          </label>
+              <div className={`venue-input ${errors.phoneNumber ? 'invalid' : ''}`}>
+                <Icon name="phone" size={17} />
 
-          <textarea
-            id="operatorNote"
-            name="operatorNote"
-            value={values.operatorNote}
-            onChange={handleChange}
-            placeholder="Např. možnost zapůjčení vybavení, šatny, parkování..."
-            maxLength={500}
-            rows={4}
-          />
+                <input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  placeholder="+420 777 123 456"
+                  value={form.phoneNumber}
+                  onChange={handleChange}
+                  aria-invalid={Boolean(errors.phoneNumber)}
+                />
+              </div>
 
-          <span className="venue-counter">
-            {values.operatorNote.length}/500
-          </span>
-        </div>
+              {errors.phoneNumber && (
+                <small className="venue-error">
+                  {errors.phoneNumber}
+                </small>
+              )}
 
-        {/* CHYBA PŘI UKLÁDÁNÍ */}
+            </div>
+
+            <div className="venue-field">
+
+              <label htmlFor="emailAddress">
+                E-mail <span className="required">*</span>
+              </label>
+
+              <div className={`venue-input ${errors.emailAddress ? 'invalid' : ''}`}>
+                <Icon name="mail" size={17} />
+
+                <input
+                  id="emailAddress"
+                  name="emailAddress"
+                  type="email"
+                  placeholder="info@sportparklipa.cz"
+                  value={form.emailAddress}
+                  onChange={handleChange}
+                  aria-invalid={Boolean(errors.emailAddress)}
+                />
+              </div>
+
+              {errors.emailAddress && (
+                <small className="venue-error">
+                  {errors.emailAddress}
+                </small>
+              )}
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* PRO SPORTOVCE */}
+
+        <section className="venue-form-section venue-note-section">
+
+          <h2>Pro sportovce</h2>
+
+          <div className="venue-field">
+
+            <label htmlFor="operatorNote">
+              Poznámka pro sportovce (nepovinné)
+            </label>
+
+            <textarea
+              id="operatorNote"
+              name="operatorNote"
+              rows={4}
+              maxLength={500}
+              placeholder="Na místě lze zapůjčit tenisové rakety a míče. Šatny a sprchy v hlavní budově."
+              value={form.operatorNote}
+              onChange={handleChange}
+            />
+
+            <div className="venue-note-counter">
+              {form.operatorNote.length}/500
+            </div>
+
+            <p className="venue-note-help">
+              Zobrazí se na detailu sportoviště, např. vybavení k zapůjčení.
+            </p>
+
+          </div>
+
+        </section>
 
         {submitError && (
-          <div className="venue-warning" role="alert">
+          <div className="venue-submit-error" role="alert">
             {submitError}
           </div>
         )}
@@ -353,22 +404,19 @@ export default function VenueForm() {
         {/* TLAČÍTKA */}
 
         <div className="venue-form-actions">
-          <Link
-            to="/arealy"
-            className="venue-button secondary"
-          >
+
+          <Link to="/arealy" className="venue-btn-cancel">
             Zrušit
           </Link>
 
-          <button
-            type="submit"
-            className="venue-button primary"
-          >
+          <button type="submit" className="venue-btn-submit">
             Vytvořit areál
           </button>
+
         </div>
 
       </form>
+
     </div>
   );
 }

@@ -267,29 +267,6 @@ button {
    7. HORNÍ LIŠTA
 ========================================== */
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  height: 76px;
-  padding: 0 45px;
-
-  background: #ffffff;
-  border-bottom: 1px solid #f0edf6;
-
-  color: #8d869c;
-  font-size: 13px;
-}
-
-.top-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  color: #3c3650;
-  font-weight: 600;
-}
 
 /* ==========================================
    8. OBSAH STRÁNEK
@@ -1531,4 +1508,939 @@ textarea::placeholder {
   .venue-sports-empty {
     min-height: 280px;
   }
+}
+
+/* ==========================================
+   FORMULÁŘ NOVÉHO AREÁLU
+   ROZLOŽENÍ PODLE FIGMY
+========================================== */
+
+.venue-form-page {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.venue-form-page .page-heading {
+  margin-bottom: 25px;
+}
+
+.venue-form-page .page-heading h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1d1735;
+}
+
+.venue-form-page .steps {
+  margin-bottom: 28px;
+}
+
+.venue-form-page .form-card {
+  width: 100%;
+  padding: 35px;
+  background: #ffffff;
+  border: 1px solid #e8e0f3;
+  border-radius: 22px;
+}
+
+.venue-form-page .form-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1d1735;
+}
+
+.venue-form-page .field label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.venue-form-page .input-wrap {
+  min-height: 48px;
+  border-radius: 10px;
+}
+
+.venue-form-page .input-wrap input {
+  height: 46px;
+}
+
+@media (max-width: 700px) {
+  .venue-form-page {
+    max-width: 100%;
+  }
+
+  .venue-form-page .form-card {
+    padding: 24px 18px;
+  }
+}
+
+/* ==========================================
+   PLAYSPOT - FORMULÁŘ NOVÉHO AREÁLU
+========================================== */
+
+.venue-form-page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  color: #1d1735;
+}
+
+/* ==========================================
+   NAVIGACE ZPĚT
+========================================== */
+
+.venue-form-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-bottom: 26px;
+
+  color: #7544ed;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.venue-form-back:hover {
+  color: #5c2ecf;
+}
+
+/* ==========================================
+   NADPIS
+========================================== */
+
+.venue-form-heading {
+  margin-bottom: 30px;
+}
+
+.venue-form-heading h1 {
+  margin: 0 0 9px;
+
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: #1d1735;
+}
+
+.venue-form-heading p {
+  margin: 0;
+
+  color: #817a96;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   TŘI KROKY
+========================================== */
+
+.venue-form-steps {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  margin-bottom: 32px;
+}
+
+.venue-form-step {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  flex-shrink: 0;
+
+  color: #938da5;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.venue-form-step .step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 29px;
+  height: 29px;
+
+  border-radius: 50%;
+
+  background: #e9e6ef;
+  color: #938da5;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.venue-form-step.active {
+  color: #1d1735;
+}
+
+.venue-form-step.active .step-number {
+  background: #7445eb;
+  color: #ffffff;
+}
+
+.venue-step-line {
+  flex: 1;
+  min-width: 15px;
+  height: 1px;
+  background: #ddd7e9;
+}
+
+/* ==========================================
+   BÍLÁ KARTA FORMULÁŘE
+========================================== */
+
+.venue-form-card {
+  width: 100%;
+  padding: 34px 35px;
+
+  background: #ffffff;
+  border: 1px solid #e5def1;
+  border-radius: 24px;
+
+  box-shadow: 0 8px 30px rgba(40, 20, 80, 0.025);
+}
+
+/* ==========================================
+   SEKCE FORMULÁŘE
+========================================== */
+
+.venue-form-section {
+  margin-bottom: 32px;
+}
+
+.venue-form-section h2 {
+  margin: 0 0 20px;
+
+  font-size: 18px;
+  font-weight: 800;
+  color: #1d1735;
+}
+
+.venue-section-description {
+  margin: -10px 0 20px;
+
+  font-size: 13px;
+  color: #928aa4;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   FORMULÁŘOVÁ POLE
+========================================== */
+
+.venue-field {
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 19px;
+}
+
+.venue-field label {
+  display: block;
+  margin-bottom: 9px;
+
+  font-size: 12px;
+  font-weight: 750;
+  color: #1d1735;
+}
+
+.venue-field label > span:not(.optional) {
+  color: #7445eb;
+}
+
+.venue-field label .optional {
+  color: #aaa3b5;
+  font-weight: 400;
+}
+
+/* ==========================================
+   INPUT S IKONOU
+========================================== */
+
+.venue-input {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  width: 100%;
+  min-height: 48px;
+  padding: 0 13px;
+
+  background: #ffffff;
+  border: 1px solid #bcb5ca;
+  border-radius: 11px;
+
+  color: #918aa5;
+
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.venue-input:focus-within {
+  border-color: #7445eb;
+  box-shadow: 0 0 0 3px rgba(116, 69, 235, 0.08);
+}
+
+.venue-input.invalid {
+  border-color: #d94c63;
+}
+
+.venue-input svg {
+  flex-shrink: 0;
+}
+
+.venue-input input {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: #1d1735;
+  font-size: 13px;
+}
+
+.venue-input input::placeholder {
+  color: #a9a1b7;
+}
+
+/* ==========================================
+   DVĚ POLE V JEDNOM ŘÁDKU
+========================================== */
+
+.venue-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+}
+
+/* ==========================================
+   TEXTAREA
+========================================== */
+
+.venue-field textarea {
+  width: 100%;
+  min-height: 105px;
+  padding: 13px;
+
+  border: 1px solid #bcb5ca;
+  border-radius: 11px;
+
+  outline: none;
+  resize: vertical;
+
+  color: #1d1735;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.venue-field textarea:focus {
+  border-color: #7445eb;
+}
+
+.venue-field textarea::placeholder {
+  color: #a9a1b7;
+}
+
+.venue-counter {
+  display: block;
+  margin-top: 6px;
+
+  text-align: right;
+  color: #aaa3b5;
+  font-size: 11px;
+}
+
+/* ==========================================
+   VALIDACE A CHYBY
+========================================== */
+
+.venue-error {
+  display: block;
+  margin-top: 6px;
+
+  color: #d23e53;
+  font-size: 11px;
+}
+
+.venue-submit-error {
+  margin-bottom: 20px;
+  padding: 12px 15px;
+
+  border: 1px solid #f1bec6;
+  border-radius: 10px;
+
+  background: #fff1f3;
+  color: #c5364a;
+
+  font-size: 13px;
+}
+
+/* ==========================================
+   SPODNÍ TLAČÍTKA
+========================================== */
+
+.venue-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 13px;
+
+  padding-top: 23px;
+  border-top: 1px solid #eeeaf3;
+}
+
+.venue-btn-cancel,
+.venue-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 43px;
+  padding: 11px 22px;
+
+  border-radius: 25px;
+
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.venue-btn-cancel {
+  background: #ffffff;
+  border: 1px solid #dcd4e9;
+  color: #7445eb;
+}
+
+.venue-btn-submit {
+  background: #7445eb;
+  border: 1px solid #7445eb;
+  color: #ffffff;
+}
+
+.venue-btn-submit:hover {
+  background: #6032d3;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 800px) {
+
+  .venue-form-page {
+    max-width: 100%;
+  }
+
+  .venue-form-card {
+    padding: 28px 24px;
+  }
+
+  .venue-form-steps {
+    gap: 8px;
+  }
+
+  .venue-form-step {
+    gap: 6px;
+    font-size: 11px;
+  }
+
+}
+
+/* ==========================================
+   MOBIL
+========================================== */
+
+@media (max-width: 550px) {
+
+  .venue-form-heading h1 {
+    font-size: 25px;
+  }
+
+  .venue-form-card {
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+
+  .venue-form-steps {
+    gap: 5px;
+  }
+
+  .venue-form-step {
+    gap: 4px;
+    font-size: 10px;
+    white-space: normal;
+  }
+
+  .venue-form-step .step-number {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+  }
+
+  .venue-step-line {
+    min-width: 8px;
+  }
+
+  .venue-fields-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .venue-form-actions {
+    flex-wrap: wrap;
+  }
+
+  .venue-btn-cancel,
+  .venue-btn-submit {
+    flex: 1;
+  }
+
+}
+
+/* ==========================================
+   PLAYSPOT - NOVÝ AREÁL PODLE FIGMY
+========================================== */
+
+.venue-form-page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  color: #1c1735;
+}
+
+/* NAVIGACE ZPĚT */
+
+.venue-form-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 25px;
+  color: #7444eb;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* NADPIS */
+
+.venue-form-heading {
+  margin-bottom: 26px;
+}
+
+.venue-form-heading h1 {
+  margin: 0 0 9px;
+  color: #1c1735;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.venue-form-heading p {
+  margin: 0;
+  color: #77718b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   TŘI KROKY - NEPŘES CELOU ŠÍŘKU
+========================================== */
+
+.venue-form-steps {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 11px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 26px;
+}
+
+.venue-form-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  color: #858097;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.venue-form-step .step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e9e6ef;
+  color: #858097;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.venue-form-step.active {
+  color: #1c1735;
+}
+
+.venue-form-step.active .step-number {
+  background: #7444eb;
+  color: white;
+}
+
+.venue-step-line {
+  width: 36px;
+  height: 1px;
+  flex: 0 0 36px;
+  background: #ddd7e8;
+}
+
+/* ==========================================
+   KARTA FORMULÁŘE
+========================================== */
+
+.venue-form-card {
+  width: 100%;
+  padding: 34px 32px 28px;
+  background: #ffffff;
+  border: 1px solid #e4ddef;
+  border-radius: 28px;
+  box-shadow: 0 5px 18px rgba(36, 20, 70, 0.025);
+}
+
+/* SEKCE */
+
+.venue-form-section {
+  margin: 0 0 30px;
+}
+
+.venue-form-section h2 {
+  margin: 0 0 18px;
+  color: #1c1735;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.venue-section-description {
+  margin: -11px 0 18px;
+  color: #7f7893;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* POLE */
+
+.venue-field {
+  min-width: 0;
+  margin-bottom: 16px;
+}
+
+.venue-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #1c1735;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.venue-field label .required {
+  color: #1c1735;
+}
+
+/* INPUTY */
+
+.venue-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 47px;
+  min-height: 47px;
+  padding: 0 13px;
+  border: 1px solid #8d86a3;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #807992;
+}
+
+.venue-input:focus-within {
+  border-color: #7444eb;
+  box-shadow: 0 0 0 2px rgba(116, 68, 235, 0.08);
+}
+
+.venue-input.invalid {
+  border: 2px solid #e72e4a;
+}
+
+.venue-input svg {
+  flex-shrink: 0;
+}
+
+.venue-input input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #1c1735;
+  font-size: 13px;
+}
+
+.venue-input input::placeholder {
+  color: #a39bb3;
+}
+
+/* ==========================================
+   ADRESA - ULICE A ČÍSLO VEDLE SEBE
+========================================== */
+
+.venue-address-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2.75fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.venue-contact-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ==========================================
+   POZNÁMKA PRO SPORTOVCE
+========================================== */
+
+.venue-note-section {
+  margin-bottom: 12px;
+}
+
+.venue-note-section h2 {
+  margin-bottom: 19px;
+}
+
+.venue-note-section textarea {
+  display: block;
+  width: 100%;
+  min-height: 110px;
+  padding: 13px 15px;
+  resize: vertical;
+  border: 1px solid #8d86a3;
+  border-radius: 14px;
+  outline: none;
+  background: #ffffff;
+  color: #1c1735;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.venue-note-section textarea:focus {
+  border-color: #7444eb;
+}
+
+.venue-note-section textarea::placeholder {
+  color: #a39bb3;
+}
+
+.venue-note-counter {
+  margin-top: -24px;
+  padding-right: 13px;
+  position: relative;
+  pointer-events: none;
+  text-align: right;
+  color: #77718b;
+  font-size: 11px;
+}
+
+.venue-note-help {
+  margin: 12px 0 0;
+  color: #817a94;
+  font-size: 11px;
+}
+
+/* ==========================================
+   CHYBOVÉ HLÁŠKY
+========================================== */
+
+.venue-error {
+  display: block;
+  margin-top: 6px;
+  color: #e02c47;
+  font-size: 11px;
+}
+
+.venue-submit-error {
+  margin: 15px 0;
+  padding: 12px;
+  border: 1px solid #f2b9c1;
+  border-radius: 10px;
+  background: #fff3f4;
+  color: #c62c42;
+  font-size: 12px;
+}
+
+/* ==========================================
+   TLAČÍTKA
+========================================== */
+
+.venue-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 25px;
+  padding-top: 0;
+  border-top: none;
+}
+
+.venue-btn-cancel,
+.venue-btn-submit {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 43px;
+  padding: 10px 23px;
+  border-radius: 25px;
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.venue-btn-cancel {
+  border: 1px solid #7444eb;
+  background: #ffffff;
+  color: #7444eb;
+}
+
+.venue-btn-submit {
+  border: 1px solid #7444eb;
+  background: #7444eb;
+  color: #ffffff;
+}
+
+.venue-btn-submit:hover {
+  background: #6033d4;
+}
+
+/* ==========================================
+   RESPONSIVITA
+========================================== */
+
+@media (max-width: 700px) {
+  .venue-form-page {
+    max-width: 100%;
+  }
+
+  .venue-form-card {
+    padding: 25px 20px;
+  }
+
+  .venue-form-steps {
+    gap: 6px;
+  }
+
+  .venue-form-step {
+    gap: 5px;
+    font-size: 10px;
+    white-space: normal;
+  }
+
+  .venue-form-step .step-number {
+    width: 23px;
+    height: 23px;
+  }
+
+  .venue-step-line {
+    width: 15px;
+    flex-basis: 15px;
+  }
+}
+
+@media (max-width: 550px) {
+  .venue-address-row,
+  .venue-contact-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .venue-form-heading h1 {
+    font-size: 25px;
+  }
+
+  .venue-form-card {
+    padding: 23px 16px;
+  }
+}
+
+/* ==========================================
+   SPODNÍ PROFIL V LEVÉM MENU
+========================================== */
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: auto;
+  padding: 18px 8px 5px;
+
+  border-top: none;
+  background: #ffffff;
+}
+
+.sidebar-footer .avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #eee6ff;
+  color: #7540e8;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-user-info strong {
+  color: #1c1735;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.sidebar-user-info small {
+  margin-top: 2px;
+  color: #817a94;
+  font-size: 10px;
+}
+
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: auto;
+  color: #817a94;
 }

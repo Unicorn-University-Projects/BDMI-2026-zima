@@ -12,6 +12,33 @@ export default function Icon({
 }) {
 
   const icons = {
+    
+        
+        logout: (
+        <>
+            {/* Rám obdélníku – všechny rohy mají poloměr 3 */}
+            <path d="
+            M10 3
+            H7
+            A3 3 0 0 0 4 6
+            V18
+            A3 3 0 0 0 7 21
+            H10
+            A3 3 0 0 0 13 18
+            V15
+
+            M13 9
+            V6
+            A3 3 0 0 0 10 3
+            " />
+
+            {/* Šipka doprava */}
+            <path d="M10 12H21" />
+            <path d="M17 8L21 12L17 16" />
+        </>
+        ),
+
+
 
     // ======================================
     // LOGO - KALENDÁŘ

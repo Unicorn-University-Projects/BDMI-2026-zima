@@ -92,18 +92,22 @@ function Layout() {
             PROFIL PROVOZOVATELE
         ================================== */}
 
+        
         <div className="sidebar-footer">
 
-          <span className="avatar">
-            KN
-          </span>
+        <span className="avatar">KN</span>
 
-          <div>
+        <div className="sidebar-user-info">
             <strong>Karel Novák</strong>
             <small>Provozovatel</small>
-          </div>
+        </div>
+
+        <span className="sidebar-logout" title="Odhlásit se">
+            <Icon name="logout" size={19} />
+        </span>
 
         </div>
+
 
       </aside>
 
@@ -113,25 +117,6 @@ function Layout() {
 
       <div className="main">
 
-        {/* HORNÍ LIŠTA */}
-
-        <header className="topbar">
-
-          <span>
-            Správa sportovních areálů
-          </span>
-
-          <span className="top-user">
-
-            <span className="avatar small">
-              KN
-            </span>
-
-            Karel Novák
-
-          </span>
-
-        </header>
 
         {/* ==================================
             OBSAH APLIKACE
