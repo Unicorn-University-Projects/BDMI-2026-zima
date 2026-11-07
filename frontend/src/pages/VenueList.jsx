@@ -85,28 +85,30 @@ export default function VenueList() {
 
       {venues.length === 0 ? (
 
-        <section className="empty-card">
+        
+<section className="empty-card">
 
-          <div className="empty-icon">
-            <Icon name="building" size={32} />
-          </div>
+  <div className="empty-icon">
+    <Icon name="building" size={30} />
+  </div>
 
-          <h2>Zatím nemáte žádný areál</h2>
+  <h2>Zatím nemáš žádný areál</h2>
 
-          <p>
-            Začněte vytvořením svého prvního areálu,
-            který potom můžete doplnit o sportoviště.
-          </p>
+  <p>
+    Založ areál a přidej do něj sportoviště,
+    která si sportovci budou rezervovat.
+  </p>
 
-          <Link
-            className="btn primary"
-            to="/arealy/novy"
-          >
-            <Icon name="plus" size={18} />
-            Vytvořit areál
-          </Link>
+  <Link
+    className="btn primary"
+    to="/arealy/novy"
+  >
+    <Icon name="plus" size={16} />
+    Vytvořit areál
+  </Link>
 
-        </section>
+</section>
+
 
       ) : (
 

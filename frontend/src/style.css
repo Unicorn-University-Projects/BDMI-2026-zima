@@ -842,3 +842,377 @@ textarea:focus {
     font-size: 12px;
   }
 }
+
+/* ==========================================
+   PLAYSPOT - ÚPRAVA PODLE FIGMY
+   STRÁNKA MOJE AREÁLY
+========================================== */
+
+/* 1. ZÁKLADNÍ ROZLOŽENÍ */
+
+:root {
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  color: #29233e;
+  background: #ffffff;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+}
+
+/* 2. BOČNÍ MENU */
+
+.sidebar {
+  width: 195px;
+  min-width: 195px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+  border-right: 1px solid #eee9f7;
+
+  padding: 25px 12px 18px;
+}
+
+/* Logo */
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  padding: 0 12px 28px;
+
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.5px;
+}
+
+.brand-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #7843e7;
+  color: #ffffff;
+
+  border-radius: 7px;
+  padding: 6px;
+  margin-right: 8px;
+}
+
+.brand > span:last-child {
+  color: #7542e6;
+}
+
+/* Navigační položky */
+
+.nav-heading {
+  display: none;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+  padding: 11px 13px;
+  margin-bottom: 5px;
+
+  border-radius: 10px;
+
+  color: #77718b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background: #f6f2ff;
+}
+
+.nav-link.active {
+  background: #eee7ff;
+  color: #6e3cde;
+  font-weight: 750;
+}
+
+/* Profil provozovatele */
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-top: auto;
+  padding: 15px 5px 0;
+
+  border-top: none;
+  font-size: 11px;
+}
+
+.sidebar-footer small {
+  display: block;
+  margin-top: 3px;
+
+  color: #9992aa;
+  font-size: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #eee6ff;
+  color: #7542e6;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 3. HORNÍ LIŠTA */
+
+.topbar {
+  display: none;
+}
+
+/* 4. HLAVNÍ OBSAH */
+
+.content {
+  max-width: none;
+  min-height: 100vh;
+
+  margin: 0;
+  padding: 28px 70px 70px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f0eaff 0px,
+      #f8f5ff 180px,
+      #ffffff 390px
+    );
+}
+
+/* 5. NADPIS MOJE AREÁLY */
+
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+  gap: 20px;
+}
+
+.page-heading h1 {
+  margin: 0;
+
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+
+  color: #29233e;
+}
+
+/* Skrytí doplňkových textů na seznamu */
+
+.page-heading .eyebrow {
+  display: none;
+}
+
+/* 6. PRÁZDNÁ KARTA AREÁLŮ */
+
+.empty-card {
+  width: 100%;
+  min-height: 285px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 25px;
+
+  background: #ffffff;
+  border: 1px dashed #e9dfff;
+  border-radius: 22px;
+
+  text-align: center;
+  box-shadow: none;
+}
+
+/* 7. IKONA AREÁLU */
+
+.empty-icon {
+  width: 57px;
+  height: 57px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 17px;
+
+  background: #efe7ff;
+  color: #51436b;
+
+  border-radius: 50%;
+}
+
+/* 8. NADPIS KARTY */
+
+.empty-card h2 {
+  margin: 0 0 9px;
+
+  color: #29233e;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* 9. POPIS KARTY */
+
+.empty-card p {
+  max-width: 330px;
+
+  margin: 0 0 15px;
+
+  color: #777087;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* 10. FIALOVÉ TLAČÍTKO */
+
+.btn.primary {
+  background: #7843e7;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 30px;
+
+  padding: 11px 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  box-shadow: none;
+}
+
+.btn.primary:hover {
+  background: #6330d1;
+}
+
+/* Menší tlačítko v prázdné kartě */
+
+.empty-card .btn.primary {
+  padding: 10px 19px;
+  font-size: 11px;
+}
+
+/* 11. KARTY EXISTUJÍCÍCH AREÁLŮ */
+
+.venue-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fill, minmax(260px, 1fr));
+
+  gap: 20px;
+}
+
+.venue-card {
+  background: #ffffff;
+  border: 1px solid #eee7f7;
+  border-radius: 18px;
+
+  padding: 24px;
+}
+
+.venue-card:hover {
+  box-shadow: 0 8px 25px #32205d13;
+}
+
+/* 12. TABLETY */
+
+@media (max-width: 800px) {
+
+  .sidebar {
+    width: 76px;
+    min-width: 76px;
+    padding: 20px 10px;
+  }
+
+  .brand {
+    font-size: 0;
+    padding: 0 4px 35px;
+  }
+
+  .brand > span:last-child,
+  .sidebar-footer div {
+    display: none;
+  }
+
+  .brand-symbol {
+    margin: 0;
+  }
+
+  .nav-link {
+    font-size: 0;
+    justify-content: center;
+    padding: 13px;
+  }
+
+  .content {
+    padding: 30px 25px;
+  }
+
+  .empty-card {
+    min-height: 300px;
+  }
+}
+
+/* 13. MOBILNÍ TELEFONY */
+
+@media (max-width: 550px) {
+
+  .sidebar {
+    width: 59px;
+    min-width: 59px;
+    padding: 17px 6px;
+  }
+
+  .content {
+    padding: 25px 15px;
+  }
+
+  .page-heading h1 {
+    font-size: 21px;
+  }
+
+  .empty-card {
+    min-height: 280px;
+    padding: 25px 15px;
+  }
+
+  .empty-card h2 {
+    font-size: 15px;
+  }
+
+  .empty-card p {
+    font-size: 12px;
+  }
+}
