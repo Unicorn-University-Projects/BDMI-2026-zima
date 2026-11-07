@@ -336,7 +336,7 @@ export default function VenueForm() {
           'name',
           'Název areálu',
           'Např. Sport Park Lípa',
-          'building',
+          'venueForm',
           { maxLength: 100 }
         )}
 
