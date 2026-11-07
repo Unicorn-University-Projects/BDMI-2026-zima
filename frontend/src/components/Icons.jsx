@@ -13,59 +13,51 @@ export default function Icon({
 
   const icons = {
 
-    // ======================================
+   
     // LOGO - KALENDÁŘ
-    // ======================================
-
     calendar: (
       <>
-        <rect
-          x="3"
-          y="5"
-          width="18"
-          height="16"
-          rx="3"
-        />
+        <rect x="3" y="5" width="18" height="16" rx="3" />
         <path d="M7 3v4M17 3v4M3 10h18" />
-        <path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" />
+        <circle cx="8" cy="14" r="1" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="14" r="1" fill="currentColor" stroke="none" />
+        <circle cx="16" cy="14" r="1" fill="currentColor" stroke="none" />
+        <circle cx="8" cy="17.5" r="1" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="17.5" r="1" fill="currentColor" stroke="none" />
       </>
     ),
 
-    // ======================================
     // PŘEHLED - DOMEČEK
-    // ======================================
-
     home: (
-      <>
-        <path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
-      </>
+      <path d="M3 10.5 10.7 4a2 2 0 0 1 2.6 0L21 10.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
     ),
 
-    // ======================================
-    // AREÁLY - ZNAČKA POLOHY
-    // ======================================
-
+    // AREÁLY - PLNÁ ZNAČKA POLOHY
     pin: (
       <>
-        <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
-        <circle cx="12" cy="10" r="3" />
-      </>
-    ),
-
-    // ======================================
-    // PROFIL - UŽIVATEL
-    // ======================================
-
-    user: (
-      <>
+        <path
+          d="M12 2C7.58 2 4 5.58 4 10c0 5.5 8 12 8 12s8-6.5 8-12c0-4.42-3.58-8-8-8z"
+          fill="currentColor"
+          stroke="none"
+        />
         <circle
           cx="12"
-          cy="7.5"
-          r="4.5"
+          cy="10"
+          r="3"
+          fill="white"
+          stroke="none"
         />
-        <path d="M4 21v-2c0-3 3.5-5 8-5s8 2 8 5v2" />
       </>
     ),
+
+    // PROFIL - HLAVA A RAMENA
+    user: (
+      <>
+        <circle cx="12" cy="7" r="4" />
+        <ellipse cx="12" cy="19" rx="7.5" ry="3" />
+      </>
+    ),
+
 
     // ======================================
     // BUDOVA - SEZNAM AREÁLŮ

@@ -7,209 +7,155 @@ Pokud už areály existují, zobrazí je jako karty s názvem, adresou a odkazem
 Využívá funkci listVenues() ze složky services.
 */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Icon from '../components/Icons';
 import { listVenues } from '../services/venues';
 
 export default function VenueList() {
-
-  // ==========================================
-  // 1. STAV A NAČÍTÁNÍ DAT
-  // ==========================================
-
-  // Text zadaný do vyhledávacího pole
   const [search, setSearch] = useState('');
 
-  // Načtení seznamu areálů
-  const [venues, setVenues] = useState(() => listVenues());
+  // Načtení areálů přihlášeného provozovatele
+  const venues = listVenues();
 
-  // ==========================================
-  // 2. FILTROVÁNÍ AREÁLŮ
-  // ==========================================
+  // Vyhledávání podle názvu a adresy
+  const filteredVenues = venues.filter((venue) => {
+    const value = [
+      venue.name,
+      venue.street,
+      venue.streetNumber,
+      venue.city
+    ]
+      .join(' ')
+      .toLocaleLowerCase('cs');
 
-  const filtered = venues.filter((venue) => {
-
-    const searchableText = (
-      venue.name + ' ' +
-      venue.city + ' ' +
-      venue.street
-    ).toLocaleLowerCase('cs');
-
-    return searchableText.includes(
-      search.toLocaleLowerCase('cs')
+    return value.includes(
+      search.trim().toLocaleLowerCase('cs')
     );
   });
 
-  // ==========================================
-  // 3. VYKRESLENÍ STRÁNKY
-  // ==========================================
-
   return (
-    <>
+    <div className="venues-page">
 
-      {/* Nadpis stránky */}
+      {/* NADPIS */}
 
-      <div className="page-heading">
-
+      <div className="venues-heading">
         <div>
-          <div className="eyebrow">
-            SPRÁVA AREÁLŮ
-          </div>
-
           <h1>Moje areály</h1>
 
-          <p>
-            Spravujte své sportovní areály na jednom místě.
-          </p>
+          {venues.length > 0 && (
+            <p>
+              Spravujte své sportovní areály
+              na jednom místě.
+            </p>
+          )}
         </div>
-
-        {/* Tlačítko pro vytvoření areálu */}
 
         {venues.length > 0 && (
           <Link
-            className="btn primary"
             to="/arealy/novy"
+            className="venues-create-button"
           >
-            <Icon name="plus" size={18} />
+            <Icon name="plus" size={16} />
             Vytvořit areál
           </Link>
         )}
-
       </div>
 
-      {/* ======================================
-          4. PRÁZDNÝ SEZNAM AREÁLŮ
-      ====================================== */}
+      {/* PRÁZDNÝ SEZNAM */}
 
       {venues.length === 0 ? (
+        <section className="venues-empty">
 
-        
-<section className="empty-card">
+          <div className="venues-empty-icon">
+            <Icon name="venueForm" size={26} />
+          </div>
 
-  <div className="empty-icon">
-    <Icon name="building" size={30} />
-  </div>
+          <h2>Zatím nemáš žádný areál</h2>
 
-  <h2>Zatím nemáš žádný areál</h2>
+          <p>
+            Založ areál a přidej do něj sportoviště,
+            která si sportovci budou rezervovat.
+          </p>
 
-  <p>
-    Založ areál a přidej do něj sportoviště,
-    která si sportovci budou rezervovat.
-  </p>
-
-  <Link
-    className="btn primary"
-    to="/arealy/novy"
-  >
-    <Icon name="plus" size={16} />
-    Vytvořit areál
-  </Link>
-
-</section>
-
-
+          <Link
+            to="/arealy/novy"
+            className="venues-create-button"
+          >
+            <Icon name="plus" size={16} />
+            Vytvořit areál
+          </Link>
+        </section>
       ) : (
-
         <>
+          {/* VYHLEDÁVÁNÍ */}
 
-          {/* ==================================
-              5. VYHLEDÁVÁNÍ AREÁLŮ
-          ================================== */}
+          <div className="venues-search">
+            <Icon name="search" size={19} />
 
-          <div className="list-tools">
+            <input
+              type="search"
+              placeholder="Hledat podle názvu nebo města..."
+              aria-label="Hledat areál"
+              value={search}
+              onChange={(event) =>
+                setSearch(event.target.value)
+              }
+            />
+          </div>
 
-            <div className="search">
+          {/* KARTY AREÁLŮ */}
 
-              <Icon name="search" />
+          {filteredVenues.length > 0 ? (
+            <div className="venues-grid">
 
-              <input
-                type="text"
-                aria-label="Hledat areál"
-                placeholder="Hledat podle názvu nebo města..."
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value);
-                }}
-              />
+              {filteredVenues.map((venue) => (
+                <Link
+                  key={venue.id}
+                  to={`/arealy/${venue.id}`}
+                  className="venues-card"
+                >
+                  <div className="venues-card-icon">
+                    <Icon name="building" size={24} />
+                  </div>
+
+                  <h2>{venue.name}</h2>
+
+                  <div className="venues-card-address">
+                    <Icon name="pin" size={18} />
+
+                    <span>
+                      {venue.street} {venue.streetNumber},
+                      {' '}{venue.city}
+                    </span>
+                  </div>
+
+                  <div className="venues-card-footer">
+                    <span className="venues-status">
+                      {venue.sportsFieldsCount > 0
+                        ? `${venue.sportsFieldsCount} sportovišť`
+                        : 'Bez sportovišť'}
+                    </span>
+
+                    <span className="venues-detail-link">
+                      Detail →
+                    </span>
+                  </div>
+                </Link>
+              ))}
 
             </div>
-
-            <span>
-              {filtered.length}
-              {' '}
-              {filtered.length === 1 ? 'areál' : 'areálů'}
-            </span>
-
-          </div>
-
-          {/* ==================================
-              6. KARTY JEDNOTLIVÝCH AREÁLŮ
-          ================================== */}
-
-          <div className="venue-grid">
-
-            {filtered.map((venue) => (
-
-              <Link
-                className="venue-card"
-                key={venue.id}
-                to={`/arealy/${venue.id}`}
-              >
-
-                {/* Ikona areálu */}
-
-                <div className="venue-card-icon">
-                  <Icon name="building" size={25} />
-                </div>
-
-                {/* Název */}
-
-                <h2>{venue.name}</h2>
-
-                {/* Adresa */}
-
-                <p>
-                  <Icon name="pin" size={16} />
-
-                  {venue.street} {venue.streetNumber},
-                  {' '}
-                  {venue.city}
-                </p>
-
-                {/* Spodní část karty */}
-
-                <div className="venue-card-bottom">
-
-                  <span className="status">
-                    Bez sportovišť
-                  </span>
-
-                  <span className="detail-link">
-                    Detail →
-                  </span>
-
-                </div>
-
-              </Link>
-
-            ))}
-
-          </div>
-
-          {/* Žádný výsledek vyhledávání */}
-
-          {filtered.length === 0 && (
-            <p>
-              Žádný areál neodpovídá hledání.
-            </p>
+          ) : (
+            <div className="venues-no-results">
+              <Icon name="search" size={26} />
+              <h2>Žádný areál nenalezen</h2>
+              <p>Zkuste upravit hledaný výraz.</p>
+            </div>
           )}
-
         </>
-
       )}
 
-    </>
+    </div>
   );
 }

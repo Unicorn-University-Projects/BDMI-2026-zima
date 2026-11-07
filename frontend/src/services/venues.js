@@ -1,96 +1,83 @@
 
 const KEY = 'playspot-venues-v1';
 
-// ==========================================
-// 1. DEMO PROVOZOVATEL
-// ==========================================
-
+// Demo identita přihlášeného provozovatele
 export const DEMO_OPERATOR_ID =
   'c3e7b912-48af-4d0e-a6f1-2b9d5e04c7a1';
 
 // ==========================================
-// 2. NAČTENÍ AREÁLŮ
+// NAČTENÍ DAT
 // ==========================================
 
 function readVenues() {
-
-  const saved = localStorage.getItem(KEY);
-
-  // Pokud nejsou uložená žádná data,
-  // vytvoří se prázdný seznam
-  if (saved === null) {
-    localStorage.setItem(KEY, JSON.stringify([]));
-    return [];
-  }
-
   try {
+    const saved = localStorage.getItem(KEY);
+
+    if (!saved) {
+      return [];
+    }
+
     const parsed = JSON.parse(saved);
 
     return Array.isArray(parsed) ? parsed : [];
-
   } catch {
     return [];
   }
 }
 
 // ==========================================
-// 3. SEZNAM AREÁLŮ PROVOZOVATELE
+// SEZNAM AREÁLŮ PROVOZOVATELE
 // ==========================================
 
 export function listVenues() {
-
   return readVenues().filter(
-    venue => venue.operatorId === DEMO_OPERATOR_ID
+    (venue) => venue.operatorId === DEMO_OPERATOR_ID
   );
-
 }
 
 // ==========================================
-// 4. DETAIL KONKRÉTNÍHO AREÁLU
+// DETAIL AREÁLU
 // ==========================================
 
 export function getVenue(id) {
-
   return listVenues().find(
-    venue => venue.id === id
+    (venue) => venue.id === id
   );
-
 }
 
 // ==========================================
-// 5. NORMALIZACE TEXTU
+// NORMALIZACE TEXTU
 // ==========================================
 
-// Slouží pro kontrolu duplicitních areálů
-
-const normalized = value =>
-  value.trim()
+function normalize(value) {
+  return String(value ?? '')
+    .trim()
     .replace(/\s+/g, ' ')
     .toLocaleLowerCase('cs');
+}
 
 // ==========================================
-// 6. VYTVOŘENÍ NOVÉHO AREÁLU
+// VYTVOŘENÍ NOVÉHO AREÁLU
 // ==========================================
 
 export function createVenue(data) {
+  const allVenues = readVenues();
 
-  const venues = listVenues();
+  const duplicate = allVenues.some((venue) =>
+    venue.operatorId === DEMO_OPERATOR_ID &&
+    normalize(venue.name) === normalize(data.name) &&
+    normalize(venue.street) === normalize(data.street) &&
+    normalize(venue.streetNumber) ===
+      normalize(data.streetNumber) &&
+    normalize(venue.city) === normalize(data.city)
+  );
 
-  // Kontrola duplicitního názvu a adresy
-  if (venues.some(venue =>
-    normalized(venue.name) === normalized(data.name) &&
-    normalized(venue.street) === normalized(data.street) &&
-    normalized(venue.streetNumber) === normalized(data.streetNumber) &&
-    normalized(venue.city) === normalized(data.city)
-  )) {
-
+  if (duplicate) {
     throw new Error(
       'Areál s tímto názvem a adresou již existuje.'
     );
-
   }
 
-  // Vytvoření nového areálu
   const venue = {
     ...data,
     id: crypto.randomUUID(),
@@ -98,10 +85,9 @@ export function createVenue(data) {
     sportsFieldsCount: 0
   };
 
-  // Uložení do localStorage
   localStorage.setItem(
     KEY,
-    JSON.stringify([...venues, venue])
+    JSON.stringify([...allVenues, venue])
   );
 
   return venue;

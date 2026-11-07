@@ -1,4 +1,4 @@
-
+import playspotLogo from './assets/playspot-logo.png';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -39,15 +39,15 @@ function Layout() {
 
         {/* LOGO PLAY SPOT */}
 
+        
         <Link className="brand" to="/arealy">
-
-          <span className="brand-symbol">
-            <Icon name="calendar" size={20} />
-          </span>
-
-          PLAY <span>SPOT</span>
-
+        <img
+            src={playspotLogo}
+            alt="PLAY SPOT"
+            className="playspot-logo"
+        />
         </Link>
+
 
         {/* NAVIGACE */}
 
@@ -59,8 +59,9 @@ function Layout() {
             className="nav-link disabled"
             title="Přehled bude dostupný později"
           >
-            <Icon name="home" size={21} />
+            <Icon name="home" size={16} />
             Přehled
+            <span className="nav-count">2</span>
           </span>
 
           {/* AREÁLY */}
