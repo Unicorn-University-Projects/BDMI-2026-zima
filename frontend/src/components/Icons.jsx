@@ -13,12 +13,22 @@ export default function Icon({
 
   const icons = {
 
-   
+    // ======================================
     // LOGO - KALENDÁŘ
+    // ======================================
+
     calendar: (
       <>
-        <rect x="3" y="5" width="18" height="16" rx="3" />
+        <rect
+          x="3"
+          y="5"
+          width="18"
+          height="16"
+          rx="3"
+        />
+
         <path d="M7 3v4M17 3v4M3 10h18" />
+
         <circle cx="8" cy="14" r="1" fill="currentColor" stroke="none" />
         <circle cx="12" cy="14" r="1" fill="currentColor" stroke="none" />
         <circle cx="16" cy="14" r="1" fill="currentColor" stroke="none" />
@@ -27,12 +37,20 @@ export default function Icon({
       </>
     ),
 
+    // ======================================
     // PŘEHLED - DOMEČEK
+    // ======================================
+
     home: (
-      <path d="M3 10.5 10.7 4a2 2 0 0 1 2.6 0L21 10.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
+      <path
+        d="M3 10.5 10.7 4a2 2 0 0 1 2.6 0L21 10.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"
+      />
     ),
 
+    // ======================================
     // AREÁLY - PLNÁ ZNAČKA POLOHY
+    // ======================================
+
     pin: (
       <>
         <path
@@ -40,6 +58,7 @@ export default function Icon({
           fill="currentColor"
           stroke="none"
         />
+
         <circle
           cx="12"
           cy="10"
@@ -50,14 +69,26 @@ export default function Icon({
       </>
     ),
 
+    // ======================================
     // PROFIL - HLAVA A RAMENA
+    // ======================================
+
     user: (
       <>
-        <circle cx="12" cy="7" r="4" />
-        <ellipse cx="12" cy="19" rx="7.5" ry="3" />
+        <circle
+          cx="12"
+          cy="7"
+          r="4"
+        />
+
+        <ellipse
+          cx="12"
+          cy="19"
+          rx="7.5"
+          ry="3"
+        />
       </>
     ),
-
 
     // ======================================
     // BUDOVA - SEZNAM AREÁLŮ
@@ -72,13 +103,15 @@ export default function Icon({
           height="18"
           rx="2"
         />
-        <path d="M9 21v-5h6v5M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01" />
+
+        <path
+          d="M9 21v-5h6v5M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01"
+        />
       </>
     ),
 
     // ======================================
-    // BUDOVA - NÁZEV AREÁLU VE FORMULÁŘI
-    // IKONA PODLE FIGMY
+    // BUDOVA - FORMULÁŘ AREÁLU
     // ======================================
 
     venueForm: (
@@ -116,6 +149,7 @@ export default function Icon({
           cy="11"
           r="7"
         />
+
         <path d="m16 16 5 5" />
       </>
     ),
@@ -133,7 +167,9 @@ export default function Icon({
     // ======================================
 
     phone: (
-      <path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1-2h3a2 2 0 0 1 2 1.7l.5 3a2 2 0 0 1-.6 1.8L7.1 10a16 16 0 0 0 6.9 6.9l1.5-1.9a2 2 0 0 1 1.8-.6l3 .5a2 2 0 0 1 1.7 2Z" />
+      <path
+        d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1-2h3a2 2 0 0 1 2 1.7l.5 3a2 2 0 0 1-.6 1.8L7.1 10a16 16 0 0 0 6.9 6.9l1.5-1.9a2 2 0 0 1 1.8-.6l3 .5a2 2 0 0 1 1.7 2Z"
+      />
     ),
 
     // ======================================
@@ -149,16 +185,81 @@ export default function Icon({
           height="16"
           rx="3"
         />
+
         <path d="m3 6 9 7 9-7" />
       </>
     ),
 
     // ======================================
-    // POTVRZENÍ - FAJFA
+    // POTVRZENÍ - FAJFA V RÁMEČKU
     // ======================================
 
     check: (
-      <path d="m5 12 4 4L19 6" />
+      <>
+        <rect
+          x="3"
+          y="3"
+          width="18"
+          height="18"
+          rx="4"
+        />
+
+        <path d="m8 12 3 3 5-6" />
+      </>
+    ),
+
+    // ======================================
+    // UPRAVIT AREÁL - TUŽKA
+    // ======================================
+
+    edit: (
+      <>
+        <path d="M12 20h9" />
+
+        <path
+          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4L16.5 3.5z"
+        />
+      </>
+    ),
+
+    // ======================================
+    // SPORTOVIŠTĚ - ČTYŘI ČTVERCE
+    // ======================================
+
+    grid: (
+      <>
+        <rect
+          x="3"
+          y="3"
+          width="7"
+          height="7"
+          rx="2"
+        />
+
+        <rect
+          x="14"
+          y="3"
+          width="7"
+          height="7"
+          rx="2"
+        />
+
+        <rect
+          x="3"
+          y="14"
+          width="7"
+          height="7"
+          rx="2"
+        />
+
+        <rect
+          x="14"
+          y="14"
+          width="7"
+          height="7"
+          rx="2"
+        />
+      </>
     )
 
   };

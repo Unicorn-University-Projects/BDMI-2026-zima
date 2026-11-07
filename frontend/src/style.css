@@ -1,12 +1,18 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+/* ==========================================
+   PLAYSPOT - HLAVNÍ STYLY
+========================================== */
 
-/* ZÁKLAD */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ==========================================
+   1. ZÁKLADNÍ NASTAVENÍ
+========================================== */
 
 :root {
-  font-family: Inter, Arial, sans-serif;
-  color: #29233e;
-  background: #fff;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  color: #1d1735;
+  background: #f8f6ff;
   font-synthesis: none;
 }
 
@@ -16,6 +22,7 @@
 
 body {
   margin: 0;
+  min-width: 320px;
 }
 
 a {
@@ -29,94 +36,101 @@ textarea {
   font: inherit;
 }
 
-/* ROZLOŽENÍ APLIKACE */
+button {
+  cursor: pointer;
+}
+
+/* ==========================================
+   2. HLAVNÍ ROZLOŽENÍ APLIKACE
+========================================== */
 
 .app {
   display: flex;
   min-height: 100vh;
-  background: #fff;
 }
 
 .main {
   flex: 1;
   min-width: 0;
-}
-
-.content {
-  min-height: 100vh;
-  padding: 28px 70px 70px;
   background: linear-gradient(
     180deg,
-    #f0eaff 0,
-    #f8f5ff 180px,
-    #fff 390px
+    #f0eaff 0%,
+    #faf8ff 32%,
+    #ffffff 75%
   );
 }
 
-/* BOČNÍ MENU */
+/* ==========================================
+   3. BOČNÍ MENU
+========================================== */
 
 .sidebar {
-  display: flex;
-  flex-direction: column;
   position: sticky;
   top: 0;
-  width: 195px;
-  min-width: 195px;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 235px;
+  min-width: 235px;
   height: 100vh;
-  padding: 25px 12px 18px;
-  background: #fff;
+
+  padding: 24px 16px;
+
+  background: #ffffff;
   border-right: 1px solid #eee9f7;
 }
 
-.brand,
+/* ==========================================
+   4. LOGO PLAYSPOT
+========================================== */
+
 .sidebar .brand {
   display: flex;
   align-items: center;
-  gap: 9px;
+
   padding: 0 8px;
-  margin-bottom: 45px;
-  text-decoration: none;
+  margin-bottom: 48px;
+
+  color: #1d1735;
+  white-space: nowrap;
 }
 
-.playspot-logo,
+/* Logo jako obrázek z Figmy */
+
 .sidebar .playspot-logo {
   display: block;
-  width: 138px;
+  width: 175px;
   max-width: 100%;
   height: auto;
 }
 
-.brand-symbol,
-.sidebar .brand-symbol {
+/* Původní textové logo - záložní styly */
+
+.brand-symbol {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+
   width: 35px;
   height: 35px;
-  padding: 0;
-  margin: 0;
+
+  margin-right: 9px;
+
   border-radius: 10px;
   background: #7447eb;
-  color: #fff;
-}
-
-.brand-symbol svg {
-  width: 21px;
-  height: 21px;
-  stroke-width: 2;
+  color: #ffffff;
 }
 
 .brand-text {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+
   font-size: 19px;
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.9px;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 .brand-play {
@@ -127,35 +141,39 @@ textarea {
   color: #7447eb;
 }
 
+/* ==========================================
+   5. NAVIGACE
+========================================== */
+
 .nav-heading {
-  display: none;
+  margin: 0 12px 12px;
+
+  color: #aaa3b5;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
 }
 
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.nav-link,
-.sidebar .nav-link {
+.nav-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 40px;
-  padding: 10px 12px;
-  margin-bottom: 5px;
-  border-radius: 12px;
+
+  min-height: 43px;
+  padding: 11px 13px;
+  margin-bottom: 6px;
+
+  border-radius: 13px;
+
   color: #625c78;
   font-size: 13px;
   font-weight: 700;
 }
 
 .nav-link svg {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
-  stroke-width: 1.8;
 }
 
 .nav-link:hover {
@@ -168,7 +186,7 @@ textarea {
 }
 
 .nav-link.disabled {
-  opacity: 1;
+  opacity: 0.7;
   cursor: default;
 }
 
@@ -177,46 +195,66 @@ textarea {
   font-size: 10px;
 }
 
+/* Červený odznak u Přehledu */
+
 .nav-count {
   display: grid;
   place-items: center;
-  width: 17px;
-  height: 17px;
+
+  width: 19px;
+  height: 19px;
+
   margin-left: auto;
+
   border-radius: 50%;
   background: #cf2441;
-  color: #fff;
-  font-size: 10px;
+  color: #ffffff;
+
+  font-size: 11px;
   font-weight: 700;
 }
 
-/* PROFIL UŽIVATELE */
+/* ==========================================
+   6. UŽIVATEL V BOČNÍM MENU
+========================================== */
 
 .sidebar-footer {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
+
   margin-top: auto;
-  padding: 15px 5px 0;
-  font-size: 11px;
+  padding: 18px 5px 0;
+
+  border-top: 1px solid #eee9f7;
+
+  font-size: 12px;
+}
+
+.sidebar-footer strong {
+  display: block;
+  font-weight: 750;
 }
 
 .sidebar-footer small {
   display: block;
   margin-top: 3px;
-  color: #9992aa;
-  font-size: 10px;
+  color: #9991a5;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
   border-radius: 50%;
-  background: #eee6ff;
-  color: #7542e6;
-  font-size: 11px;
+  background: #eee4ff;
+  color: #743bd6;
+
   font-weight: 800;
 }
 
@@ -225,428 +263,735 @@ textarea {
   height: 29px;
 }
 
+/* ==========================================
+   7. HORNÍ LIŠTA
+========================================== */
+
 .topbar {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 76px;
+  padding: 0 45px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #f0edf6;
+
+  color: #8d869c;
+  font-size: 13px;
 }
 
-/* OBECNÉ NADPISY */
+.top-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #3c3650;
+  font-weight: 600;
+}
+
+/* ==========================================
+   8. OBSAH STRÁNEK
+========================================== */
+
+.content {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+  padding: 42px 50px 80px;
+}
 
 .page-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 18px;
+
+  margin-bottom: 30px;
 }
 
 .page-heading h1 {
-  margin: 0;
-  color: #29233e;
-  font-size: 23px;
+  margin: 6px 0 8px;
+
+  font-size: 30px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.8px;
 }
 
 .page-heading p {
   margin: 0;
+
   color: #898297;
   font-size: 14px;
   line-height: 1.6;
 }
 
-.page-heading .eyebrow {
-  display: none;
+.eyebrow {
+  color: #8048dd;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
 }
 
-/* TLAČÍTKA */
+/* ==========================================
+   9. SPOLEČNÁ TLAČÍTKA
+========================================== */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+
   padding: 13px 20px;
+
   border: 0;
   border-radius: 10px;
+
   font-size: 13px;
   font-weight: 750;
   white-space: nowrap;
-  cursor: pointer;
 }
 
 .btn.primary {
-  padding: 11px 20px;
-  border-radius: 30px;
-  background: #7843e7;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  background: #7447eb;
+  color: #ffffff;
 }
 
 .btn.primary:hover {
-  background: #6330d1;
+  background: #6231d4;
 }
 
 .btn.secondary {
+  background: #ffffff;
   border: 1px solid #e0dbe8;
-  background: #fff;
   color: #615b6b;
 }
 
-/* PRÁZDNÝ SEZNAM */
+/* ==========================================
+   10. SEZNAM AREÁLŮ - STRÁNKA
+========================================== */
 
+.venues-page {
+  width: 100%;
+  color: #1d1735;
+}
+
+/* Nadpis a tlačítko */
+
+.venues-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 35px;
+}
+
+.venues-heading h1 {
+  margin: 0;
+
+  color: #1d1735;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.venues-heading p {
+  margin: 7px 0 0;
+  color: #8c849e;
+  font-size: 14px;
+}
+
+/* Vytvořit areál */
+
+.venues-create-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+
+  padding: 12px 24px;
+
+  border: 2px solid #7447eb;
+  border-radius: 30px;
+
+  background: #ffffff;
+  color: #7447eb;
+
+  font-size: 15px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.venues-create-button:hover {
+  background: #f3edff;
+}
+
+/* ==========================================
+   11. HORIZONTÁLNÍ SEZNAM AREÁLŮ
+========================================== */
+
+.venues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.venues-list-card {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+
+  width: 100%;
+  min-height: 100px;
+
+  padding: 16px 20px 16px 26px;
+
+  background: #ffffff;
+
+  border: 1px solid #e4dcf6;
+  border-radius: 25px;
+
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+
+.venues-list-card:hover {
+  border-color: #c9b7f8;
+  box-shadow: 0 5px 18px #7447eb10;
+}
+
+/* Ikona areálu */
+
+.venues-list-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 65px;
+  height: 65px;
+
+  flex-shrink: 0;
+
+  background: #eee7ff;
+  color: #7447eb;
+
+  border-radius: 20px;
+}
+
+.venues-list-icon svg {
+  width: 27px;
+  height: 27px;
+  stroke-width: 2;
+}
+
+/* Název a adresa */
+
+.venues-list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.venues-list-info h2 {
+  margin: 0 0 9px;
+
+  color: #1d1735;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.venues-list-address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #77708d;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.venues-list-address svg {
+  flex-shrink: 0;
+  stroke-width: 1.8;
+}
+
+/* Spravovat sportoviště */
+
+.venues-manage-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  flex-shrink: 0;
+
+  min-height: 48px;
+  padding: 12px 23px;
+
+  border: 0;
+  border-radius: 30px;
+
+  background: #7440e8;
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.venues-manage-button:hover {
+  background: #6030d0;
+}
+
+.venues-manage-button svg {
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+
+/* ==========================================
+   12. PRÁZDNÝ SEZNAM AREÁLŮ
+========================================== */
+
+.venues-empty,
 .empty-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  min-height: 285px;
-  padding: 40px 25px;
-  border: 1px dashed #e9dfff;
+
+  min-height: 330px;
+  padding: 45px 25px;
+
+  border: 1px dashed #e6dcff;
   border-radius: 22px;
-  background: #fff;
+
+  background: #ffffff;
   text-align: center;
 }
 
+.venues-empty-icon,
 .empty-icon {
-  display: grid;
-  place-items: center;
-  width: 57px;
-  height: 57px;
-  margin-bottom: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 60px;
+  height: 60px;
+
+  margin-bottom: 18px;
+
   border-radius: 50%;
-  background: #efe7ff;
+
+  background: #eee7ff;
   color: #51436b;
 }
 
+.venues-empty h2,
 .empty-card h2 {
-  margin: 0 0 9px;
-  font-size: 16px;
+  margin: 0 0 10px;
+  font-size: 17px;
   font-weight: 800;
 }
 
+.venues-empty p,
 .empty-card p {
-  max-width: 330px;
-  margin: 0 0 15px;
-  color: #777087;
+  max-width: 340px;
+  margin: 0 0 18px;
+
+  color: #8c849e;
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
-.empty-card .btn.primary {
-  padding: 10px 19px;
-  font-size: 11px;
-}
+/* ==========================================
+   13. VYHLEDÁVÁNÍ - POMOCNÉ STYLY
+========================================== */
 
-/* PŮVODNÍ KARTY AREÁLŮ */
-
-.list-tools {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  color: #9991a5;
-  font-size: 13px;
-}
-
+.venues-search,
 .search {
   display: flex;
   align-items: center;
-  gap: 9px;
-  width: 350px;
-  padding: 0 13px;
-  border: 1px solid #e7e0ed;
-  border-radius: 10px;
-  background: #fff;
+  gap: 12px;
+
+  width: 100%;
+  max-width: 440px;
+
+  margin-bottom: 25px;
+  padding: 0 16px;
+
+  border: 1px solid #e8e1f1;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #9c94ac;
 }
 
+.venues-search input,
 .search input {
   flex: 1;
   min-width: 0;
-  padding: 12px 0;
+  height: 49px;
+
   border: 0;
   outline: 0;
+
+  background: transparent;
+  color: #1d1735;
+  font-size: 14px;
 }
 
-.venue-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+.venues-no-results {
+  padding: 45px 20px;
+  text-align: center;
+  color: #8c849e;
 }
 
-.venue-card {
-  padding: 24px;
-  border: 1px solid #eee7f7;
-  border-radius: 18px;
-  background: #fff;
-  transition: transform 0.15s, box-shadow 0.15s;
+/* ==========================================
+   14. FORMULÁŘ AREÁLU - STRÁNKA
+========================================== */
+
+.venue-form-page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
 }
 
-.venue-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px #32205d13;
-}
-
-.venue-card-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f2ebff;
-  color: #7941dc;
-}
-
-.venue-card h2 {
-  margin: 19px 0 10px;
-  font-size: 18px;
-}
-
-.venue-card p {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  color: #847d90;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.venue-card-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 22px;
-  padding-top: 17px;
-  border-top: 1px solid #eeeaf4;
-}
-
-.status {
-  padding: 6px 10px;
-  border-radius: 20px;
-  background: #fff5e5;
-  color: #a46d22;
-  font-size: 11px;
-}
-
-.detail-link {
-  color: #7540d6;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-/* PŮVODNÍ FORMULÁŘ */
-
+.venue-back,
 .back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 24px;
-  color: #7941dc;
+  gap: 7px;
+
+  margin-bottom: 25px;
+
+  color: #7447eb;
   font-size: 13px;
   font-weight: 700;
 }
 
+.venue-form-heading,
 .form-heading {
-  margin-bottom: 25px;
-}
-
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 14px;
   margin-bottom: 28px;
 }
 
+.venue-form-heading h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.venue-form-heading p {
+  margin: 7px 0 0;
+  color: #8c849e;
+  font-size: 14px;
+}
+
+/* ==========================================
+   15. KROKY FORMULÁŘE
+========================================== */
+
+.venue-steps,
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  margin-bottom: 28px;
+}
+
+.venue-step,
 .step {
   display: flex;
   align-items: center;
-  gap: 9px;
-  color: #aaa3b3;
-  font-size: 12px;
+  gap: 10px;
+
+  color: #a49caf;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
 
+.venue-step span,
 .step b {
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 29px;
+
+  width: 34px;
+  height: 34px;
+
   border-radius: 50%;
-  background: #eae6ef;
-  color: #8d8797;
+
+  background: #ebe7f0;
+  color: #928a9f;
 }
 
+.venue-step.active,
 .step.current {
-  color: #7140d2;
+  color: #7447eb;
 }
 
+.venue-step.active span,
 .step.current b {
-  background: #7a42dc;
-  color: #fff;
+  background: #7447eb;
+  color: #ffffff;
 }
 
+.venue-step-line,
 .step-line {
-  width: 45px;
-  height: 1px;
-  background: #e1dbe9;
+  width: 65px;
+  height: 2px;
+  background: #e2dce9;
 }
 
+/* ==========================================
+   16. KARTA FORMULÁŘE
+========================================== */
+
+.venue-form-card,
 .form-card {
-  padding: 32px 35px;
-  border: 1px solid #ebe7f0;
-  border-radius: 21px;
-  background: #fff;
-  box-shadow: 0 6px 28px #39265c08;
+  padding: 36px 42px;
+
+  border: 1px solid #e8e1f1;
+  border-radius: 22px;
+
+  background: #ffffff;
+  box-shadow: 0 5px 22px #32205d06;
 }
 
+.venue-form-card h2,
 .form-card h2 {
-  margin: 0 0 22px;
-  font-size: 17px;
+  margin: 0 0 25px;
+  font-size: 19px;
+  font-weight: 800;
 }
 
+.venue-section-title,
 .form-card .section-title {
-  margin: 30px 0 6px;
+  margin: 35px 0 7px !important;
 }
 
+.venue-section-description,
 .section-description {
-  margin: 0 0 17px;
-  color: #9992a4;
-  font-size: 12px;
+  margin: 0 0 20px;
+  color: #8c849e;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
+/* ==========================================
+   17. FORMULÁŘOVÁ POLE
+========================================== */
+
+.venue-field,
 .field {
   min-width: 0;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
+.venue-field label,
 .field label {
   display: block;
   margin-bottom: 9px;
-  font-size: 12px;
+
+  color: #1d1735;
+  font-size: 13px;
   font-weight: 750;
 }
 
 .required {
-  color: #7b40dc;
+  color: #7447eb;
 }
 
-.optional {
-  color: #9c95a7;
+.optional,
+.venue-optional {
+  color: #9d95aa;
   font-weight: 400;
 }
 
+/* Vstupní pole */
+
+.venue-input-wrap,
 .input-wrap {
   display: flex;
   align-items: center;
-  gap: 9px;
-  min-height: 45px;
-  padding: 0 12px;
-  border: 1px solid #dcd6e3;
-  border-radius: 10px;
-  color: #a39bac;
+  gap: 11px;
+
+  min-height: 49px;
+  padding: 0 14px;
+
+  border: 1px solid #dcd6e6;
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: #9d94ac;
 }
 
+.venue-input-wrap:focus-within,
 .input-wrap:focus-within {
-  border-color: #7a41dc;
-  box-shadow: 0 0 0 3px #7a41dc12;
+  border-color: #7447eb;
+  box-shadow: 0 0 0 3px #7447eb12;
 }
 
-.input-wrap.invalid {
-  border-color: #e15c69;
-  background: #fffafb;
-}
-
+.venue-input-wrap input,
 .input-wrap input {
   width: 100%;
-  height: 43px;
+  min-width: 0;
+  height: 47px;
+
+  padding: 0;
+
   border: 0;
   outline: 0;
+
   background: transparent;
-  color: #332c42;
+  color: #1d1735;
+
   font-size: 13px;
 }
 
+.venue-input-wrap input::placeholder,
 .input-wrap input::placeholder,
 textarea::placeholder {
-  color: #b4adbd;
+  color: #aaa2b8;
 }
 
+/* Dvě pole vedle sebe */
+
+.venue-fields-two,
 .fields.two {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 18px;
 }
 
 .fields.address {
   grid-template-columns: 2fr 1fr;
 }
 
-textarea {
+/* Textová oblast */
+
+.venue-form-card textarea,
+.form-card textarea {
   display: block;
   width: 100%;
-  min-height: 100px;
-  padding: 14px;
-  border: 1px solid #dcd6e3;
-  border-radius: 10px;
+  min-height: 105px;
+
+  padding: 13px 14px;
+
+  border: 1px solid #dcd6e6;
+  border-radius: 11px;
+
   outline: 0;
   resize: vertical;
+
+  color: #1d1735;
   font-size: 13px;
 }
 
-textarea:focus {
-  border-color: #7a41dc;
+.venue-form-card textarea:focus,
+.form-card textarea:focus {
+  border-color: #7447eb;
 }
 
+/* Počítadlo znaků */
+
+.venue-counter,
 .counter {
   display: block;
-  margin-top: 5px;
-  color: #aaa2b2;
+  margin-top: 6px;
+
+  color: #a59cad;
   font-size: 11px;
   text-align: right;
 }
 
-.error {
-  display: block;
-  margin-top: 6px;
-  color: #cf3448;
-  font-size: 11px;
+/* ==========================================
+   18. VALIDACE FORMULÁŘE
+========================================== */
+
+.venue-input-wrap.invalid,
+.input-wrap.invalid {
+  border-color: #dc5263;
+  background: #fffafb;
 }
 
+.venue-error,
+.error {
+  display: block;
+  margin-top: 7px;
+
+  color: #d13e51;
+  font-size: 12px;
+}
+
+.venue-warning,
 .warning {
-  margin-top: 14px;
-  padding: 13px;
-  border: 1px solid #f6d1a4;
-  border-radius: 9px;
-  background: #fff4e8;
-  color: #9b5b1c;
+  margin-top: 15px;
+  padding: 13px 15px;
+
+  border: 1px solid #f3ce9f;
+  border-radius: 10px;
+
+  background: #fff5e9;
+  color: #9a5a1e;
+
   font-size: 13px;
 }
 
-.success {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 24px;
-  padding: 15px 18px;
-  border-radius: 10px;
-  background: #e9f8ef;
-  color: #26774b;
-  font-size: 14px;
-  font-weight: 650;
-}
+/* ==========================================
+   19. TLAČÍTKA FORMULÁŘE
+========================================== */
 
+.venue-form-actions,
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 22px;
-  padding-top: 22px;
-  border-top: 1px solid #eeeaf2;
+
+  margin-top: 30px;
+  padding-top: 24px;
+
+  border-top: 1px solid #eee9f4;
 }
 
-/* DETAIL AREÁLU */
+.venue-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+  padding: 11px 20px;
+
+  border-radius: 25px;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.venue-button.primary {
+  border: 1px solid #7447eb;
+  background: #7447eb;
+  color: #ffffff;
+}
+
+.venue-button.primary:hover {
+  background: #6231d4;
+}
+
+.venue-button.secondary {
+  border: 1px solid #ded7e9;
+  background: #ffffff;
+  color: #70677e;
+}
+
+/* ==========================================
+   20. DETAIL AREÁLU
+========================================== */
 
 .detail-layout {
   display: grid;
@@ -691,500 +1036,82 @@ textarea:focus {
 .sport-section p {
   max-width: 420px;
   margin: 0 0 22px;
+
   color: #91899e;
   font-size: 14px;
   line-height: 1.65;
 }
 
-.sport-section .empty-icon {
-  width: 64px;
-  height: 64px;
-}
-
 .pending {
   padding: 11px;
+
   border-radius: 8px;
+
   background: #f6f2fb;
   color: #8c8497;
+
   font-size: 12px;
 }
 
-/* AREÁLY PODLE FIGMY */
+/* Potvrzení úspěšného vytvoření */
 
-.venues-page,
-.venue-form-page {
-  --venue-purple: #7447eb;
-  --venue-purple-dark: #6231d4;
-  --venue-light: #eee7ff;
-  --venue-text: #1d1735;
-  --venue-muted: #8c849e;
-  --venue-border: #e8e1f1;
-
-  width: 100%;
-  color: var(--venue-text);
-  font-family: Inter, Arial, sans-serif;
-}
-
-/* NADPIS SEZNAMU */
-
-.venues-heading {
+.success {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 25px;
-}
+  gap: 9px;
 
-.venues-heading h1,
-.venue-form-heading h1 {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-}
-
-.venues-heading p,
-.venue-form-heading p {
-  margin: 7px 0 0;
-  color: var(--venue-muted);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-/* VYTVOŘENÍ AREÁLU */
-
-.venues-create-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 11px 19px;
-  border: 0;
-  border-radius: 30px;
-  background: var(--venue-purple);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.venues-create-button:hover {
-  background: var(--venue-purple-dark);
-}
-
-/* PRÁZDNÝ SEZNAM AREÁLŮ */
-
-.venues-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 330px;
-  padding: 45px 25px;
-  border: 1px dashed #e6dcff;
-  border-radius: 22px;
-  background: #fff;
-  text-align: center;
-}
-
-.venues-empty-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  margin-bottom: 18px;
-  border-radius: 50%;
-  background: var(--venue-light);
-  color: #51436b;
-}
-
-.venues-empty h2 {
-  margin: 0 0 10px;
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.venues-empty p {
-  max-width: 340px;
-  margin: 0 0 18px;
-  color: var(--venue-muted);
-  font-size: 12px;
-  line-height: 1.65;
-}
-
-/* VYHLEDÁVÁNÍ */
-
-.venues-search {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 440px;
-  margin-bottom: 25px;
-  padding: 0 16px;
-  border: 1px solid var(--venue-border);
-  border-radius: 12px;
-  background: #fff;
-  color: #9c94ac;
-}
-
-.venues-search input {
-  flex: 1;
-  min-width: 0;
-  height: 49px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--venue-text);
-  font-size: 14px;
-}
-
-.venues-search:focus-within {
-  border-color: var(--venue-purple);
-}
-
-/* KARTY AREÁLŮ */
-
-.venues-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 24px;
-}
-
-.venues-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 275px;
-  padding: 28px 30px;
-  border: 1px solid var(--venue-border);
-  border-radius: 22px;
-  background: #fff;
-  color: inherit;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.venues-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px #32205d12;
-}
-
-.venues-card-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  margin-bottom: 22px;
-  border-radius: 15px;
-  background: #f0eaff;
-  color: var(--venue-purple);
-}
-
-.venues-card h2 {
-  margin: 0 0 15px;
-  font-size: 19px;
-  font-weight: 750;
-  line-height: 1.3;
-}
-
-.venues-card-address {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
   margin-bottom: 24px;
-  color: #817993;
-  font-size: 14px;
-  line-height: 1.5;
-}
+  padding: 15px 18px;
 
-.venues-card-address svg {
-  flex-shrink: 0;
-}
-
-.venues-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid #eee8f5;
-}
-
-.venues-status {
-  padding: 7px 12px;
-  border-radius: 20px;
-  background: #fff4e4;
-  color: #b86b16;
-  font-size: 12px;
-}
-
-.venues-detail-link {
-  color: var(--venue-purple);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.venues-no-results {
-  padding: 45px 20px;
-  color: var(--venue-muted);
-  text-align: center;
-}
-
-.venues-no-results h2 {
-  color: var(--venue-text);
-  font-size: 17px;
-}
-
-/* FORMULÁŘ AREÁLU */
-
-.venue-form-page {
-  max-width: 760px;
-  margin: 0 auto;
-}
-
-.venue-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 25px;
-  color: var(--venue-purple);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.venue-form-heading {
-  margin-bottom: 28px;
-}
-
-.venue-steps {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 28px;
-}
-
-.venue-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #a49caf;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-step span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #ebe7f0;
-  color: #928a9f;
-  font-size: 14px;
-}
-
-.venue-step.active {
-  color: var(--venue-purple);
-}
-
-.venue-step.active span {
-  background: var(--venue-purple);
-  color: #fff;
-}
-
-.venue-step-line {
-  width: 65px;
-  height: 2px;
-  background: #e2dce9;
-}
-
-/* KARTA FORMULÁŘE */
-
-.venue-form-card {
-  padding: 36px 42px;
-  border: 1px solid var(--venue-border);
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 5px 22px #32205d06;
-}
-
-.venue-form-card h2 {
-  margin: 0 0 25px;
-  color: var(--venue-text);
-  font-size: 19px;
-  font-weight: 800;
-}
-
-.venue-form-card .venue-section-title {
-  margin: 35px 0 7px;
-}
-
-.venue-section-description {
-  margin: 0 0 20px;
-  color: var(--venue-muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* POLE FORMULÁŘE */
-
-.venue-field {
-  min-width: 0;
-  margin-bottom: 20px;
-}
-
-.venue-field label {
-  display: block;
-  margin-bottom: 9px;
-  color: var(--venue-text);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.venue-field .required {
-  color: var(--venue-purple);
-}
-
-.venue-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  min-height: 49px;
-  padding: 0 14px;
-  border: 1px solid #dcd6e6;
-  border-radius: 11px;
-  background: #fff;
-  color: #9d94ac;
-}
-
-.venue-input-wrap:focus-within {
-  border-color: var(--venue-purple);
-  box-shadow: 0 0 0 3px #7447eb12;
-}
-
-.venue-input-wrap.invalid {
-  border-color: #dc5263;
-  background: #fffafb;
-}
-
-.venue-input-wrap input {
-  width: 100%;
-  min-width: 0;
-  height: 47px;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--venue-text);
-  font-size: 13px;
-}
-
-.venue-input-wrap input::placeholder,
-.venue-form-card textarea::placeholder {
-  color: #aaa2b8;
-}
-
-.venue-fields-two {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-}
-
-.venue-form-card textarea {
-  display: block;
-  width: 100%;
-  min-height: 105px;
-  padding: 13px 14px;
-  border: 1px solid #dcd6e6;
-  border-radius: 11px;
-  outline: 0;
-  resize: vertical;
-  color: var(--venue-text);
-  font-size: 13px;
-}
-
-.venue-form-card textarea:focus {
-  border-color: var(--venue-purple);
-}
-
-.venue-optional {
-  color: #9d95aa;
-  font-weight: 400;
-}
-
-.venue-counter {
-  display: block;
-  margin-top: 6px;
-  color: #a59cad;
-  font-size: 11px;
-  text-align: right;
-}
-
-/* VALIDACE */
-
-.venue-error {
-  display: block;
-  margin-top: 7px;
-  color: #d13e51;
-  font-size: 12px;
-}
-
-.venue-warning {
-  margin-top: 15px;
-  padding: 13px 15px;
-  border: 1px solid #f3ce9f;
   border-radius: 10px;
-  background: #fff5e9;
-  color: #9a5a1e;
-  font-size: 13px;
+
+  background: #e9f8ef;
+  color: #26774b;
+
+  font-size: 14px;
+  font-weight: 650;
 }
 
-/* TLAČÍTKA FORMULÁŘE */
+/* ==========================================
+   21. RESPONZIVNÍ ZOBRAZENÍ - TABLET
+========================================== */
 
-.venue-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 30px;
-  padding-top: 24px;
-  border-top: 1px solid #eee9f4;
+@media (max-width: 900px) {
+
+  .content {
+    padding: 32px 25px 60px;
+  }
+
+  .venues-list-card {
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .venues-list-info h2 {
+    font-size: 18px;
+  }
+
+  .venues-manage-button {
+    padding: 11px 15px;
+    font-size: 12px;
+  }
+
+  .venue-form-card,
+  .form-card {
+    padding: 28px 25px;
+  }
+
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
-.venue-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 11px 20px;
-  border-radius: 25px;
-  font-size: 13px;
-  font-weight: 750;
-  cursor: pointer;
-}
-
-.venue-button.primary {
-  border: 1px solid var(--venue-purple);
-  background: var(--venue-purple);
-  color: #fff;
-}
-
-.venue-button.primary:hover {
-  background: var(--venue-purple-dark);
-}
-
-.venue-button.secondary {
-  border: 1px solid #ded7e9;
-  background: #fff;
-  color: #70677e;
-}
-
-/* TABLETY */
+/* ==========================================
+   22. RESPONZIVNÍ ZOBRAZENÍ - MENU
+========================================== */
 
 @media (max-width: 800px) {
+
   .sidebar {
     width: 76px;
     min-width: 76px;
@@ -1204,127 +1131,404 @@ textarea:focus {
   }
 
   .brand-text,
-  .brand > span:last-child,
-  .sidebar-footer div,
-  .soon {
+  .nav-heading,
+  .sidebar-footer div {
     display: none;
   }
 
-  .sidebar .nav-link {
+  .nav-link {
     justify-content: center;
+    gap: 0;
     padding: 12px;
     font-size: 0;
+  }
+
+  .nav-link svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .soon,
+  .nav-count {
+    display: none;
   }
 
   .sidebar-footer {
     justify-content: center;
   }
 
-  .content {
-    padding: 30px 25px;
-  }
-
-  .detail-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .venue-form-card {
-    padding: 28px 25px;
-  }
-
-  .venues-grid {
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 16px;
-  }
-
-  .venues-card {
-    padding: 22px;
+  .topbar {
+    padding: 0 24px;
   }
 }
 
-/* MOBILY */
+/* ==========================================
+   23. RESPONZIVNÍ ZOBRAZENÍ - MOBIL
+========================================== */
+
+@media (max-width: 650px) {
+
+  .venues-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .venues-heading h1 {
+    font-size: 25px;
+  }
+
+  .venues-list-card {
+    flex-wrap: wrap;
+    gap: 14px;
+    border-radius: 18px;
+  }
+
+  .venues-list-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+  }
+
+  .venues-list-info {
+    flex: 1 1 calc(100% - 70px);
+  }
+
+  .venues-list-info h2 {
+    font-size: 16px;
+  }
+
+  .venues-list-address {
+    font-size: 12px;
+  }
+
+  .venues-manage-button {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .venue-fields-two,
+  .fields.two,
+  .fields.address {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .venue-form-actions,
+  .form-actions {
+    flex-wrap: wrap;
+  }
+}
 
 @media (max-width: 550px) {
+
   .sidebar {
     width: 59px;
     min-width: 59px;
     padding: 17px 6px;
   }
 
+  .topbar {
+    height: 60px;
+    font-size: 11px;
+  }
+
+  .top-user {
+    font-size: 0;
+  }
+
   .content {
-    padding: 25px 15px;
+    padding: 25px 15px 50px;
   }
 
-  .page-heading,
-  .venues-heading {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .page-heading h1,
-  .venues-heading h1,
   .venue-form-heading h1 {
     font-size: 23px;
   }
 
-  .empty-card,
-  .venues-empty {
-    min-height: 280px;
-    padding: 25px 15px;
-  }
-
-  .venues-grid,
-  .venue-fields-two,
-  .fields.two,
-  .fields.address {
-    grid-template-columns: 1fr;
-  }
-
-  .venues-search {
-    max-width: 100%;
-  }
-
-  .search {
-    width: 75%;
-  }
-
-  .form-card,
-  .venue-form-card {
+  .venue-form-card,
+  .form-card {
     padding: 23px 18px;
   }
 
-  .venue-steps {
+  .venue-steps,
+  .steps {
     gap: 9px;
   }
 
-  .venue-step {
+  .venue-step,
+  .step {
     gap: 6px;
     font-size: 11px;
   }
 
-  .venue-step-line {
+  .venue-step-line,
+  .step-line {
     width: 25px;
   }
+}
 
-  .venue-form-actions {
-    flex-wrap: wrap;
+/* ==========================================
+   DETAIL AREÁLU - PODLE FIGMY
+========================================== */
+
+.venue-detail-page {
+  width: 100%;
+  color: #1d1735;
+}
+
+/* Zpět na seznam */
+
+.venue-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-bottom: 25px;
+
+  color: #7447eb;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   HLAVIČKA AREÁLU
+========================================== */
+
+.venue-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 25px;
+}
+
+.venue-detail-heading {
+  min-width: 0;
+}
+
+.venue-detail-heading h1 {
+  margin: 0 0 7px;
+
+  color: #1d1735;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.venue-detail-contact {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  color: #77708d;
+  font-size: 12px;
+}
+
+.venue-detail-contact span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.venue-detail-contact svg {
+  flex-shrink: 0;
+}
+
+/* Upravit areál */
+
+.venue-detail-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  flex-shrink: 0;
+
+  padding: 10px 20px;
+
+  border: 2px solid #7447eb;
+  border-radius: 30px;
+
+  background: #ffffff;
+  color: #7447eb;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.venue-detail-edit:disabled,
+.venue-add-sport:disabled {
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   ZELENÉ POTVRZENÍ VYTVOŘENÍ
+========================================== */
+
+.venue-created-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  width: 100%;
+
+  margin-bottom: 35px;
+  padding: 17px 20px;
+
+  border-radius: 15px;
+
+  background: #d5f9df;
+  color: #176c43;
+}
+
+.venue-created-success > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.venue-created-success strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.venue-created-success p {
+  margin: 0;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   SPORTOVIŠTĚ
+========================================== */
+
+.venue-sports-section {
+  width: 100%;
+}
+
+.venue-sports-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.venue-sports-header h2 {
+  margin: 0;
+
+  font-size: 17px;
+  font-weight: 800;
+  color: #1d1735;
+}
+
+/* Přidat sportoviště */
+
+.venue-add-sport {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 12px 22px;
+
+  border: 0;
+  border-radius: 30px;
+
+  background: #7447eb;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* ==========================================
+   PRÁZDNÝ SEZNAM SPORTOVIŠŤ
+========================================== */
+
+.venue-sports-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 320px;
+  padding: 45px 25px;
+
+  border: 1px dashed #e4dcf6;
+  border-radius: 22px;
+
+  background: #ffffff;
+  text-align: center;
+}
+
+.venue-sports-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 78px;
+  height: 78px;
+
+  margin-bottom: 18px;
+
+  border-radius: 50%;
+
+  background: #eee7ff;
+  color: #7447eb;
+}
+
+.venue-sports-empty h3 {
+  margin: 0 0 12px;
+
+  color: #1d1735;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.venue-sports-empty p {
+  max-width: 330px;
+  margin: 0;
+
+  color: #77708d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   RESPONZIVNÍ ZOBRAZENÍ
+========================================== */
+
+@media (max-width: 700px) {
+
+  .venue-detail-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .steps {
-    gap: 5px;
+  .venue-detail-heading h1 {
+    font-size: 23px;
   }
 
-  .step {
-    gap: 4px;
-    font-size: 10px;
+  .venue-detail-contact {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
   }
 
-  .step b {
-    width: 23px;
-    height: 23px;
+  .venue-sports-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .step-line {
-    width: 12px;
+  .venue-sports-empty {
+    min-height: 280px;
   }
 }
