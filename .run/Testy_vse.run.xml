@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Testy: všechny služby" type="CompoundRunConfigurationType">
+    <toRun name="Testy: gateway" type="js.build_tools.npm" />
+    <toRun name="Testy: auth" type="js.build_tools.npm" />
+    <toRun name="Testy: venue" type="js.build_tools.npm" />
+    <toRun name="Testy: booking" type="js.build_tools.npm" />
+    <toRun name="Testy: review" type="js.build_tools.npm" />
+    <toRun name="Testy: audit" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>
