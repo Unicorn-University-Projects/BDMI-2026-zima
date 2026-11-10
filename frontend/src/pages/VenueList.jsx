@@ -1,55 +1,80 @@
-//seznam areálů
-/*
-Zobrazuje všechny areály uložené pro demo provozovatele. Pokud žádný neexistuje, zobrazí prázdný stav s tlačítkem „Vytvořit areál“.
-
-Pokud už areály existují, zobrazí je jako karty s názvem, adresou a odkazem na detail. Umožňuje také vyhledávání podle názvu, města nebo ulice.
-
-Využívá funkci listVenues() ze složky services.
-*/
-
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Icon from '../components/Icons';
 import { listVenues } from '../services/venues';
 
-// ==========================================
-// SEZNAM AREÁLŮ
-// ==========================================
-
 export default function VenueList() {
+  const [venues, setVenues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Načtení areálů z localStorage
-  const venues = listVenues();
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const itemList = await listVenues();
+        if (!cancelled) {
+          setVenues(itemList);
+          setError('');
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setError(e.message || 'Seznam areálů se nepodařilo načíst.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="venues-page">
+        <div className="venues-heading">
+          <h1>Moje areály</h1>
+        </div>
+        <p>Načítám areály…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="venues-page">
+        <div className="venues-heading">
+          <h1>Moje areály</h1>
+        </div>
+        <div className="venue-submit-error" role="alert">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="venues-page">
-
-      {/* NADPIS A TLAČÍTKO */}
-
       <div className="venues-heading">
-
         <h1>Moje areály</h1>
 
         {venues.length > 0 && (
-          <Link
-            to="/arealy/novy"
-            className="venues-create-button"
-          >
+          <Link to="/arealy/novy" className="venues-create-button">
             <Icon name="plus" size={18} />
             Vytvořit areál
           </Link>
         )}
-
       </div>
 
-      {/* PRÁZDNÝ SEZNAM */}
-
       {venues.length === 0 ? (
-
         <section className="venues-empty">
-
           <div className="venues-empty-icon">
             <Icon name="venueForm" size={26} />
           </div>
@@ -61,55 +86,30 @@ export default function VenueList() {
             která si sportovci budou rezervovat.
           </p>
 
-          <Link
-            to="/arealy/novy"
-            className="venues-create-button"
-          >
+          <Link to="/arealy/novy" className="venues-create-button">
             <Icon name="plus" size={16} />
             Vytvořit areál
           </Link>
-
         </section>
-
       ) : (
-
-        /* SEZNAM VYTVOŘENÝCH AREÁLŮ */
-
         <div className="venues-list">
-
           {venues.map((venue) => (
-
-            <article
-              key={venue.id}
-              className="venues-list-card"
-            >
-
-              {/* IKONA AREÁLU */}
-
+            <article key={venue.id} className="venues-list-card">
               <div className="venues-list-icon">
                 <Icon name="building" size={26} />
               </div>
 
-              {/* NÁZEV A ADRESA */}
-
               <div className="venues-list-info">
-
                 <h2>{venue.name}</h2>
 
                 <div className="venues-list-address">
-
                   <Icon name="pin" size={18} />
-
                   <span>
-                    {venue.street} {venue.streetNumber},
-                    {' '}{venue.city}
+                    {[venue.street, venue.streetNumber].filter(Boolean).join(' ')},{' '}
+                    {venue.city}
                   </span>
-
                 </div>
-
               </div>
-
-              {/* SPRÁVA SPORTOVIŠŤ */}
 
               <Link
                 to={`/arealy/${venue.id}`}
@@ -118,15 +118,10 @@ export default function VenueList() {
                 <Icon name="calendar" size={19} />
                 Spravovat sportoviště
               </Link>
-
             </article>
-
           ))}
-
         </div>
-
       )}
-
     </div>
   );
 }

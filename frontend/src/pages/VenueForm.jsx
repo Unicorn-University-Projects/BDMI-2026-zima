@@ -78,7 +78,7 @@ export default function VenueForm() {
     return newErrors;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const newErrors = validate();
@@ -89,7 +89,7 @@ export default function VenueForm() {
     }
 
     try {
-      createVenue({
+      await createVenue({
         name: form.name.trim(),
         street: form.street.trim(),
         streetNumber: form.streetNumber.trim(),

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 import Icon from '../components/Icons';
@@ -9,10 +8,61 @@ export default function VenueDetail() {
   const { id } = useParams();
   const location = useLocation();
 
-  const venue = getVenue(id);
+  const [venue, setVenue] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const isCreated = location.state?.created === true;
 
-  // Areál nebyl nalezen
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const item = await getVenue(id);
+        if (!cancelled) {
+          setVenue(item);
+          setError('');
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setError(e.message || 'Detail areálu se nepodařilo načíst.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="venue-detail-page">
+        <p>Načítám areál…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="venue-detail-page">
+        <h1>Chyba</h1>
+        <div className="venue-submit-error" role="alert">
+          {error}
+        </div>
+        <Link to="/arealy" className="back">
+          <Icon name="arrow" size={17} />
+          Zpět na moje areály
+        </Link>
+      </div>
+    );
+  }
+
   if (!venue) {
     return (
       <div className="venue-detail-page">
@@ -29,27 +79,22 @@ export default function VenueDetail() {
   const address = [
     [venue.street, venue.streetNumber].filter(Boolean).join(' '),
     venue.city
-  ].filter(Boolean).join(', ');
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   return (
     <div className="venue-detail-page">
-
-      {/* ZPĚT NA SEZNAM */}
-
       <Link to="/arealy" className="venue-detail-back">
         <Icon name="arrow" size={16} />
         Moje areály
       </Link>
 
-      {/* HLAVIČKA AREÁLU */}
-
       <div className="venue-detail-header">
-
         <div className="venue-detail-heading">
           <h1>{venue.name}</h1>
 
           <div className="venue-detail-contact">
-
             <span>
               <Icon name="pin" size={15} />
               {address}
@@ -68,11 +113,8 @@ export default function VenueDetail() {
                 {venue.emailAddress}
               </span>
             )}
-
           </div>
         </div>
-
-        {/* ÚPRAVA AREÁLU - ZATÍM NEAKTIVNÍ */}
 
         <button
           type="button"
@@ -83,14 +125,10 @@ export default function VenueDetail() {
           <Icon name="edit" size={17} />
           Upravit areál
         </button>
-
       </div>
-
-      {/* POTVRZENÍ VYTVOŘENÍ */}
 
       {isCreated && (
         <div className="venue-created-success" role="status">
-
           <Icon name="check" size={20} />
 
           <div>
@@ -100,19 +138,12 @@ export default function VenueDetail() {
               nabízet k rezervaci.
             </p>
           </div>
-
         </div>
       )}
 
-      {/* SPORTOVIŠTĚ */}
-
       <section className="venue-sports-section">
-
         <div className="venue-sports-header">
-
-          <h2>
-            Sportoviště ({venue.sportsFieldsCount ?? 0})
-          </h2>
+          <h2>Sportoviště ({venue.sportsFieldsCount ?? 0})</h2>
 
           <button
             type="button"
@@ -123,13 +154,9 @@ export default function VenueDetail() {
             <Icon name="plus" size={18} />
             Přidat sportoviště
           </button>
-
         </div>
 
-        {/* PRÁZDNÝ SEZNAM SPORTOVIŠŤ */}
-
         <div className="venue-sports-empty">
-
           <div className="venue-sports-empty-icon">
             <Icon name="grid" size={30} />
           </div>
@@ -140,11 +167,8 @@ export default function VenueDetail() {
             Přidej kurty, hřiště nebo haly. Pak jim
             nastavíš otevírací dobu a ceník.
           </p>
-
         </div>
-
       </section>
-
     </div>
   );
 }
