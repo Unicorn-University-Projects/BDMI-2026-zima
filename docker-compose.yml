@@ -40,6 +40,10 @@ services:
       - backend
     env_file:
       - ./services/venue/.env
+    environment:
+      DB_HOST: mysql
+    depends_on:
+      - mysql
 
   booking:
     build: ./services/booking
