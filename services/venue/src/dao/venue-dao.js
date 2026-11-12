@@ -40,9 +40,25 @@ async function listByOperatorId(operatorId) {
   return rows;
 }
 
+async function update(id, venue) {
+  await pool.execute(
+    `UPDATE venues
+     SET name = ?, street = ?, city = ?, noteForAthletes = ?, email = ?, phone = ?
+     WHERE id = ?`,
+    [venue.name, venue.street, venue.city, venue.noteForAthletes, venue.email, venue.phone, id],
+  );
+  return get(id);
+}
+
+async function deleteById(id) {
+  await pool.execute("DELETE FROM venues WHERE id = ?", [id]);
+}
+
 export default {
   create,
   get,
   getByNameAndAddress,
   listByOperatorId,
+  update,
+  deleteById,
 };

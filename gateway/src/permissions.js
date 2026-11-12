@@ -12,8 +12,8 @@ const permissions = {
   "venue/venue/create": ["Operator"],
   "venue/venue/list": ["Operator"],
   "venue/venue/get": ["Authenticated"],
-  "venue/venue/update": ["Operator"],
-  "venue/venue/delete": ["Operator"],
+  "venue/venue/update": ["Operator", "Admin"],
+  "venue/venue/delete": ["Operator", "Admin"],
   "venue/sportsGround/create": ["Operator"],
   "venue/sportsGround/list": ["Authenticated"],
   "venue/sportsGround/get": ["Authenticated"],
@@ -46,6 +46,7 @@ const roleNotSetAllowed = ["auth/user/getMe", "auth/user/setRole"];
 const roleProfiles = {
   athlete: "Athlete",
   operator: "Operator",
+  admin: "Admin",
 };
 
 const services = {
