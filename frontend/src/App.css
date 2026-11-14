@@ -109,7 +109,7 @@ html, body { margin: 0; padding: 0; display: block; min-height: 100vh; backgroun
 .ps-role-ico { width: 36px; height: 36px; border-radius: 10px; background: var(--soft-2); display: grid; place-items: center; color: var(--ink); flex: none; }
 .ps-role.active .ps-role-ico { background: #fff; }
 .ps-role-txt { flex: 1; }
-.ps-role-txt strong { display: block; font-size: 13px; font-weight: 600; color: #0000;}
+.ps-role-txt strong { display: block; font-size: 13px; font-weight: 600; }
 .ps-role-txt small { font-size: 11px; color: var(--muted); }
 .ps-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #9d99b5; flex: none; display: grid; place-items: center; background: #fff; }
 .ps-role.active .ps-radio { border-color: var(--primary); background: var(--primary); }
@@ -131,7 +131,7 @@ html, body { margin: 0; padding: 0; display: block; min-height: 100vh; backgroun
 }
 .ps-illu { width: 100%; max-width: 480px; height: auto; align-self: center; }
 .ps-promo { max-width: 440px; }
-.ps-promo h2 { font-size: 34px; line-height: 1.2; font-weight: 600; margin: 0 0 14px; letter-spacing: -.5px; color: #0000;}
+.ps-promo h2 { font-size: 34px; line-height: 1.2; font-weight: 600; margin: 0 0 14px; letter-spacing: -.5px; }
 .ps-promo p { font-size: 13px; color: var(--muted); margin: 0 0 22px; }
 .ps-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .ps-bullets li { display: flex; align-items: center; gap: 12px; font-size: 13px; }
@@ -163,8 +163,11 @@ html, body { margin: 0; padding: 0; display: block; min-height: 100vh; backgroun
 .ps-search {
   max-width: 640px; margin: 0 auto; background: #fff; border-radius: 24px;
   padding: 16px 20px 20px; box-shadow: 0 12px 32px rgba(60, 30, 140, .1);
-  display: grid; grid-template-columns: 1fr 1fr 1.1fr auto; gap: 12px; align-items: end; text-align: left;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr) auto; gap: 12px; align-items: end; text-align: left;
+  box-sizing: border-box; width: calc(100% - 48px);
 }
+.ps-search > * { min-width: 0; }
+.ps-search .ps-btn { white-space: nowrap; flex: none; }
 .ps-search .ps-label { font-size: 10px; margin-bottom: 4px; }
 .ps-search .ps-input-wrap { height: 38px; border-radius: 12px; padding: 0 10px; }
 .ps-search .ps-input-wrap input, .ps-search select { font-size: 11px; }
@@ -188,7 +191,7 @@ html, body { margin: 0; padding: 0; display: block; min-height: 100vh; backgroun
 }
 
 @media (max-width: 700px) {
-  .ps-search { grid-template-columns: 1fr; }
+  .ps-search { grid-template-columns: minmax(0, 1fr); }
   .ps-search .ps-btn { width: 100%; justify-content: center; }
   .ps-steps { grid-template-columns: 1fr; }
   .ps-nav { padding: 0 16px; }
@@ -220,7 +223,11 @@ html, body { margin: 0; padding: 0; display: block; min-height: 100vh; backgroun
   background: #15803d; color: #fff; display: grid; place-items: center; border: 2px solid #fff;
 }
 .ps-prov-check svg { width: 10px; height: 10px; }
+
+/* ---------- Pevná barva textu (nezávislá na tmavém režimu a výchozím index.css) ---------- */
 .ps h1, .ps h2, .ps h3 { color: var(--ink); }
 .ps-promo, .ps-promo h2 { color: var(--ink); }
 .ps-role, .ps-role-txt strong { color: var(--ink); }
 .ps-role-txt small { color: var(--muted); }
+.ps { color-scheme: light; }
+.ps select option { background: #fff; color: var(--ink); }
