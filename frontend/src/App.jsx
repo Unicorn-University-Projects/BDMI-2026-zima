@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import './App.css';
 
 // Adresa API gateway (backend na portu 4000)
-const API_URL = 'http://localhost:4000/auth';
+// Adresa gateway se čte z frontend/.env (VITE_API_URL); když chybí, použije se localhost:4000
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/auth`;
 
 // Token pro reset hesla chodí v odkazu z e-mailu: https://tvuj-web/?token=...
 // Podle analýzy je odkaz ve tvaru /obnova-hesla/<token>; ?token=... necháváme jako záložní variantu
