@@ -323,14 +323,19 @@ function App() {
       });
       if (res.ok) {
         const data = await res.json();
-        setUzivatel(data);
+        const u = data.user || data; // odpověď může být { user: {...} } nebo přímo uživatel
+        setUzivatel(u);
         setScreen('home');
-        setToast(`Vítej v PlaySpotu, ${data.firstName}!`);
+        setToast(`Vítej v PlaySpotu, ${u.firstName}!`);
       } else {
+        const text = await res.text().catch(() => '');
+        console.error('getMe selhalo:', res.status, text);
         odhlasit();
+        setErrorMsg(`Přihlášení se nepodařilo ověřit (chyba ${res.status}). Zkus to prosím znovu.`);
       }
     } catch (err) {
       console.error('Chyba při načítání uživatele', err);
+      setErrorMsg('Nelze se spojit se serverem.');
     } finally {
       setNacitam(false);
     }
