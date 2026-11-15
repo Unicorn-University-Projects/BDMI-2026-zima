@@ -84,6 +84,8 @@ async function readJson(response) {
   return { status: response.status, body: await response.json() };
 }
 
+// Start the real HTTP services on temporary ports with test-only JWT keys.
+// The suite does not require MySQL; database-backed success paths are not exercised.
 before(async () => {
   const ports = {};
   for (const name of ["auth", "venue", "booking", "review", "audit"]) {
@@ -137,6 +139,7 @@ after(async () => {
   }
 });
 
+// Health checks cover the gateway and each currently implemented backend service.
 test("all backend services expose their health endpoint", async () => {
   for (const name of ["gateway", "auth", "venue", "booking", "review", "audit"]) {
     const response = await fetch(serviceUrl(name, "/health"));
@@ -145,6 +148,7 @@ test("all backend services expose their health endpoint", async () => {
   }
 });
 
+// Public Auth requests pass through the gateway and retain the Auth service response.
 test("gateway routes a public auth request to auth and returns DTO validation errors", async () => {
   const { status, body } = await readJson(await fetch(serviceUrl("gateway", "/auth/user/register"), {
     method: "POST",
@@ -155,6 +159,7 @@ test("gateway routes a public auth request to auth and returns DTO validation er
   assert.equal(body.code, "user/register/invalidDtoIn");
 });
 
+// Auth request validation: sign-in, password reset, and provider sign-in payloads.
 test("auth rejects invalid sign-in, reset, and OAuth request DTOs", async () => {
   const scenarios = [
     ["/auth/user/signIn", { email: "bad", password: "" }, "user/signIn/invalidDtoIn"],
@@ -182,6 +187,7 @@ test("auth rejects invalid sign-in, reset, and OAuth request DTOs", async () => 
   }
 });
 
+// OAuth is deliberately unconfigured in this isolated test environment.
 test("auth rejects provider login when OAuth credentials are not configured", async () => {
   const { status, body } = await readJson(await fetch(serviceUrl("gateway", "/auth/user/signInWithProvider"), {
     method: "POST",
@@ -197,6 +203,7 @@ test("auth rejects provider login when OAuth credentials are not configured", as
   assert.equal(body.code, "user/signInWithProvider/providerNotSupported");
 });
 
+// Gateway authentication: missing/invalid tokens and Auth role-selection validation.
 test("gateway protects authenticated auth and venue commands", async () => {
   const scenarios = [
     ["GET", "/auth/user/getMe"],
@@ -232,6 +239,7 @@ test("gateway protects authenticated auth and venue commands", async () => {
   assert.equal(invalidRole.body.code, "user/setRole/invalidDtoIn");
 });
 
+// Venue validation and role checks return before DAO calls, so no database is needed.
 test("gateway and venue service reject roles and invalid venue DTOs before database access", async () => {
   const athleteToken = createToken("athlete");
   const forbidden = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
@@ -276,6 +284,7 @@ test("gateway and venue service reject roles and invalid venue DTOs before datab
   assert.equal(invalidDelete.body.code, "venue/invalidDtoIn");
 });
 
+// Auth service boundary checks for internal requests that bypass the gateway.
 test("auth service enforces identity and DTO validation on direct internal calls", async () => {
   const unauthenticated = await readJson(await fetch(serviceUrl("auth", "/user/getMe")));
   assert.equal(unauthenticated.status, 401);
@@ -290,6 +299,7 @@ test("auth service enforces identity and DTO validation on direct internal calls
   assert.equal(invalidPassword.body.code, "user/setPassword/invalidDtoIn");
 });
 
+// Venue service independently validates the identity and role headers from the gateway.
 test("venue service enforces its own identity and role headers", async () => {
   const unauthenticated = await readJson(await fetch(serviceUrl("venue", "/venue/create"), {
     method: "POST",
@@ -330,6 +340,7 @@ test("venue service enforces its own identity and role headers", async () => {
   assert.equal(forbiddenGet.body.code, "user/forbidden");
 });
 
+// Audit middleware rejects invalid keys; a valid key reaches the currently unimplemented route.
 test("audit service rejects missing and invalid system credentials", async () => {
   for (const headers of [{}, { "X-System-Key": "wrong-key" }]) {
     const { status, body } = await readJson(await fetch(serviceUrl("audit", "/audit/events"), { headers }));
@@ -343,12 +354,14 @@ test("audit service rejects missing and invalid system credentials", async () =>
   assert.equal(authorized.status, 404);
 });
 
+// Unknown gateway commands are rejected before reaching a backend service.
 test("gateway rejects unlisted commands without forwarding them", async () => {
   const { status, body } = await readJson(await fetch(serviceUrl("gateway", "/venue/not-a-command")));
   assert.equal(status, 403);
   assert.equal(body.code, "user/forbidden");
 });
 
+// Use a capture server to verify proxy path/body forwarding and replacement of spoofed headers.
 test("gateway strips caller-supplied identity headers and forwards the verified identity", async () => {
   let received;
   forwardingUpstream = createServer(async (req, res) => {
