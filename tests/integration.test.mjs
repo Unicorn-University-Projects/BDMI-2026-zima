@@ -12,6 +12,7 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const keyPair = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const services = new Map();
 const systemKey = "integration-test-system-key";
+const gatewaySecret = "integration-test-gateway-secret";
 let gateway;
 let gatewayPort;
 let forwardingUpstream;
@@ -101,7 +102,7 @@ before(async () => {
     MICROSOFT_CLIENT_SECRET: "",
     MICROSOFT_REDIRECT_URI: "",
   });
-  startService("venue", ports.venue);
+  startService("venue", ports.venue, { GATEWAY_INTERNAL_SECRET: gatewaySecret });
   startService("booking", ports.booking);
   startService("review", ports.review);
   startService("audit", ports.audit, { SYSTEM_KEY: systemKey });
@@ -116,6 +117,7 @@ before(async () => {
     VENUE_URL: serviceUrl("venue"),
     BOOKING_URL: serviceUrl("booking"),
     REVIEW_URL: serviceUrl("review"),
+    GATEWAY_INTERNAL_SECRET: gatewaySecret,
     JWT_PUBLIC_KEY: Buffer.from(
       keyPair.publicKey.export({ type: "spki", format: "pem" }),
     ).toString("base64"),
@@ -257,10 +259,11 @@ test("gateway and venue service reject roles and invalid venue DTOs before datab
   const invalidCreate = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
     method: "POST",
     headers: operatorHeaders,
-    body: JSON.stringify({ name: "" }),
+    body: JSON.stringify({ name: "   " }),
   }));
   assert.equal(invalidCreate.status, 400);
-  assert.equal(invalidCreate.body.code, "venue/create/invalidDtoIn");
+  assert.equal(invalidCreate.body.code, "venue/invalidDtoIn");
+  assert.equal(invalidCreate.body.message, "Vstupní data nejsou validní.");
 
   const invalidGet = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/get?id=not-a-uuid"), {
     headers: operatorHeaders,
@@ -282,6 +285,14 @@ test("gateway and venue service reject roles and invalid venue DTOs before datab
   }));
   assert.equal(invalidDelete.status, 400);
   assert.equal(invalidDelete.body.code, "venue/invalidDtoIn");
+
+  const invalidSportsGround = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({ name: "   " }),
+  }));
+  assert.equal(invalidSportsGround.status, 400);
+  assert.equal(invalidSportsGround.body.code, "sportsGround/invalidDtoIn");
 });
 
 // Auth service boundary checks for internal requests that bypass the gateway.
@@ -299,11 +310,17 @@ test("auth service enforces identity and DTO validation on direct internal calls
   assert.equal(invalidPassword.body.code, "user/setPassword/invalidDtoIn");
 });
 
-// Venue service independently validates the identity and role headers from the gateway.
-test("venue service enforces its own identity and role headers", async () => {
+// Venue service rejects direct access without gateway secret and validates identity with a valid secret.
+test("venue service requires gateway secret and enforces identity headers", async () => {
+  const blocked = await readJson(await fetch(serviceUrl("venue", "/venue/list")));
+  assert.equal(blocked.status, 403);
+  assert.equal(blocked.body.code, "user/forbidden");
+
+  const secretHeaders = { "X-Gateway-Secret": gatewaySecret };
+
   const unauthenticated = await readJson(await fetch(serviceUrl("venue", "/venue/create"), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { ...secretHeaders, "Content-Type": "application/json" },
     body: "{}",
   }));
   assert.equal(unauthenticated.status, 401);
@@ -312,6 +329,7 @@ test("venue service enforces its own identity and role headers", async () => {
   const forbiddenCreate = await readJson(await fetch(serviceUrl("venue", "/venue/create"), {
     method: "POST",
     headers: {
+      ...secretHeaders,
       "Content-Type": "application/json",
       "X-User-Id": "integration-test-user",
       "X-User-Role": "athlete",
@@ -323,6 +341,7 @@ test("venue service enforces its own identity and role headers", async () => {
 
   const forbiddenList = await readJson(await fetch(serviceUrl("venue", "/venue/list"), {
     headers: {
+      ...secretHeaders,
       "X-User-Id": "integration-test-user",
       "X-User-Role": "athlete",
     },
@@ -332,6 +351,7 @@ test("venue service enforces its own identity and role headers", async () => {
 
   const forbiddenGet = await readJson(await fetch(serviceUrl("venue", "/venue/get?id=not-a-uuid"), {
     headers: {
+      ...secretHeaders,
       "X-User-Id": "integration-test-user",
       "X-User-Role": "system",
     },
@@ -386,6 +406,7 @@ test("gateway strips caller-supplied identity headers and forwards the verified 
     VENUE_URL: `http://127.0.0.1:${forwardingPort}`,
     BOOKING_URL: serviceUrl("booking"),
     REVIEW_URL: serviceUrl("review"),
+    GATEWAY_INTERNAL_SECRET: gatewaySecret,
     JWT_PUBLIC_KEY: Buffer.from(
       keyPair.publicKey.export({ type: "spki", format: "pem" }),
     ).toString("base64"),
@@ -398,8 +419,9 @@ test("gateway strips caller-supplied identity headers and forwards the verified 
       Authorization: `Bearer ${createToken("operator")}`,
       "Content-Type": "application/json",
       "X-User-Id": "spoofed-user",
-      "X-User-Role": "admin",
+      "X-User-Role": "operator",
       "X-System-Key": "spoofed-key",
+      "X-Gateway-Secret": "spoofed-secret",
     },
     body: JSON.stringify({ name: "Integration venue" }),
   });
@@ -411,6 +433,7 @@ test("gateway strips caller-supplied identity headers and forwards the verified 
   assert.equal(received.headers["x-user-id"], "integration-test-user");
   assert.equal(received.headers["x-user-role"], "operator");
   assert.equal(received.headers["x-system-key"], undefined);
+  assert.equal(received.headers["x-gateway-secret"], gatewaySecret);
   assert.equal(received.headers.authorization, undefined);
   assert.deepEqual(JSON.parse(received.body), { name: "Integration venue" });
 });

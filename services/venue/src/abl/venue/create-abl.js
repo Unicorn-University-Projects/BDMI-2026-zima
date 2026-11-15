@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import venueDao from "../../dao/venue-dao.js";
+import { invalidDtoIn, normalizeText, trimDtoIn } from "../../utils/validation.js";
 
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
@@ -9,12 +10,12 @@ addFormats(ajv);
 const schema = {
   type: "object",
   properties: {
-    name: { type: "string", minLength: 1, maxLength: 150 },
-    street: { type: "string", minLength: 1, maxLength: 150 },
-    streetNumber: { type: "string", minLength: 1, maxLength: 50 },
-    city: { type: "string", minLength: 1, maxLength: 100 },
-    emailAddress: { type: "string", format: "email", maxLength: 255 },
-    phoneNumber: { type: "string", minLength: 1, maxLength: 30 },
+    name: { type: "string", minLength: 1, maxLength: 150, pattern: "\\S" },
+    street: { type: "string", minLength: 1, maxLength: 150, pattern: "\\S" },
+    streetNumber: { type: "string", minLength: 1, maxLength: 50, pattern: "\\S" },
+    city: { type: "string", minLength: 1, maxLength: 100, pattern: "\\S" },
+    emailAddress: { type: "string", format: "email", maxLength: 255, pattern: "\\S" },
+    phoneNumber: { type: "string", minLength: 1, maxLength: 30, pattern: "\\S" },
     operatorNote: { type: "string", maxLength: 1000 },
   },
   required: ["name", "street", "streetNumber", "city", "emailAddress", "phoneNumber"],
@@ -22,10 +23,6 @@ const schema = {
 };
 
 const validate = ajv.compile(schema);
-
-function normalizeText(value) {
-  return String(value).trim().replace(/\s+/g, " ");
-}
 
 async function createAbl(req, res) {
   try {
@@ -47,13 +44,9 @@ async function createAbl(req, res) {
       });
     }
 
-    const dtoIn = req.body ?? {};
+    const dtoIn = trimDtoIn(req.body ?? {});
     if (!validate(dtoIn)) {
-      return res.status(400).json({
-        code: "venue/create/invalidDtoIn",
-        message: "DtoIn is not valid.",
-        params: { validationErrors: validate.errors },
-      });
+      return res.status(400).json(invalidDtoIn(validate.errors));
     }
 
     const unsupportedKeyList = Object.keys(dtoIn).filter((key) => !(key in schema.properties));
@@ -89,7 +82,7 @@ async function createAbl(req, res) {
       dtoOut.warnings = [
         {
           code: "venue/create/unsupportedKeys",
-          message: "DtoIn contains unsupported keys.",
+          message: "Vstup obsahuje nepodporované klíče.",
           params: { unsupportedKeyList },
         },
       ];

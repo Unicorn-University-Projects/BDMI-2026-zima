@@ -1,6 +1,7 @@
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import venueDao from "../../dao/venue-dao.js";
+import { invalidDtoIn, trimDtoIn } from "../../utils/validation.js";
 
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
@@ -16,7 +17,7 @@ const schema = {
 
 const validate = ajv.compile(schema);
 
-const allowedRoles = ["athlete", "operator", "admin"];
+const allowedRoles = ["athlete", "operator"];
 
 async function getAbl(req, res) {
   try {
@@ -38,13 +39,9 @@ async function getAbl(req, res) {
       });
     }
 
-    const dtoIn = req.query ?? {};
+    const dtoIn = trimDtoIn(req.query ?? {});
     if (!validate(dtoIn)) {
-      return res.status(400).json({
-        code: "venue/invalidDtoIn",
-        message: "DtoIn is not valid.",
-        params: { validationErrors: validate.errors },
-      });
+      return res.status(400).json(invalidDtoIn(validate.errors));
     }
 
     const unsupportedKeyList = Object.keys(dtoIn).filter((key) => !(key in schema.properties));
@@ -62,7 +59,7 @@ async function getAbl(req, res) {
       dtoOut.warnings = [
         {
           code: "venue/get/unsupportedKeys",
-          message: "DtoIn contains unsupported keys.",
+          message: "Vstup obsahuje nepodporované klíče.",
           params: { unsupportedKeyList },
         },
       ];

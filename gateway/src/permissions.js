@@ -12,16 +12,16 @@ const permissions = {
   "venue/venue/create": ["Operator"],
   "venue/venue/list": ["Operator"],
   "venue/venue/get": ["Authenticated"],
-  "venue/venue/update": ["Operator", "Admin"],
-  "venue/venue/delete": ["Operator", "Admin"],
+  "venue/venue/update": ["Operator"],
+  "venue/venue/delete": ["Operator"],
   "venue/sportsGround/create": ["Operator"],
   "venue/sportsGround/list": ["Authenticated"],
   "venue/sportsGround/get": ["Authenticated"],
   "venue/sportsGround/update": ["Operator"],
+  "venue/sportsGround/delete": ["Operator"],
   "venue/sportsGround/addPhoto": ["Operator"],
   "venue/sportsGround/deletePhoto": ["Operator"],
   "venue/sportsGround/setPhotoOrder": ["Operator"],
-  "venue/sportsGround/delete": ["Operator"],
   "venue/sportsGround/setOpeningHoursAndPriceList": ["Operator"],
 
   "booking/sportsGround/search": ["Athlete"],
@@ -46,7 +46,6 @@ const roleNotSetAllowed = ["auth/user/getMe", "auth/user/setRole"];
 const roleProfiles = {
   athlete: "Athlete",
   operator: "Operator",
-  admin: "Admin",
 };
 
 const services = {

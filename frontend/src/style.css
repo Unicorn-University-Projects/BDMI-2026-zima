@@ -1479,6 +1479,57 @@ textarea::placeholder {
   line-height: 1.6;
 }
 
+.venue-sport-form {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding: 20px;
+  border: 1px solid #e4dcf6;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.venue-sports-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.venue-sports-item {
+  padding: 16px 18px;
+  border: 1px solid #e4dcf6;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.venue-sports-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #1d1735;
+  font-size: 15px;
+}
+
+.venue-sports-item span {
+  color: #77708d;
+  font-size: 13px;
+}
+
+.venue-sports-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.venue-sports-item p {
+  margin: 10px 0 0;
+  color: #5b5470;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 /* ==========================================
    RESPONZIVNÍ ZOBRAZENÍ
 ========================================== */

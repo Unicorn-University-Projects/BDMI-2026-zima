@@ -38,6 +38,16 @@ export default function VenueForm() {
     setSubmitError('');
   }
 
+  function isValidEmail(value) {
+    if (/[^\x00-\x7F]/.test(value)) {
+      return false;
+    }
+    if (value.includes('..')) {
+      return false;
+    }
+    return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
+  }
+
   function validate() {
     const newErrors = {};
 
@@ -68,11 +78,9 @@ export default function VenueForm() {
 
     if (!form.emailAddress.trim()) {
       newErrors.emailAddress = 'Vyplň e-mail.';
-    } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailAddress.trim())
-    ) {
+    } else if (!isValidEmail(form.emailAddress.trim())) {
       newErrors.emailAddress =
-        'Zadej platný e-mail, např. info@sportparklipa.cz';
+        'Zadej platný e-mail bez diakritiky, např. info@sportparklipa.cz';
     }
 
     return newErrors;
@@ -89,7 +97,7 @@ export default function VenueForm() {
     }
 
     try {
-      await createVenue({
+      const venue = await createVenue({
         name: form.name.trim(),
         street: form.street.trim(),
         streetNumber: form.streetNumber.trim(),
@@ -99,8 +107,20 @@ export default function VenueForm() {
         operatorNote: form.operatorNote.trim()
       });
 
-      navigate('/arealy', { replace: true });
+      navigate(`/arealy/${venue.id}`, {
+        replace: true,
+        state: { created: true }
+      });
     } catch (error) {
+      if (error.code === 'venue/invalidDtoIn' && error.params?.invalidFields?.length) {
+        const fieldErrors = {};
+        for (const field of error.params.invalidFields) {
+          fieldErrors[field] = 'Toto pole není vyplněné správně.';
+        }
+        setErrors(previous => ({ ...previous, ...fieldErrors }));
+        setSubmitError('Oprav vyznačená pole a zkus to znovu.');
+        return;
+      }
       setSubmitError(
         error.message || 'Areál se nepodařilo vytvořit.'
       );

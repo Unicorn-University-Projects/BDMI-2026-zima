@@ -1,6 +1,7 @@
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import venueDao from "../../dao/venue-dao.js";
+import { invalidDtoIn, trimDtoIn } from "../../utils/validation.js";
 
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
@@ -16,10 +17,6 @@ const schema = {
 
 const validate = ajv.compile(schema);
 
-function canManage(role, userId, venue) {
-  return role === "admin" || venue.operatorId === userId;
-}
-
 async function deleteAbl(req, res) {
   try {
     const userId = req.get("X-User-Id");
@@ -31,17 +28,12 @@ async function deleteAbl(req, res) {
       });
     }
 
-    const role = req.get("X-User-Role");
-    const dtoIn = {
+    const dtoIn = trimDtoIn({
       ...(req.body ?? {}),
       id: req.body?.id ?? req.query?.id,
-    };
+    });
     if (!validate(dtoIn)) {
-      return res.status(400).json({
-        code: "venue/invalidDtoIn",
-        message: "DtoIn is not valid.",
-        params: { validationErrors: validate.errors },
-      });
+      return res.status(400).json(invalidDtoIn(validate.errors));
     }
 
     const unsupportedKeyList = Object.keys(dtoIn).filter((key) => !(key in schema.properties));
@@ -54,11 +46,19 @@ async function deleteAbl(req, res) {
       });
     }
 
-    if (!canManage(role, userId, venue)) {
+    if (venue.operatorId !== userId) {
       return res.status(403).json({
         code: "user/forbidden",
         message: "Areál může smazat jen jeho provozovatel.",
-        params: { role },
+        params: {},
+      });
+    }
+
+    if ((await venueDao.countSportsGrounds(venue.id)) > 0) {
+      return res.status(409).json({
+        code: "venue/hasSportsGrounds",
+        message: "Areál nelze smazat, protože obsahuje sportoviště.",
+        params: { id: venue.id },
       });
     }
 
@@ -69,7 +69,7 @@ async function deleteAbl(req, res) {
       dtoOut.warnings = [
         {
           code: "venue/delete/unsupportedKeys",
-          message: "DtoIn contains unsupported keys.",
+          message: "Vstup obsahuje nepodporované klíče.",
           params: { unsupportedKeyList },
         },
       ];
