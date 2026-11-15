@@ -1,7 +1,7 @@
 import express from "express";
 import venueController from "./controllers/venue-controller.js";
+import app, { SERVICE_NAME } from "./app.js";
 
-const SERVICE_NAME = "venue";
 const PORT = process.env.PORT || 4002;
 
 const app = express();
