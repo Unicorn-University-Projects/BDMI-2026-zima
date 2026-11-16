@@ -144,6 +144,18 @@ function Layout() {
               element={<VenueForm />}
             />
 
+            {/* Úprava existujícího areálu */}
+            <Route
+              path="/arealy/:id/upravit"
+              element={<VenueForm key="edit" />}
+            />
+
+            {/* Detail areálu */}
+            <Route
+              path="/arealy/:id"
+              element={<VenueDetail />}
+            />
+
             {/* Detail konkrétního areálu */}
             <Route
               path="/arealy/:id"
@@ -177,11 +189,3 @@ createRoot(
     <Layout />
   </BrowserRouter>
 );
-venueForm: (
-  <>
-    <path d="M5 21V5a2 2 0 0 1 2-2h7l5 5v13" />
-    <path d="M14 3v5h5" />
-    <path d="M3 21h18" />
-    <path d="M9 12h2M9 16h2" />
-  </>
-)

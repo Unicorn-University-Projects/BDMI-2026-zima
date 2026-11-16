@@ -1,18 +1,21 @@
-//seznam areálů
+
 /*
-Zobrazuje všechny areály uložené pro demo provozovatele. Pokud žádný neexistuje, zobrazí prázdný stav s tlačítkem „Vytvořit areál“.
+  SEZNAM AREÁLŮ
 
-Pokud už areály existují, zobrazí je jako karty s názvem, adresou a odkazem na detail. Umožňuje také vyhledávání podle názvu, města nebo ulice.
-
-Využívá funkci listVenues() ze složky services.
+  Zobrazuje areály demo provozovatele.
+  Umožňuje vytvoření, úpravu a smazání areálu.
+  Data jsou uložená v localStorage.
 */
 
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Icon from '../components/Icons';
-import { listVenues } from '../services/venues';
+
+import {
+  listVenues,
+  deleteVenue
+} from '../services/venues';
 
 // ==========================================
 // SEZNAM AREÁLŮ
@@ -20,19 +23,52 @@ import { listVenues } from '../services/venues';
 
 export default function VenueList() {
 
-  // Načtení areálů z localStorage
-  const venues = listVenues();
+  // Načtení areálů
+  const [venues, setVenues] = useState(() => listVenues());
+
+  // ========================================
+  // SMAZÁNÍ AREÁLU
+  // ========================================
+
+  const handleDelete = (id, name) => {
+
+    const confirmed = window.confirm(
+      `Opravdu chcete smazat areál "${name}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+
+      deleteVenue(id);
+
+      // Aktualizace seznamu
+      setVenues(listVenues());
+
+    } catch (error) {
+
+      window.alert(error.message);
+
+    }
+  };
+
+  // ========================================
+  // VYKRESLENÍ STRÁNKY
+  // ========================================
 
   return (
     <div className="venues-page">
 
-      {/* NADPIS A TLAČÍTKO */}
+      {/* NADPIS A VYTVOŘENÍ AREÁLU */}
 
       <div className="venues-heading">
 
         <h1>Moje areály</h1>
 
         {venues.length > 0 && (
+
           <Link
             to="/arealy/novy"
             className="venues-create-button"
@@ -40,6 +76,7 @@ export default function VenueList() {
             <Icon name="plus" size={18} />
             Vytvořit areál
           </Link>
+
         )}
 
       </div>
@@ -73,9 +110,9 @@ export default function VenueList() {
 
       ) : (
 
-        /* SEZNAM VYTVOŘENÝCH AREÁLŮ */
-
         <div className="venues-list">
+
+          {/* SEZNAM VYTVOŘENÝCH AREÁLŮ */}
 
           {venues.map((venue) => (
 
@@ -101,23 +138,52 @@ export default function VenueList() {
                   <Icon name="pin" size={18} />
 
                   <span>
-                    {venue.street} {venue.streetNumber},
-                    {' '}{venue.city}
+                    {venue.street} {venue.streetNumber},{" "}
+                    {venue.city}
                   </span>
 
                 </div>
 
               </div>
 
-              {/* SPRÁVA SPORTOVIŠŤ */}
+              {/* TLAČÍTKA AREÁLU */}
 
-              <Link
-                to={`/arealy/${venue.id}`}
-                className="venues-manage-button"
-              >
-                <Icon name="calendar" size={19} />
-                Spravovat sportoviště
-              </Link>
+              <div className="venue-actions">
+
+                {/* UPRAVIT */}
+
+                <Link
+                  to={`/arealy/${venue.id}/upravit`}
+                  className="venue-action-btn edit"
+                >
+                  <Icon name="edit" size={17} />
+                  Upravit
+                </Link>
+
+                {/* SMAZAT */}
+
+                <button
+                  type="button"
+                  className="venue-action-btn delete"
+                  onClick={() =>
+                    handleDelete(venue.id, venue.name)
+                  }
+                >
+                  <Icon name="trash" size={17} />
+                  Smazat
+                </button>
+
+                {/* SPRAVOVAT SPORTOVIŠTĚ */}
+
+                <Link
+                  to={`/arealy/${venue.id}`}
+                  className="venues-manage-button"
+                >
+                  <Icon name="calendar" size={19} />
+                  Spravovat sportoviště
+                </Link>
+
+              </div>
 
             </article>
 

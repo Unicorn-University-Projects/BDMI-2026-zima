@@ -2444,3 +2444,88 @@ textarea::placeholder {
   margin-left: auto;
   color: #817a94;
 }
+
+/* ==========================================
+   SEZNAM AREÁLŮ – TLAČÍTKA
+========================================== */
+
+.venues-list-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.venues-list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.venue-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.venue-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 12px 16px;
+  border-radius: 30px;
+
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Upravit */
+
+.venue-action-btn.edit {
+  border: 1px solid #7540ed;
+  color: #7540ed;
+}
+
+.venue-action-btn.edit:hover {
+  background: #f2ebff;
+}
+
+/* Smazat */
+
+.venue-action-btn.delete {
+  border: 1px solid #e8b0b6;
+  color: #d34857;
+}
+
+.venue-action-btn.delete:hover {
+  background: #fff0f2;
+}
+
+/* Spravovat sportoviště */
+
+.venue-actions .venues-manage-button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Responzivita */
+
+@media (max-width: 900px) {
+
+  .venues-list-card {
+    flex-wrap: wrap;
+  }
+
+  .venue-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+}

@@ -12,6 +12,17 @@ export default function Icon({
 }) {
 
   const icons = {
+
+    // KOŠ - SMAZÁNÍ AREÁLU
+    trash: (
+      <>
+        <path d="M3 6h18" />
+        <path d="M8 6V4h8v2" />
+        <path d="M5 6l1 15h12l1-15" />
+        <path d="M10 10v7M14 10v7" />
+      </>
+    ),
+
     
         
         logout: (

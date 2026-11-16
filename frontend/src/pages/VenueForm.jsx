@@ -1,9 +1,22 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 
 import Icon from '../components/Icons';
-import { createVenue } from '../services/venues';
+
+import {
+  getVenue,
+  createVenue,
+  updateVenue
+} from '../services/venues';
+
+// ==========================================
+// VÝCHOZÍ HODNOTY FORMULÁŘE
+// ==========================================
 
 const initialForm = {
   name: '',
@@ -15,12 +28,45 @@ const initialForm = {
   operatorNote: ''
 };
 
-export default function VenueForm() {
-  const navigate = useNavigate();
+// ==========================================
+// FORMULÁŘ AREÁLU
+// ==========================================
 
-  const [form, setForm] = useState(initialForm);
+export default function VenueForm() {
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  // Rozlišení vytvoření a editace
+  const isEditing = Boolean(id);
+
+  // Načtení existujícího areálu
+  const existingVenue = isEditing
+    ? getVenue(id)
+    : null;
+
+  // ========================================
+  // STAV FORMULÁŘE
+  // ========================================
+
+  const [form, setForm] = useState(() => ({
+    ...initialForm,
+    ...(existingVenue
+      ? Object.fromEntries(
+          Object.keys(initialForm).map(key => [
+            key,
+            existingVenue[key] ?? ''
+          ])
+        )
+      : {})
+  }));
+
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
+
+  // ========================================
+  // ZMĚNA HODNOTY POLE
+  // ========================================
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -37,6 +83,10 @@ export default function VenueForm() {
 
     setSubmitError('');
   }
+
+  // ========================================
+  // VALIDACE FORMULÁŘE
+  // ========================================
 
   function validate() {
     const newErrors = {};
@@ -69,7 +119,9 @@ export default function VenueForm() {
     if (!form.emailAddress.trim()) {
       newErrors.emailAddress = 'Vyplň e-mail.';
     } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailAddress.trim())
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        form.emailAddress.trim()
+      )
     ) {
       newErrors.emailAddress =
         'Zadej platný e-mail, např. info@sportparklipa.cz';
@@ -77,6 +129,10 @@ export default function VenueForm() {
 
     return newErrors;
   }
+
+  // ========================================
+  // ULOŽENÍ FORMULÁŘE
+  // ========================================
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -88,24 +144,60 @@ export default function VenueForm() {
       return;
     }
 
-    try {
-      createVenue({
-        name: form.name.trim(),
-        street: form.street.trim(),
-        streetNumber: form.streetNumber.trim(),
-        city: form.city.trim(),
-        phoneNumber: form.phoneNumber.trim(),
-        emailAddress: form.emailAddress.trim(),
-        operatorNote: form.operatorNote.trim()
-      });
+    const data = {
+      name: form.name.trim(),
+      street: form.street.trim(),
+      streetNumber: form.streetNumber.trim(),
+      city: form.city.trim(),
+      phoneNumber: form.phoneNumber.trim(),
+      emailAddress: form.emailAddress.trim(),
+      operatorNote: form.operatorNote.trim()
+    };
 
+    try {
+
+      if (isEditing) {
+        // Úprava existujícího areálu
+        updateVenue(id, data);
+      } else {
+        // Vytvoření nového areálu
+        createVenue(data);
+      }
+
+      // Návrat na seznam areálů
       navigate('/arealy', { replace: true });
+
     } catch (error) {
       setSubmitError(
-        error.message || 'Areál se nepodařilo vytvořit.'
+        error.message ||
+        'Areál se nepodařilo uložit.'
       );
     }
   }
+
+  // ========================================
+  // NEEXISTUJÍCÍ AREÁL
+  // ========================================
+
+  if (isEditing && !existingVenue) {
+    return (
+      <div className="venue-form-page">
+        <Link to="/arealy" className="venue-form-back">
+          <Icon name="arrow" size={16} />
+          Moje areály
+        </Link>
+
+        <h1>Areál nebyl nalezen</h1>
+        <p>
+          Požadovaný areál neexistuje nebo byl smazán.
+        </p>
+      </div>
+    );
+  }
+
+  // ========================================
+  // VYKRESLENÍ FORMULÁŘE
+  // ========================================
 
   return (
     <div className="venue-form-page">
@@ -120,9 +212,14 @@ export default function VenueForm() {
       {/* NADPIS */}
 
       <header className="venue-form-heading">
-        <h1>Nový areál</h1>
+        <h1>
+          {isEditing ? 'Upravit areál' : 'Nový areál'}
+        </h1>
+
         <p>
-          Vyplň základní údaje. Sportoviště přidáš v dalším kroku.
+          {isEditing
+            ? 'Uprav základní údaje svého areálu.'
+            : 'Vyplň základní údaje. Sportoviště přidáš v dalším kroku.'}
         </p>
       </header>
 
@@ -395,6 +492,8 @@ export default function VenueForm() {
 
         </section>
 
+        {/* CHYBA PŘI UKLÁDÁNÍ */}
+
         {submitError && (
           <div className="venue-submit-error" role="alert">
             {submitError}
@@ -410,7 +509,7 @@ export default function VenueForm() {
           </Link>
 
           <button type="submit" className="venue-btn-submit">
-            Vytvořit areál
+            {isEditing ? 'Uložit změny' : 'Vytvořit areál'}
           </button>
 
         </div>

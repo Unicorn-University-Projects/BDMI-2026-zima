@@ -92,3 +92,81 @@ export function createVenue(data) {
 
   return venue;
 }
+
+/* ==========================================
+   SMAZÁNÍ AREÁLU
+========================================== */
+
+export function deleteVenue(id) {
+  const allVenues = readVenues();
+
+  const venue = allVenues.find(
+    (venue) =>
+      venue.id === id &&
+      venue.operatorId === DEMO_OPERATOR_ID
+  );
+
+  if (!venue) {
+    throw new Error('Areál nebyl nalezen.');
+  }
+
+  const updatedVenues = allVenues.filter(
+    (venue) => venue.id !== id
+  );
+
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(updatedVenues)
+  );
+}
+
+/* ==========================================
+   ÚPRAVA AREÁLU
+========================================== */
+
+export function updateVenue(id, data) {
+  const allVenues = readVenues();
+
+  const index = allVenues.findIndex(
+    (venue) =>
+      venue.id === id &&
+      venue.operatorId === DEMO_OPERATOR_ID
+  );
+
+  if (index === -1) {
+    throw new Error('Areál nebyl nalezen.');
+  }
+
+  const duplicate = allVenues.some(
+    (venue) =>
+      venue.id !== id &&
+      venue.operatorId === DEMO_OPERATOR_ID &&
+      normalize(venue.name) === normalize(data.name) &&
+      normalize(venue.street) === normalize(data.street) &&
+      normalize(venue.streetNumber) ===
+        normalize(data.streetNumber) &&
+      normalize(venue.city) === normalize(data.city)
+  );
+
+  if (duplicate) {
+    throw new Error(
+      'Areál s tímto názvem a adresou již existuje.'
+    );
+  }
+
+  const updatedVenue = {
+    ...allVenues[index],
+    ...data,
+    id,
+    operatorId: DEMO_OPERATOR_ID
+  };
+
+  allVenues[index] = updatedVenue;
+
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(allVenues)
+  );
+
+  return updatedVenue;
+}
