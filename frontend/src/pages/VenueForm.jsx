@@ -1,9 +1,22 @@
 
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {
+  Link,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 
 import Icon from '../components/Icons';
-import { createVenue } from '../services/venues';
+
+import {
+  getVenue,
+  createVenue,
+  updateVenue
+} from '../services/venues';
+
+// ==========================================
+// VÝCHOZÍ HODNOTY FORMULÁŘE
+// ==========================================
 
 const initialForm = {
   name: '',
@@ -15,12 +28,52 @@ const initialForm = {
   operatorNote: ''
 };
 
+// ==========================================
+// FORMULÁŘ AREÁLU
+// ==========================================
+
 export default function VenueForm() {
+
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  // Rozlišení vytvoření a editace
+  const isEditing = Boolean(id);
 
   const [form, setForm] = useState(initialForm);
+  const [loading, setLoading] = useState(isEditing);
+  const [notFound, setNotFound] = useState(false);
+
+  // Načtení existujícího areálu při editaci
+  useEffect(() => {
+    if (!isEditing) return;
+    let cancelled = false;
+
+    getVenue(id)
+      .then(venue => {
+        if (cancelled) return;
+        setForm(Object.fromEntries(
+          Object.keys(initialForm).map(key => [key, venue[key] ?? ''])
+        ));
+      })
+      .catch(() => {
+        if (!cancelled) setNotFound(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isEditing]);
+
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
+
+  // ========================================
+  // ZMĚNA HODNOTY POLE
+  // ========================================
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -96,21 +149,27 @@ export default function VenueForm() {
       return;
     }
 
-    try {
-      const venue = await createVenue({
-        name: form.name.trim(),
-        street: form.street.trim(),
-        streetNumber: form.streetNumber.trim(),
-        city: form.city.trim(),
-        phoneNumber: form.phoneNumber.trim(),
-        emailAddress: form.emailAddress.trim(),
-        operatorNote: form.operatorNote.trim()
-      });
+    const data = {
+      name: form.name.trim(),
+      street: form.street.trim(),
+      streetNumber: form.streetNumber.trim(),
+      city: form.city.trim(),
+      phoneNumber: form.phoneNumber.trim(),
+      emailAddress: form.emailAddress.trim(),
+      operatorNote: form.operatorNote.trim()
+    };
 
-      navigate(`/arealy/${venue.id}`, {
-        replace: true,
-        state: { created: true }
-      });
+    try {
+      if (isEditing) {
+        await updateVenue(id, data);
+        navigate('/arealy', { replace: true });
+      } else {
+        const venue = await createVenue(data);
+        navigate(`/arealy/${venue.id}`, {
+          replace: true,
+          state: { created: true }
+        });
+      }
     } catch (error) {
       if (error.code === 'venue/invalidDtoIn' && error.params?.invalidFields?.length) {
         const fieldErrors = {};
@@ -122,10 +181,43 @@ export default function VenueForm() {
         return;
       }
       setSubmitError(
-        error.message || 'Areál se nepodařilo vytvořit.'
+        error.message ||
+        'Areál se nepodařilo uložit.'
       );
     }
   }
+
+  // ========================================
+  // NEEXISTUJÍCÍ AREÁL
+  // ========================================
+
+  if (loading) {
+    return (
+      <div className="venue-form-page">
+        <p>Načítám areál…</p>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="venue-form-page">
+        <Link to="/arealy" className="venue-form-back">
+          <Icon name="arrow" size={16} />
+          Moje areály
+        </Link>
+
+        <h1>Areál nebyl nalezen</h1>
+        <p>
+          Požadovaný areál neexistuje nebo byl smazán.
+        </p>
+      </div>
+    );
+  }
+
+  // ========================================
+  // VYKRESLENÍ FORMULÁŘE
+  // ========================================
 
   return (
     <div className="venue-form-page">
@@ -140,9 +232,14 @@ export default function VenueForm() {
       {/* NADPIS */}
 
       <header className="venue-form-heading">
-        <h1>Nový areál</h1>
+        <h1>
+          {isEditing ? 'Upravit areál' : 'Nový areál'}
+        </h1>
+
         <p>
-          Vyplň základní údaje. Sportoviště přidáš v dalším kroku.
+          {isEditing
+            ? 'Uprav základní údaje svého areálu.'
+            : 'Vyplň základní údaje. Sportoviště přidáš v dalším kroku.'}
         </p>
       </header>
 
@@ -415,6 +512,8 @@ export default function VenueForm() {
 
         </section>
 
+        {/* CHYBA PŘI UKLÁDÁNÍ */}
+
         {submitError && (
           <div className="venue-submit-error" role="alert">
             {submitError}
@@ -430,7 +529,7 @@ export default function VenueForm() {
           </Link>
 
           <button type="submit" className="venue-btn-submit">
-            Vytvořit areál
+            {isEditing ? 'Uložit změny' : 'Vytvořit areál'}
           </button>
 
         </div>

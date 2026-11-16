@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Icon from '../components/Icons';
-import { listVenues } from '../services/venues';
+
+import {
+  listVenues,
+  deleteVenue
+} from '../services/venues';
 
 export default function VenueList() {
   const [venues, setVenues] = useState([]);
@@ -35,6 +39,19 @@ export default function VenueList() {
       cancelled = true;
     };
   }, []);
+
+  async function handleDelete(id, name) {
+    if (!window.confirm(`Opravdu chcete smazat areál "${name}"?`)) {
+      return;
+    }
+
+    try {
+      await deleteVenue(id);
+      setVenues(previous => previous.filter(venue => venue.id !== id));
+    } catch (e) {
+      window.alert(e.message || 'Areál se nepodařilo smazat.');
+    }
+  }
 
   if (loading) {
     return (
@@ -70,6 +87,7 @@ export default function VenueList() {
             <Icon name="plus" size={18} />
             Vytvořit areál
           </Link>
+
         )}
       </div>
 
@@ -111,13 +129,45 @@ export default function VenueList() {
                 </div>
               </div>
 
-              <Link
-                to={`/arealy/${venue.id}`}
-                className="venues-manage-button"
-              >
-                <Icon name="calendar" size={19} />
-                Spravovat sportoviště
-              </Link>
+              {/* TLAČÍTKA AREÁLU */}
+
+              <div className="venue-actions">
+
+                {/* UPRAVIT */}
+
+                <Link
+                  to={`/arealy/${venue.id}/upravit`}
+                  className="venue-action-btn edit"
+                >
+                  <Icon name="edit" size={17} />
+                  Upravit
+                </Link>
+
+                {/* SMAZAT */}
+
+                <button
+                  type="button"
+                  className="venue-action-btn delete"
+                  onClick={() =>
+                    handleDelete(venue.id, venue.name)
+                  }
+                >
+                  <Icon name="trash" size={17} />
+                  Smazat
+                </button>
+
+                {/* SPRAVOVAT SPORTOVIŠTĚ */}
+
+                <Link
+                  to={`/arealy/${venue.id}`}
+                  className="venues-manage-button"
+                >
+                  <Icon name="calendar" size={19} />
+                  Spravovat sportoviště
+                </Link>
+
+              </div>
+
             </article>
           ))}
         </div>

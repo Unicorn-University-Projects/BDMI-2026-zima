@@ -1,12 +1,19 @@
 import { apiFetch } from './api';
 
+// Backend ukládá ulici i číslo popisné dohromady, pro formulář je rozdělíme.
+function splitStreet(street = '') {
+  const match = street.match(/^(.*\S)\s+(\S*\d\S*)$/);
+  return match ? [match[1], match[2]] : [street, ''];
+}
+
 function mapVenue(venue) {
+  const [street, streetNumber] = splitStreet(venue.street);
   return {
     id: venue.id,
     operatorId: venue.operatorId,
     name: venue.name,
-    street: venue.street,
-    streetNumber: '',
+    street,
+    streetNumber,
     city: venue.city,
     phoneNumber: venue.phone,
     emailAddress: venue.email,
@@ -86,4 +93,28 @@ export async function createSportsGround(data) {
   });
 
   return mapSportsGround(dtoOut.sportsGround);
+}
+
+export async function updateVenue(id, data) {
+  const dtoOut = await apiFetch('/venue/venue/update', {
+    method: 'PUT',
+    body: JSON.stringify({
+      id,
+      name: data.name,
+      street: data.street,
+      streetNumber: data.streetNumber,
+      city: data.city,
+      phoneNumber: data.phoneNumber,
+      emailAddress: data.emailAddress,
+      operatorNote: data.operatorNote || undefined
+    })
+  });
+
+  return mapVenue(dtoOut.venue);
+}
+
+export async function deleteVenue(id) {
+  await apiFetch(`/venue/venue/delete?id=${encodeURIComponent(id)}`, {
+    method: 'DELETE'
+  });
 }

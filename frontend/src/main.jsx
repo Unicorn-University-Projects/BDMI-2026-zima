@@ -144,6 +144,12 @@ function Layout() {
               element={<VenueForm />}
             />
 
+            {/* Úprava existujícího areálu */}
+            <Route
+              path="/arealy/:id/upravit"
+              element={<VenueForm key="edit" />}
+            />
+
             {/* Detail konkrétního areálu */}
             <Route
               path="/arealy/:id"
