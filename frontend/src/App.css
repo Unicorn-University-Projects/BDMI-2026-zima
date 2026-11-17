@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Barlow:ital,wght@1,800&display=swap');
 
-/* ---------- Reset (přebije výchozí styly z Vite šablony) ---------- */
-html, body { margin: 0; padding: 0; display: block; min-height: 100vh; background: #fff; }
-#root { width: 100%; max-width: none; margin: 0; padding: 0; text-align: left; }
+/* Obecné styly stránky (body, #root) jsou ve style.css; tady jsou jen styly obrazovek s předponou .ps */
 
 .ps {
   --primary: #7547ec;
@@ -229,5 +227,10 @@ html, body { margin: 0; padding: 0; display: block; min-height: 100vh; backgroun
 .ps-promo, .ps-promo h2 { color: var(--ink); }
 .ps-role, .ps-role-txt strong { color: var(--ink); }
 .ps-role-txt small { color: var(--muted); }
+
+/* ---------- Rozbalovací nabídky (Sport, Datum) čitelné i v tmavém režimu prohlížeče ---------- */
 .ps { color-scheme: light; }
 .ps select option { background: #fff; color: var(--ink); }
+
+/* Odhlášení v postranním menu je klikací */
+.sidebar-logout { cursor: pointer; }

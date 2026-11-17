@@ -18,10 +18,10 @@ const permissions = {
   "venue/sportsGround/list": ["Authenticated"],
   "venue/sportsGround/get": ["Authenticated"],
   "venue/sportsGround/update": ["Operator"],
+  "venue/sportsGround/delete": ["Operator"],
   "venue/sportsGround/addPhoto": ["Operator"],
   "venue/sportsGround/deletePhoto": ["Operator"],
   "venue/sportsGround/setPhotoOrder": ["Operator"],
-  "venue/sportsGround/delete": ["Operator"],
   "venue/sportsGround/setOpeningHoursAndPriceList": ["Operator"],
 
   "booking/sportsGround/search": ["Athlete"],

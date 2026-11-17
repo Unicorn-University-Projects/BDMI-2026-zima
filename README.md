@@ -37,6 +37,7 @@ Backendová část aplikace pro rezervaci sportovišť postavená na mikroservis
 Jednotlivé části backendu budou umístěny do vyhrazených složek v tomto repozitáři:
 
 ```text
+├── frontend/             # Frontend
 ├── gateway/              # API Gateway
 ├── services/
 │   ├── auth/             # Autentizace a správa identit
@@ -48,16 +49,8 @@ Jednotlivé části backendu budou umístěny do vyhrazených složek v tomto re
 └── README.md
 ```
 
+---
 
-## Rezervační systém sportovišť (Frontend)
-Frontendová část aplikace postavená na čistém Reactu s nástrojem Vite.
+## Instalace a lokální spuštění
 
-### Spuštění frontendu lokálně:
-1. Přejdete do složky frontend: `cd frontend`
-2. Nainstalujte závislosti: `npm install`
-3. Spusťte aplikaci: `npm run dev`
-
-### Pravidla vývoje pro FE:
-- Veškerý kód uživatelského rozhraní pište výhradně do složky `/frontend`.
-- Pro nové úkoly si vždy vytvořte vlastní větev (branch) z `main` (např. `fe-navigace`).
-- Hotový kód nasazujte formou Pull Requestu ke schválení ostatním členům týmu.
+Podrobný návod na instalaci, konfiguraci a lokální spuštění je v souboru [INSTALACE.md](INSTALACE.md).

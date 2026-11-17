@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 import permissions from "../permissions.js";
 
-const publicKey = Buffer.from(process.env.JWT_PUBLIC_KEY ?? "", "base64").toString("utf8");
+const publicKey = Buffer.from(process.env.JWT_PUBLIC_KEY ?? "", "base64")
+  .toString("utf8")
+  .replace(/\\n/g, "\n");
 
 function unauthenticated(res) {
   return res.status(401).json({
@@ -28,7 +30,8 @@ function authenticate(req, res, next) {
   try {
     const payload = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
     req.user = { id: payload.sub, role: payload.role ?? null };
-  } catch {
+  } catch (err) {
+    console.error("GATEWAY AUTH ERROR:", err);
     return unauthenticated(res);
   }
 

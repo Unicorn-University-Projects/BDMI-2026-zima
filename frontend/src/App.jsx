@@ -1,16 +1,38 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getToken, setToken as ulozitToken, clearToken } from './services/api';
 import './App.css';
 
 // Adresa API gateway (backend na portu 4000)
 // Adresa gateway se čte z frontend/.env (VITE_API_URL); když chybí, použije se localhost:4000
 const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/auth`;
 
-// Token pro reset hesla chodí v odkazu z e-mailu: https://tvuj-web/?token=...
-// Podle analýzy je odkaz ve tvaru /obnova-hesla/<token>; ?token=... necháváme jako záložní variantu
-const RESET_TOKEN = (() => {
-  const m = window.location.pathname.match(/^\/obnova-hesla\/([^/]+)/);
-  return m ? m[1] : new URLSearchParams(window.location.search).get('token');
-})();
+// Adresy jednotlivých obrazovek (musí odpovídat cestám v main.jsx)
+const PATHS = {
+  login: '/prihlaseni',
+  register: '/registrace',
+  roleChoice: '/registrace/role',
+  forgot: '/zapomenute-heslo',
+  checkEmail: '/zapomenute-heslo',
+  home: '/hledat',
+  // 'reset' a 'expired' se otevírají jen z odkazu v e-mailu (/obnova-hesla/<token>), nenavigujeme na ně
+};
+
+// Z adresy určí, jakou obrazovku ukázat
+function screenFromPath(pathname) {
+  if (pathname.startsWith('/obnova-hesla')) return 'reset';
+  if (pathname === '/registrace/role') return 'roleChoice';
+  if (pathname.startsWith('/registrace')) return 'register';
+  if (pathname.startsWith('/zapomenute-heslo')) return 'forgot';
+  if (pathname.startsWith('/hledat')) return getToken() ? 'home' : 'login';
+  return 'login';
+}
+
+// Token pro obnovu hesla chodí v odkazu z e-mailu: /obnova-hesla/<token> (záložně ?token=...)
+function tokenZOdkazu(pathname, search) {
+  const m = pathname.match(/^\/obnova-hesla\/([^/]+)/);
+  return m ? m[1] : new URLSearchParams(search).get('token');
+}
 
 // ==================================================
 // IKONY (jednoduché inline SVG, aby nebylo potřeba žádné knihovny)
@@ -263,10 +285,34 @@ function DevBar({ onSelect }) {
 function App() {
   // --- NAVIGACE ---
   // login | register | forgot | checkEmail | reset | expired | home
-  const [screen, setScreen] = useState(RESET_TOKEN ? 'reset' : 'login');
-  const [token, setToken] = useState(sessionStorage.getItem('token') || null);
+  const navigate = useNavigate();
+  const { pathname, search } = useLocation();
+  const [screen, setScreenState] = useState(() => screenFromPath(pathname));
+  const [token, setToken] = useState(getToken());
   const [uzivatel, setUzivatel] = useState(null);
-  const [nacitam, setNacitam] = useState(Boolean(sessionStorage.getItem('token')));
+  const [nacitam, setNacitam] = useState(Boolean(getToken()));
+
+  // Změna obrazovky zároveň změní adresu v prohlížeči (funguje tlačítko Zpět i obnovení stránky)
+  const setScreen = (nova) => {
+    setScreenState(nova);
+    const cil = PATHS[nova];
+    if (cil && cil !== pathname) navigate(cil);
+  };
+
+  // Když se adresa změní zvenku (tlačítko Zpět, ručně zadaná adresa), přizpůsobíme obrazovku
+  useEffect(() => {
+    const nova = screenFromPath(pathname);
+    setScreenState((cur) => {
+      if (nova === 'forgot' && cur === 'checkEmail') return cur;
+      if (nova === 'reset' && cur === 'expired') return cur;
+      if (nova === 'home' && cur === 'home') return cur;
+      return nova;
+    });
+    // Úvodní stránka je jen pro přihlášené
+    if (pathname.startsWith('/hledat') && !getToken() && !uzivatel) {
+      navigate('/prihlaseni', { replace: true });
+    }
+  }, [pathname]);
 
   // --- FORMULÁŘE ---
   const [email, setEmail] = useState('');
@@ -325,6 +371,11 @@ function App() {
         const data = await res.json();
         const u = data.user || data; // odpověď může být { user: {...} } nebo přímo uživatel
         setUzivatel(u);
+        // Provozovatel pokračuje do správy areálů, sportovec na úvodní stránku s vyhledáváním
+        if (u.role === 'operator') {
+          navigate('/arealy', { replace: true });
+          return;
+        }
         setScreen('home');
         setToast(`Vítej v PlaySpotu, ${u.firstName}!`);
       } else {
@@ -342,7 +393,7 @@ function App() {
   };
 
   const odhlasit = () => {
-    sessionStorage.removeItem('token');
+    clearToken();
     setToken(null);
     setUzivatel(null);
     setPassword('');
@@ -365,7 +416,7 @@ function App() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.token) {
-        sessionStorage.setItem('token', data.token);
+        ulozitToken(data.token);
         setToken(data.token); // useEffect si pak načte uživatele
       } else if (res.status === 429) {
         setErrorMsg('Příliš mnoho pokusů o přihlášení. Zkus to prosím za chvíli.');
@@ -406,7 +457,7 @@ function App() {
 
       if (res.ok && data.token) {
         // Backend po registraci rovnou vrací token -> uživatel je přihlášený
-        sessionStorage.setItem('token', data.token);
+        ulozitToken(data.token);
         setPassword('');
         setToken(data.token); // useEffect načte uživatele a zobrazí home
       } else if (res.ok) {
@@ -481,11 +532,10 @@ function App() {
       const res = await fetch(`${API_URL}/user/resetPassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: RESET_TOKEN, newPassword: password }),
+        body: JSON.stringify({ token: tokenZOdkazu(pathname, search), newPassword: password }),
       });
       if (res.ok) {
-        // odstraníme token z adresy a půjdeme na login s hláškou "Heslo je změněné"
-        window.history.replaceState({}, '', '/');
+        // půjdeme na login s hláškou "Heslo je změněné" (adresa s tokenem se tím opustí)
         setPassword('');
         setPassword2('');
         setSuccessMsg('Heslo je změněné. Přihlas se novým heslem.');
@@ -508,7 +558,7 @@ function App() {
   // --- VOLBA ROLE PO PŘIHLÁŠENÍ PŘES POSKYTOVATELE ---
   // PŘIPRAVENO, ZATÍM BEZ FUNKČNOSTI. Až bude hotové přihlášení přes poskytovatele,
   // sem patří: POST /user/setRole { role, termsAccepted } s hlavičkou Authorization: Bearer <token>.
-  // Backend vrátí NOVÝ token (starý roli neobsahuje) -> uložit do sessionStorage a setToken(...).
+  // Backend vrátí NOVÝ token (starý roli neobsahuje) -> uložit do localStorage (setToken z services/api) a setToken(...).
   const handleRoleChoice = (e) => {
     e.preventDefault();
     vycistitZpravy();
@@ -796,12 +846,10 @@ function App() {
                 <Alert type="error">Platnost odkazu skončila.</Alert>
 
                 <button type="button" className="ps-btn" onClick={() => {
-                  window.history.replaceState({}, '', '/');
                   prejit('forgot');
                 }}>Poslat nový odkaz</button>
 
                 <p className="ps-center">Víš heslo? <button type="button" className="ps-link" onClick={() => {
-                  window.history.replaceState({}, '', '/');
                   prejit('login');
                 }}>Přihlas se</button></p>
               </div>
