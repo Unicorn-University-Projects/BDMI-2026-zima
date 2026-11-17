@@ -2893,9 +2893,10 @@ textarea::placeholder {
   color: var(--color-text-secondary);
 }
 
+/* Desktop 7 slotů v řadě (obsah 960 px), mobil 3 – podle návrhu. */
 .sports-ground-slots {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: var(--spacing-8);
   margin: 0;
   padding: 0;
@@ -2909,7 +2910,6 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
-  width: 130px;
   height: 56px;
   border: 1px solid var(--color-slot-available-border);
   border-radius: var(--radius-control);
@@ -2995,16 +2995,94 @@ textarea::placeholder {
 
 /* ---------- Responzivní zobrazení ---------- */
 
-@media (max-width: 1024px) {
+/* Počet slotů v řadě se zmenšuje s oknem, ať zůstanou čitelně široké
+   (desktop 7 jako v návrhu, mobil 3). */
+@media (max-width: 1150px) {
 
-  .sports-ground-header,
-  .sports-ground-callout,
-  .sports-ground-summary {
-    flex-wrap: wrap;
+  .sports-ground-slots {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
-  .sports-ground-slot {
-    width: calc((100% - 2 * var(--spacing-8)) / 3);
+}
+
+/* Tablet – užší obsah, souhrn se zalomí pod sebe */
+@media (max-width: 900px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .sports-ground-summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-16);
+  }
+
+  .sports-ground-summary .sports-ground-btn-ghost {
+    align-self: flex-start;
+    padding-left: 0;
+  }
+
+}
+
+/* Mobil – vše pod sebou */
+@media (max-width: 650px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sports-ground-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-12);
+  }
+
+  /* Odznak stavu patří pod název, ne vedle něj */
+  .sports-ground-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-8);
+  }
+
+  .sports-ground-header .sports-ground-btn-outline {
+    width: 100%;
+  }
+
+  .sports-ground-callout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sports-ground-callout .sports-ground-btn-primary {
+    width: 100%;
+  }
+
+  .sports-ground-fact {
+    align-items: flex-start;
+  }
+
+  .sports-ground-modal {
+    padding: var(--spacing-20);
+  }
+
+  .sports-ground-modal-scrim {
+    padding: var(--spacing-12);
+  }
+
+}
+
+/* Úzký mobil – 3 sloty v řadě podle návrhu */
+@media (max-width: 550px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sports-ground-summary,
+  .sports-ground-callout,
+  .sports-ground-facts {
+    padding: var(--spacing-16);
   }
 
 }
