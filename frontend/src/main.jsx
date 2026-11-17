@@ -1,5 +1,5 @@
 import playspotLogo from './assets/playspot-logo.png';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import {
@@ -8,8 +8,13 @@ import {
   Link,
   Navigate,
   Route,
-  Routes
+  Routes,
+  useNavigate
 } from 'react-router-dom';
+
+// Přihlášení, registrace a obnova hesla (obrazovky z Figmy) a práce s tokenem
+import App from './App';
+import { apiFetch, clearToken, getToken } from './services/api';
 
 // Komponenty
 import Icon from './components/Icons';
@@ -26,7 +31,41 @@ import './style.css';
 // HLAVNÍ ROZLOŽENÍ APLIKACE
 // ==========================================
 
+// Hlídá přístup: bez přihlášení (bez tokenu) přesměruje na přihlašovací stránku
+function RequireAuth({ children }) {
+  if (!getToken()) {
+    return <Navigate to="/prihlaseni" replace />;
+  }
+  return children;
+}
+
 function Layout() {
+
+  const navigate = useNavigate();
+
+  // Přihlášený uživatel (jméno a role v dolní části menu)
+  const [me, setMe] = useState(null);
+
+  useEffect(() => {
+    apiFetch('/auth/user/getMe')
+      .then((data) => setMe(data.user || data))
+      .catch((e) => {
+        // Token vypršel nebo není platný -> odhlásit a poslat na přihlášení
+        if (e.status === 401) {
+          clearToken();
+          navigate('/prihlaseni', { replace: true });
+        }
+      });
+  }, []);
+
+  const odhlasit = () => {
+    clearToken();
+    navigate('/prihlaseni', { replace: true });
+  };
+
+  const initials = me
+    ? `${me.firstName?.[0] || ''}${me.surName?.[0] || ''}`.toUpperCase()
+    : '';
 
   return (
     <div className="app">
@@ -95,14 +134,21 @@ function Layout() {
         
         <div className="sidebar-footer">
 
-        <span className="avatar">KN</span>
+        <span className="avatar">{initials}</span>
 
         <div className="sidebar-user-info">
-            <strong>Karel Novák</strong>
-            <small>Provozovatel</small>
+            <strong>{me ? `${me.firstName} ${me.surName}` : ''}</strong>
+            <small>{me?.role === 'operator' ? 'Provozovatel' : me?.role === 'athlete' ? 'Sportovec' : ''}</small>
         </div>
 
-        <span className="sidebar-logout" title="Odhlásit se">
+        <span
+          className="sidebar-logout"
+          title="Odhlásit se"
+          role="button"
+          tabIndex={0}
+          onClick={odhlasit}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') odhlasit(); }}
+        >
             <Icon name="logout" size={19} />
         </span>
 
@@ -176,10 +222,39 @@ function Layout() {
 // SPUŠTĚNÍ REACT APLIKACE
 // ==========================================
 
+function Root() {
+  return (
+    <Routes>
+
+      {/* Přihlášení, registrace, obnova hesla a úvodní stránka sportovce.
+          Všechny cesty sdílí jednu komponentu App, takže se její stav nezahazuje při přepínání. */}
+      <Route element={<App />}>
+        <Route path="/prihlaseni" element={null} />
+        <Route path="/registrace" element={null} />
+        <Route path="/registrace/role" element={null} />
+        <Route path="/zapomenute-heslo" element={null} />
+        <Route path="/obnova-hesla/:token" element={null} />
+        <Route path="/hledat" element={null} />
+      </Route>
+
+      {/* Zbytek aplikace (správa areálů) je jen pro přihlášené */}
+      <Route
+        path="*"
+        element={
+          <RequireAuth>
+            <Layout />
+          </RequireAuth>
+        }
+      />
+
+    </Routes>
+  );
+}
+
 createRoot(
   document.getElementById('root')
 ).render(
   <BrowserRouter>
-    <Layout />
+    <Root />
   </BrowserRouter>
 );
