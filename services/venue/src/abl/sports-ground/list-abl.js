@@ -42,7 +42,10 @@ async function listAbl(req, res) {
       return res.status(400).json(sportsGroundInvalidDtoIn(validate.errors));
     }
 
-    const itemList = await sportsGroundDao.list({ venueId: dtoIn.venueId });
+    const itemList = await sportsGroundDao.list({
+      venueId: dtoIn.venueId,
+      status: role === "athlete" ? "active" : undefined,
+    });
     return res.json({ itemList });
   } catch (e) {
     console.error(e);

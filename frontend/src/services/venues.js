@@ -37,6 +37,8 @@ function mapSportsGround(sportsGround) {
     status: sportsGround.status,
     regularPrice: sportsGround.regularPrice == null ? null : Number(sportsGround.regularPrice),
     peakPrice: sportsGround.peakPrice == null ? null : Number(sportsGround.peakPrice),
+    priceList: sportsGround.priceList ?? null,
+    openingHours: sportsGround.openingHours ?? [],
     createdAt: sportsGround.createdAt,
     updatedAt: sportsGround.updatedAt
   };
@@ -82,16 +84,19 @@ export async function createSportsGround(data) {
       venueId: data.venueId,
       sportCode: data.sportCode,
       name: data.name,
-      surface: data.surface || undefined,
-      coverType: data.coverType,
-      status: data.status || 'active',
-      regularPrice:
-        data.regularPrice === '' || data.regularPrice == null
-          ? undefined
-          : Number(data.regularPrice)
+      surface: data.surface,
+      coverType: data.coverType
     })
   });
 
+  return mapSportsGround(dtoOut.sportsGround);
+}
+
+export async function setOpeningHoursAndPriceList(data) {
+  const dtoOut = await apiFetch('/venue/sportsGround/setOpeningHoursAndPriceList', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
   return mapSportsGround(dtoOut.sportsGround);
 }
 

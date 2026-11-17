@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS sports_grounds (
   venueId CHAR(36) NOT NULL,
   sportId CHAR(36) NOT NULL,
   name VARCHAR(150) NOT NULL,
-  surface VARCHAR(50) NULL,
+  surface VARCHAR(50) NOT NULL,
   coverType ENUM('indoor', 'outdoor') NOT NULL,
   status ENUM('inactive', 'active') NOT NULL DEFAULT 'inactive',
   createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -37,10 +37,25 @@ CREATE TABLE IF NOT EXISTS sports_grounds (
     FOREIGN KEY (sportId) REFERENCES sports (id) ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS opening_hours (
+  sportsGroundId CHAR(36) NOT NULL,
+  dayOfWeek TINYINT NOT NULL,
+  openFrom VARCHAR(5) NULL,
+  openTo VARCHAR(5) NULL,
+  isClosed BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (sportsGroundId, dayOfWeek),
+  CONSTRAINT fk_opening_hours_sports_ground
+    FOREIGN KEY (sportsGroundId) REFERENCES sports_grounds (id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS price_lists (
   sportsGroundId CHAR(36) PRIMARY KEY,
   regularPrice DECIMAL(8, 2) NOT NULL,
   peakPrice DECIMAL(8, 2) NULL,
+  hasPeak BOOLEAN NOT NULL DEFAULT FALSE,
+  peakDays VARCHAR(50) NULL,
+  peakFrom VARCHAR(5) NULL,
+  peakTo VARCHAR(5) NULL,
   createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_price_lists_sports_ground
