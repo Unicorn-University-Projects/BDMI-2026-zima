@@ -3018,9 +3018,9 @@ textarea::placeholder {
     gap: var(--spacing-16);
   }
 
+  /* V mobilním návrhu je „Upravit“ přes celou šířku karty */
   .sports-ground-summary .sports-ground-btn-ghost {
-    align-self: flex-start;
-    padding-left: 0;
+    width: 100%;
   }
 
 }
@@ -3079,10 +3079,15 @@ textarea::placeholder {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  /* Mezera mezi bloky je v mobilním návrhu 20 px, ne 24 */
+  .sports-ground-content {
+    gap: var(--spacing-20);
+  }
+
+  /* Souhrn a výzva mají užší odsazení, karta s údaji si drží 24 px */
   .sports-ground-summary,
-  .sports-ground-callout,
-  .sports-ground-facts {
-    padding: var(--spacing-16);
+  .sports-ground-callout {
+    padding: var(--spacing-20) var(--spacing-16);
   }
 
 }
