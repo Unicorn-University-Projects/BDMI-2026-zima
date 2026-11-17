@@ -97,6 +97,21 @@ export async function createSportsGround(data) {
   return mapSportsGround(dtoOut.sportsGround);
 }
 
+export async function updateSportsGround(id, data) {
+  const dtoOut = await apiFetch('/venue/sportsGround/update', {
+    method: 'PUT',
+    body: JSON.stringify({
+      id,
+      sportCode: data.sportCode,
+      name: data.name,
+      surface: data.surface,
+      coverType: data.coverType
+    })
+  });
+
+  return mapSportsGround(dtoOut.sportsGround);
+}
+
 export async function setOpeningHoursAndPriceList(data) {
   const dtoOut = await apiFetch('/venue/sportsGround/setOpeningHoursAndPriceList', {
     method: 'POST',

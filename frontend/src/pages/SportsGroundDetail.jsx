@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import Icon from '../components/Icons';
+import SportsGroundForm from '../components/SportsGroundForm';
 import iconTime from '../assets/icon-time.svg';
 
 import {
   getSportsGround,
-  getVenue
+  getVenue,
+  updateSportsGround
 } from '../services/venues';
 
 import {
@@ -32,6 +34,15 @@ export default function SportsGroundDetail() {
   const [sportsGround, setSportsGround] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showEdit, setShowEdit] = useState(false);
+
+  // Úprava používá stejný formulář jako vytvoření sportoviště v detailu
+  // areálu – backend u obou příkazů čeká stejná pole.
+  async function handleUpdate(values) {
+    const updated = await updateSportsGround(sportsGroundId, values);
+    setSportsGround(updated);
+    setShowEdit(false);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -140,13 +151,57 @@ export default function SportsGroundDetail() {
           <button
             type="button"
             className="sports-ground-btn-outline"
-            disabled
-            title="Úprava sportoviště bude doplněna"
+            onClick={() => setShowEdit(true)}
           >
             <Icon name="edit" size={20} />
             Upravit sportoviště
           </button>
         </div>
+
+        {/* ÚPRAVA SPORTOVIŠTĚ (5.4) */}
+
+        {showEdit && (
+          <div
+            className="sports-ground-modal-scrim"
+            role="presentation"
+            onClick={event => {
+              if (event.target === event.currentTarget) {
+                setShowEdit(false);
+              }
+            }}
+          >
+            <div className="sports-ground-modal" role="dialog" aria-modal="true" aria-label="Upravit sportoviště">
+              <div className="sports-ground-modal-header">
+                <div>
+                  <h2>Upravit sportoviště</h2>
+                  {venue?.name && <p>{venue.name}</p>}
+                </div>
+
+                <button
+                  type="button"
+                  className="sports-ground-modal-close"
+                  onClick={() => setShowEdit(false)}
+                  aria-label="Zavřít"
+                >
+                  ×
+                </button>
+              </div>
+
+              <SportsGroundForm
+                initialValues={{
+                  name: sportsGround.name,
+                  sportCode: sportsGround.sportCode ?? 'tennis',
+                  surface: sportsGround.surface,
+                  coverType: sportsGround.coverType
+                }}
+                submitLabel="Uložit změny"
+                errorMessage="Sportoviště se nepodařilo upravit."
+                onSubmit={handleUpdate}
+                onCancel={() => setShowEdit(false)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* NEAKTIVNÍ – VÝZVA K NASTAVENÍ (5.1) */}
 

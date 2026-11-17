@@ -3008,3 +3008,62 @@ textarea::placeholder {
   }
 
 }
+
+/* ---------- Modál úpravy sportoviště (5.4) ---------- */
+
+.sports-ground-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-24);
+  background: rgba(29, 23, 53, 0.45);
+}
+
+.sports-ground-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--spacing-24);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+}
+
+.sports-ground-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-16);
+}
+
+.sports-ground-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  color: var(--color-text-primary);
+}
+
+.sports-ground-modal-header p {
+  margin: var(--spacing-4) 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.sports-ground-modal-close {
+  border: none;
+  background: none;
+  padding: 0 var(--spacing-4);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+.sports-ground-modal-close:hover {
+  color: var(--color-text-primary);
+}
