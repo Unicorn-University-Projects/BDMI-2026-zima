@@ -341,18 +341,20 @@ export default function VenueDetail() {
           <ul className="venue-sports-list">
             {sportsGrounds.map(item => (
               <li key={item.id} className="venue-sports-item">
-                <div>
-                  <strong>{item.name}</strong>
-                  <span>
-                    {item.sportName}
-                    {item.surface ? ` · ${item.surface}` : ''}
-                    {` · ${item.coverType === 'indoor' ? 'kryté' : 'venkovní'}`}
-                  </span>
-                </div>
-                <div className="venue-sports-meta">
-                  {item.regularPrice != null && <span>{item.regularPrice} Kč/h</span>}
-                  <span>{item.status === 'active' ? 'Aktivní' : 'Neaktivní – doplň otevírací dobu a ceník'}</span>
-                </div>
+                <Link to={`/arealy/${id}/sportoviste/${item.id}`} className="venue-sports-link">
+                  <div>
+                    <strong>{item.name}</strong>
+                    <span>
+                      {item.sportName}
+                      {item.surface ? ` · ${item.surface}` : ''}
+                      {` · ${item.coverType === 'indoor' ? 'kryté' : 'venkovní'}`}
+                    </span>
+                  </div>
+                  <div className="venue-sports-meta">
+                    {item.regularPrice != null && <span>{item.regularPrice} Kč/h</span>}
+                    <span>{item.status === 'active' ? 'Aktivní' : 'Neaktivní – doplň otevírací dobu a ceník'}</span>
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
