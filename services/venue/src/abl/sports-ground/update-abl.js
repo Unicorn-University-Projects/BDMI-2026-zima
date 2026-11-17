@@ -15,13 +15,11 @@ const schema = {
     sportId: { type: "string", format: "uuid" },
     sportCode: { type: "string", minLength: 1, maxLength: 30, pattern: "\\S" },
     name: { type: "string", minLength: 1, maxLength: 150, pattern: "\\S" },
-    surface: { type: "string", maxLength: 50 },
+    surface: { type: "string", minLength: 1, maxLength: 50, pattern: "\\S" },
     coverType: { type: "string", enum: ["indoor", "outdoor"] },
     status: { type: "string", enum: ["inactive", "active"] },
-    regularPrice: { type: "number", minimum: 0 },
-    peakPrice: { type: ["number", "null"], minimum: 0 },
   },
-  required: ["id", "name", "coverType"],
+  required: ["id", "name", "surface", "coverType"],
   additionalProperties: true,
   anyOf: [{ required: ["sportId"] }, { required: ["sportCode"] }],
 };
@@ -49,12 +47,6 @@ async function updateAbl(req, res) {
     }
 
     const dtoIn = trimDtoIn(req.body ?? {});
-    if (typeof dtoIn.regularPrice === "string" && dtoIn.regularPrice !== "") {
-      dtoIn.regularPrice = Number(dtoIn.regularPrice);
-    }
-    if (typeof dtoIn.peakPrice === "string" && dtoIn.peakPrice !== "") {
-      dtoIn.peakPrice = Number(dtoIn.peakPrice);
-    }
     if (!validate(dtoIn)) {
       return res.status(400).json(sportsGroundInvalidDtoIn(validate.errors));
     }
@@ -89,14 +81,21 @@ async function updateAbl(req, res) {
       });
     }
 
+    let status = dtoIn.status ?? sportsGround.status;
+    if (status === "active" && !(await sportsGroundDao.hasOpeningHoursAndPriceList(sportsGround.id))) {
+      return res.status(400).json({
+        code: "sportsGround/invalidDtoIn",
+        message: "Sportoviště nelze aktivovat bez otevírací doby a ceníku.",
+        params: { invalidFields: ["status"] },
+      });
+    }
+
     const updated = await sportsGroundDao.update(sportsGround.id, {
       sportId: sport.id,
       name: normalizeText(dtoIn.name),
-      surface: dtoIn.surface ? normalizeText(dtoIn.surface) : null,
+      surface: normalizeText(dtoIn.surface),
       coverType: dtoIn.coverType,
-      status: dtoIn.status ?? sportsGround.status,
-      regularPrice: dtoIn.regularPrice ?? sportsGround.regularPrice,
-      peakPrice: dtoIn.peakPrice ?? sportsGround.peakPrice,
+      status,
     });
 
     const dtoOut = { sportsGround: updated };

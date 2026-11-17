@@ -44,7 +44,7 @@ async function getAbl(req, res) {
     }
 
     const sportsGround = await sportsGroundDao.get(dtoIn.id);
-    if (!sportsGround) {
+    if (!sportsGround || (role === "athlete" && sportsGround.status !== "active")) {
       return res.status(404).json({
         code: "sportsGround/notFound",
         message: "Sportoviště neexistuje.",

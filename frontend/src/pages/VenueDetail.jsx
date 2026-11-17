@@ -12,9 +12,7 @@ const emptySportsGroundForm = {
   name: '',
   sportCode: 'tennis',
   surface: '',
-  coverType: 'outdoor',
-  regularPrice: '',
-  status: 'active'
+  coverType: 'outdoor'
 };
 
 export default function VenueDetail() {
@@ -81,11 +79,8 @@ export default function VenueDetail() {
     if (!form.coverType) {
       newErrors.coverType = 'Vyber krytí.';
     }
-    if (
-      form.regularPrice.trim() &&
-      (Number.isNaN(Number(form.regularPrice)) || Number(form.regularPrice) < 0)
-    ) {
-      newErrors.regularPrice = 'Zadej platnou cenu za hodinu.';
+    if (!form.surface.trim()) {
+      newErrors.surface = 'Vyplň povrch.';
     }
     return newErrors;
   }
@@ -105,9 +100,7 @@ export default function VenueDetail() {
         name: form.name.trim(),
         sportCode: form.sportCode.trim(),
         surface: form.surface.trim(),
-        coverType: form.coverType,
-        status: form.status,
-        regularPrice: form.regularPrice.trim()
+        coverType: form.coverType
       });
       setForm(emptySportsGroundForm);
       setShowForm(false);
@@ -290,7 +283,9 @@ export default function VenueDetail() {
             </div>
 
             <div className="venue-field">
-              <label htmlFor="sport-surface">Povrch</label>
+              <label htmlFor="sport-surface">
+                Povrch <span className="required">*</span>
+              </label>
               <input
                 id="sport-surface"
                 name="surface"
@@ -298,22 +293,8 @@ export default function VenueDetail() {
                 onChange={handleChange}
                 placeholder="antuka"
               />
-            </div>
-
-            <div className="venue-field">
-              <label htmlFor="sport-rate">Cena za hodinu</label>
-              <input
-                id="sport-rate"
-                name="regularPrice"
-                type="number"
-                min="0"
-                step="1"
-                value={form.regularPrice}
-                onChange={handleChange}
-                placeholder="400"
-              />
-              {formErrors.regularPrice && (
-                <small className="venue-error">{formErrors.regularPrice}</small>
+              {formErrors.surface && (
+                <small className="venue-error">{formErrors.surface}</small>
               )}
             </div>
 
@@ -370,7 +351,7 @@ export default function VenueDetail() {
                 </div>
                 <div className="venue-sports-meta">
                   {item.regularPrice != null && <span>{item.regularPrice} Kč/h</span>}
-                  <span>{item.status === 'active' ? 'Aktivní' : 'Neaktivní'}</span>
+                  <span>{item.status === 'active' ? 'Aktivní' : 'Neaktivní – doplň otevírací dobu a ceník'}</span>
                 </div>
               </li>
             ))}

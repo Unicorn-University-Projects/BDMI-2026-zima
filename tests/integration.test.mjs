@@ -102,7 +102,10 @@ before(async () => {
     MICROSOFT_CLIENT_SECRET: "",
     MICROSOFT_REDIRECT_URI: "",
   });
-  startService("venue", ports.venue, { GATEWAY_INTERNAL_SECRET: gatewaySecret });
+  startService("venue", ports.venue, {
+    GATEWAY_INTERNAL_SECRET: gatewaySecret,
+    VENUE_MEMORY_DB: "1",
+  });
   startService("booking", ports.booking);
   startService("review", ports.review);
   startService("audit", ports.audit, { SYSTEM_KEY: systemKey });
@@ -436,4 +439,160 @@ test("gateway strips caller-supplied identity headers and forwards the verified 
   assert.equal(received.headers["x-gateway-secret"], gatewaySecret);
   assert.equal(received.headers.authorization, undefined);
   assert.deepEqual(JSON.parse(received.body), { name: "Integration venue" });
+});
+
+function weekOpeningHours({ openFrom = "08:00", openTo = "22:00", closedDays = [] } = {}) {
+  return Array.from({ length: 7 }, (_, index) => {
+    const dayOfWeek = index + 1;
+    const isClosed = closedDays.includes(dayOfWeek);
+    return {
+      dayOfWeek,
+      isClosed,
+      openFrom: isClosed ? null : openFrom,
+      openTo: isClosed ? null : openTo,
+    };
+  });
+}
+
+test("sports ground starts inactive, stays hidden from athletes until hours and price list are set", async () => {
+  const operatorHeaders = {
+    Authorization: `Bearer ${createToken("operator")}`,
+    "Content-Type": "application/json",
+  };
+  const athleteHeaders = {
+    Authorization: `Bearer ${createToken("athlete")}`,
+    "Content-Type": "application/json",
+  };
+
+  const venue = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({
+      name: "US08 Areál",
+      street: "Sportovní",
+      streetNumber: "1",
+      city: "Praha",
+      emailAddress: "us08@example.com",
+      phoneNumber: "+420777000111",
+    }),
+  }));
+  assert.equal(venue.status, 201, JSON.stringify(venue.body));
+  const venueId = venue.body.venue.id;
+
+  const created = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({
+      venueId,
+      sportCode: "tennis",
+      name: "Kurt A",
+      surface: "antuka",
+      coverType: "outdoor",
+      status: "active",
+    }),
+  }));
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+  assert.equal(created.body.sportsGround.status, "inactive");
+  const sportsGroundId = created.body.sportsGround.id;
+
+  const athleteList = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/list?venueId=${venueId}`),
+    { headers: athleteHeaders },
+  ));
+  assert.equal(athleteList.status, 200);
+  assert.equal(athleteList.body.itemList.length, 0);
+
+  const athleteGet = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/get?id=${sportsGroundId}`),
+    { headers: athleteHeaders },
+  ));
+  assert.equal(athleteGet.status, 404);
+  assert.equal(athleteGet.body.code, "sportsGround/notFound");
+
+  const operatorGet = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/get?id=${sportsGroundId}`),
+    { headers: operatorHeaders },
+  ));
+  assert.equal(operatorGet.status, 200);
+  assert.equal(operatorGet.body.sportsGround.status, "inactive");
+
+  const invalidOpenTo = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers: operatorHeaders,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "18:00", openTo: "10:00" }),
+        priceList: { basePrice: 400, hasPeak: false },
+      }),
+    },
+  ));
+  assert.equal(invalidOpenTo.status, 400);
+  assert.equal(invalidOpenTo.body.code, "sportsGround/invalidOpeningHours");
+  assert.equal(invalidOpenTo.body.message, "Konec otevírací doby musí být později než začátek.");
+
+  const peakOutside = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers: operatorHeaders,
+      body: JSON.stringify({
+        id: sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "16:00" }),
+        priceList: {
+          basePrice: 400,
+          hasPeak: true,
+          peakPrice: 600,
+          peakDays: [1, 2],
+          peakFrom: "15:00",
+          peakTo: "18:00",
+        },
+      }),
+    },
+  ));
+  assert.equal(peakOutside.status, 400);
+  assert.equal(peakOutside.body.code, "sportsGround/peakOutsideOpeningHours");
+  assert.equal(peakOutside.body.message, "Čas špičky musí být v rámci otevírací doby.");
+
+  const saved = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "PUT",
+      headers: operatorHeaders,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00", closedDays: [7] }),
+        basePrice: 450,
+        hasPeak: true,
+        peakPrice: 650,
+        peakDays: [1, 2, 3],
+        peakFrom: "17:00",
+        peakTo: "21:00",
+      }),
+    },
+  ));
+  assert.equal(saved.status, 200, JSON.stringify(saved.body));
+  assert.equal(saved.body.sportsGround.status, "active");
+  assert.equal(saved.body.sportsGround.priceList.regularPrice, 450);
+  assert.equal(saved.body.sportsGround.priceList.hasPeak, true);
+  assert.deepEqual(saved.body.sportsGround.priceList.peakDays, [1, 2, 3]);
+  assert.equal(saved.body.sportsGround.openingHours.length, 7);
+  assert.equal(saved.body.sportsGround.openingHours[6].isClosed, true);
+
+  const athleteListAfter = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/list?venueId=${venueId}`),
+    { headers: athleteHeaders },
+  ));
+  assert.equal(athleteListAfter.status, 200);
+  assert.equal(athleteListAfter.body.itemList.length, 1);
+  assert.equal(athleteListAfter.body.itemList[0].id, sportsGroundId);
+  assert.equal(athleteListAfter.body.itemList[0].status, "active");
+
+  const athleteGetAfter = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/get?id=${sportsGroundId}`),
+    { headers: athleteHeaders },
+  ));
+  assert.equal(athleteGetAfter.status, 200);
+  assert.equal(athleteGetAfter.body.sportsGround.status, "active");
 });
