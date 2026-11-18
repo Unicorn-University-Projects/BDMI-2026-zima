@@ -77,11 +77,31 @@ export async function listSportsGrounds(venueId) {
   return (data.itemList ?? []).map(mapSportsGround);
 }
 
+export async function getSportsGround(id) {
+  const data = await apiFetch(`/venue/sportsGround/get?id=${encodeURIComponent(id)}`);
+  return mapSportsGround(data.sportsGround);
+}
+
 export async function createSportsGround(data) {
   const dtoOut = await apiFetch('/venue/sportsGround/create', {
     method: 'POST',
     body: JSON.stringify({
       venueId: data.venueId,
+      sportCode: data.sportCode,
+      name: data.name,
+      surface: data.surface,
+      coverType: data.coverType
+    })
+  });
+
+  return mapSportsGround(dtoOut.sportsGround);
+}
+
+export async function updateSportsGround(id, data) {
+  const dtoOut = await apiFetch('/venue/sportsGround/update', {
+    method: 'PUT',
+    body: JSON.stringify({
+      id,
       sportCode: data.sportCode,
       name: data.name,
       surface: data.surface,

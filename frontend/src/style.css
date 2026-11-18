@@ -6,6 +6,69 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 /* ==========================================
+   0. DESIGN TOKENY (Figma: kolekce Color, Spacing & Radius)
+==========================================
+   Hodnoty odpovídají proměnným v návrhu – nové styly berou barvy odtud,
+   ne z natvrdo zadaných hodnot. Starší styly níže zatím používají vlastní
+   odstíny, nahrazují se postupně. */
+
+:root {
+  /* Text */
+  --color-text-primary: #1d1735;
+  --color-text-secondary: #5e5a73;
+  --color-text-tertiary: #77728a;
+  --color-text-inverse: #ffffff;
+
+  /* Plochy a čáry */
+  --color-bg-surface: #ffffff;
+  --color-bg-muted: #e4e0f0;
+  --color-border-default: #e4e0f0;
+
+  /* Akce */
+  --color-action-primary: #7447eb;
+  --color-action-on-primary: #ffffff;
+  --color-action-outline: #7447eb;
+  --color-action-on-outline: #7447eb;
+  --color-action-ghost-text: #5f2fcb;
+  --color-action-subtle: #eee8ff;
+  --color-action-on-subtle: #5f2fcb;
+
+  /* Stavy */
+  --color-status-success: #028743;
+  --color-status-success-subtle: #d4f8dc;
+  --color-status-warning: #b27c07;
+  --color-status-warning-subtle: #fef5e8;
+  --color-status-danger: #c9263d;
+
+  /* Hodinové sloty */
+  --color-slot-available-bg: #e2fef9;
+  --color-slot-available-border: #0b9c90;
+  --color-slot-available-text: #01504b;
+
+  /* Gradient v horní části obrazovek */
+  --color-gradient-hero-start: #eee8ff;
+  --color-gradient-hero-accent: #f6f6fe;
+  --color-gradient-hero-end: #ffffff;
+
+  /* Rozestupy a zaoblení */
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+
+  --radius-md: 12px;
+  --radius-control: 16px;
+  --radius-card: 24px;
+  --radius-button: 9999px;
+  --radius-full: 9999px;
+}
+
+/* ==========================================
    1. ZÁKLADNÍ NASTAVENÍ
 ========================================== */
 
@@ -2579,4 +2642,511 @@ textarea::placeholder {
     justify-content: flex-start;
   }
 
+}
+
+/* ==========================================
+   24. DETAIL SPORTOVIŠTĚ (BUC-08, obrazovky 5.1 a 5.3)
+========================================== */
+
+/* Celá položka v seznamu sportovišť (detail areálu) vede na jeho detail */
+.venue-sports-link {
+  display: block;
+}
+
+.venue-sports-item:hover {
+  border-color: var(--color-action-primary);
+}
+
+.sports-ground-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Outfit', Inter, Arial, sans-serif;
+}
+
+/* Gradient v horní části obrazovky dodává už .main, zde se neopakuje. */
+
+.sports-ground-content {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+
+/* ---------- Zpět na areál ---------- */
+
+.sports-ground-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  align-self: flex-start;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-action-ghost-text);
+}
+
+.sports-ground-back:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Nadpis a stav ---------- */
+
+.sports-ground-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.sports-ground-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+
+.sports-ground-title h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  color: var(--color-text-primary);
+}
+
+.sports-ground-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  padding: var(--spacing-4) var(--spacing-12);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.sports-ground-badge.active {
+  background: var(--color-status-success-subtle);
+}
+
+.sports-ground-badge.inactive {
+  background: var(--color-bg-muted);
+}
+
+.sports-ground-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-tertiary);
+}
+
+.sports-ground-badge.active .sports-ground-badge-dot {
+  background: var(--color-status-success);
+}
+
+/* ---------- Tlačítka ---------- */
+
+.sports-ground-btn-outline,
+.sports-ground-btn-primary,
+.sports-ground-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border-radius: var(--radius-button);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.sports-ground-btn-outline {
+  border: 1.5px solid var(--color-action-outline);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+}
+
+.sports-ground-btn-primary {
+  border: none;
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.sports-ground-btn-ghost {
+  border: none;
+  background: none;
+  color: var(--color-action-ghost-text);
+}
+
+.sports-ground-btn-outline:disabled,
+.sports-ground-btn-primary:disabled,
+.sports-ground-btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Výzva k nastavení (5.1) ---------- */
+
+.sports-ground-callout {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+  padding: var(--spacing-20) var(--spacing-24);
+  border-radius: var(--radius-card);
+  background: var(--color-status-warning-subtle);
+}
+
+.sports-ground-callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+}
+
+.sports-ground-callout-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.sports-ground-callout-text strong {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+.sports-ground-callout-text p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+/* ---------- Souhrn nastavení (5.3) ---------- */
+
+.sports-ground-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-32);
+  padding: var(--spacing-20) var(--spacing-24);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+}
+
+.sports-ground-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.sports-ground-summary-label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.sports-ground-summary-item strong {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* ---------- Náhled slotů (5.3) ---------- */
+
+.sports-ground-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.sports-ground-preview h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--color-text-primary);
+}
+
+.sports-ground-preview-empty {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+/* Desktop 7 slotů v řadě (obsah 960 px), mobil 3 – podle návrhu. */
+.sports-ground-slots {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sports-ground-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  height: 56px;
+  border: 1px solid var(--color-slot-available-border);
+  border-radius: var(--radius-control);
+  background: var(--color-slot-available-bg);
+  color: var(--color-slot-available-text);
+}
+
+.sports-ground-slot-time {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.sports-ground-slot-price {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+/* Jantárová tečka označuje cenu ve špičce */
+.sports-ground-slot-peak {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-status-warning);
+}
+
+/* ---------- Údaje sportoviště ---------- */
+
+.sports-ground-facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  padding: var(--spacing-20) var(--spacing-24);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+}
+
+.sports-ground-facts h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--color-text-primary);
+}
+
+.sports-ground-facts dl {
+  margin: 0;
+}
+
+.sports-ground-fact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  padding: var(--spacing-12) 0;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.sports-ground-fact.last {
+  border-bottom: none;
+}
+
+.sports-ground-fact dt {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+.sports-ground-fact dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: right;
+  color: var(--color-text-primary);
+}
+
+/* ---------- Responzivní zobrazení ---------- */
+
+/* Počet slotů v řadě se zmenšuje s oknem, ať zůstanou čitelně široké
+   (desktop 7 jako v návrhu, mobil 3). */
+@media (max-width: 1150px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+}
+
+/* Tablet – užší obsah, souhrn se zalomí pod sebe */
+@media (max-width: 900px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .sports-ground-summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-16);
+  }
+
+  /* V mobilním návrhu je „Upravit“ přes celou šířku karty */
+  .sports-ground-summary .sports-ground-btn-ghost {
+    width: 100%;
+  }
+
+}
+
+/* Mobil – vše pod sebou */
+@media (max-width: 650px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sports-ground-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-12);
+  }
+
+  /* Odznak stavu patří pod název, ne vedle něj */
+  .sports-ground-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-8);
+  }
+
+  .sports-ground-header .sports-ground-btn-outline {
+    width: 100%;
+  }
+
+  .sports-ground-callout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sports-ground-callout .sports-ground-btn-primary {
+    width: 100%;
+  }
+
+  .sports-ground-fact {
+    align-items: flex-start;
+  }
+
+  .sports-ground-modal {
+    padding: var(--spacing-20);
+  }
+
+  .sports-ground-modal-scrim {
+    padding: var(--spacing-12);
+  }
+
+}
+
+/* Úzký mobil – 3 sloty v řadě podle návrhu */
+@media (max-width: 550px) {
+
+  .sports-ground-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Mezera mezi bloky je v mobilním návrhu 20 px, ne 24 */
+  .sports-ground-content {
+    gap: var(--spacing-20);
+  }
+
+  /* Souhrn a výzva mají užší odsazení, karta s údaji si drží 24 px */
+  .sports-ground-summary,
+  .sports-ground-callout {
+    padding: var(--spacing-20) var(--spacing-16);
+  }
+
+}
+
+/* ---------- Modál úpravy sportoviště (5.4) ---------- */
+
+.sports-ground-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-24);
+  background: rgba(29, 23, 53, 0.45);
+}
+
+.sports-ground-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--spacing-24);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+}
+
+.sports-ground-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-16);
+}
+
+.sports-ground-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  color: var(--color-text-primary);
+}
+
+.sports-ground-modal-header p {
+  margin: var(--spacing-4) 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.sports-ground-modal-close {
+  border: none;
+  background: none;
+  padding: 0 var(--spacing-4);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+.sports-ground-modal-close:hover {
+  color: var(--color-text-primary);
 }
