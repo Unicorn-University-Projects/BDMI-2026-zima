@@ -656,7 +656,7 @@ function App() {
             </nav>
           </div>
           <div className="ps-nav-right">
-            <button className="ps-bell" aria-label="Oznámení"><Icon name="bell" size={18} /></button>
+            <button className="ps-bell" aria-label="Oznámení"><Icon name="bell" size={20} /></button>
             <span className="ps-avatar" title={`${uzivatel?.firstName || ''} ${uzivatel?.surName || ''}`}>{initials}</span>
             <button className="ps-logout" onClick={odhlasit}>Odhlásit se</button>
           </div>
@@ -697,17 +697,17 @@ function App() {
 
           <section className="ps-steps">
             <div className="ps-step">
-              <div className="ps-step-ico"><Icon name="search" size={16} /></div>
+              <div className="ps-step-ico"><Icon name="search" size={22} /></div>
               <h3>Vyber sport a město</h3>
               <p>Uvidíš všechna sportoviště v okolí na jednom místě.</p>
             </div>
             <div className="ps-step">
-              <div className="ps-step-ico"><Icon name="calendar" size={16} /></div>
+              <div className="ps-step-ico"><Icon name="calendar" size={22} /></div>
               <h3>Najdi volný termín</h3>
               <p>Volné hodiny a ceny vidíš hned, bez telefonování.</p>
             </div>
             <div className="ps-step">
-              <div className="ps-step-ico"><Icon name="ticket" size={16} /></div>
+              <div className="ps-step-ico"><Icon name="ticket" size={22} /></div>
               <h3>Zarezervuj</h3>
               <p>Provozovatel rezervaci potvrdí a dáme ti vědět.</p>
             </div>

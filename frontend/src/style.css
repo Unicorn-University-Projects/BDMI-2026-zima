@@ -23,6 +23,7 @@
   --color-bg-surface: #ffffff;
   --color-bg-muted: #e4e0f0;
   --color-border-default: #e4e0f0;
+  --color-border-input: #77728a;
 
   /* Akce */
   --color-action-primary: #7447eb;
@@ -60,12 +61,18 @@
   --spacing-20: 20px;
   --spacing-24: 24px;
   --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
 
   --radius-md: 12px;
   --radius-control: 16px;
   --radius-card: 24px;
+  --radius-sheet: 32px;
   --radius-button: 9999px;
   --radius-full: 9999px;
+
+  /* Mezera mezi popiskem a polem formuláře */
+  --layout-field-gap: 6px;
 }
 
 /* ==========================================
