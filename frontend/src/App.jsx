@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getToken, setToken as ulozitToken, clearToken } from './services/api';
+import { buildSearchUrl, dateOptions, sportCodeFromName, toIsoDate, today } from './utils/searchParams';
 import './App.css';
 
 // Adresa API gateway (backend na portu 4000)
@@ -336,6 +337,13 @@ function App() {
   // --- HOME (vyhledávání) ---
   const [sport, setSport] = useState('');
   const [lokalita, setLokalita] = useState('');
+  const [datum, setDatum] = useState(() => toIsoDate(today()));
+
+  // Odeslání formuláře přejde na výsledky; kritéria se předávají v URL.
+  const hledat = (e) => {
+    e.preventDefault();
+    navigate(buildSearchUrl({ sport: sportCodeFromName(sport), lokalita, datum }));
+  };
 
   // Při startu: když je v prohlížeči token, ověříme ho u backendu
   useEffect(() => {
@@ -633,7 +641,6 @@ function App() {
 
   if (screen === 'home') {
     const initials = `${uzivatel?.firstName?.[0] || ''}${uzivatel?.surName?.[0] || ''}`.toUpperCase();
-    const dnes = new Date().toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'numeric' });
     const oblibene = ['Tenis', 'Fotbal', 'Badminton', 'Squash', 'Curling'];
 
     return (
@@ -659,7 +666,7 @@ function App() {
             <small>Ahoj, {uzivatel?.firstName}</small>
             <h1>Kde si dnes zahraješ?</h1>
 
-            <form className="ps-search" onSubmit={(e) => e.preventDefault()}>
+            <form className="ps-search" onSubmit={hledat}>
               <div>
                 <label className="ps-label">Sport *</label>
                 <div className="ps-input-wrap">
@@ -682,7 +689,9 @@ function App() {
                 <label className="ps-label">Datum *</label>
                 <div className="ps-input-wrap">
                   <Icon name="calendar" size={15} />
-                  <select defaultValue="dnes"><option value="dnes">Dnes, {dnes}</option></select>
+                  <select value={datum} onChange={(e) => setDatum(e.target.value)}>
+                    {dateOptions().map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+                  </select>
                   <Icon name="chevron" size={14} />
                 </div>
               </div>
