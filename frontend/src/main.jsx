@@ -24,6 +24,7 @@ import VenueList from './pages/VenueList';
 import VenueForm from './pages/VenueForm';
 import VenueDetail from './pages/VenueDetail';
 import SportsGroundDetail from './pages/SportsGroundDetail';
+import SearchResults from './pages/SearchResults';
 
 // Styly
 import './style.css';
@@ -243,6 +244,19 @@ function Root() {
         <Route path="/obnova-hesla/:token" element={null} />
         <Route path="/hledat" element={null} />
       </Route>
+
+      {/* Výsledky vyhledávání (sportovec) – má vlastní horní lištu, proto
+          stojí mimo Layout s bočním panelem provozovatele.
+          Pozor: kdyby se cesta /hledat výše změnila na "/hledat/*",
+          přebila by tuhle obrazovku komponenta App. */}
+      <Route
+        path="/hledat/vysledky"
+        element={
+          <RequireAuth>
+            <SearchResults />
+          </RequireAuth>
+        }
+      />
 
       {/* Zbytek aplikace (správa areálů) je jen pro přihlášené */}
       <Route
