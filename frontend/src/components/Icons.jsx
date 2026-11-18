@@ -314,6 +314,37 @@ phone: (
           rx="2"
         />
       </>
+    ),
+
+    // ======================================
+    // VYHLEDÁVÁNÍ SPORTOVIŠŤ
+    // ======================================
+
+    // Hodnocení. Vyplněnou hvězdu udělá <Icon name="star" fill="currentColor" />
+    star: (
+      <path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85-5.25-2.75-5.25 2.75 1-5.85L3.5 9.65l5.9-.85z" />
+    ),
+
+    // Oznámení v horní liště
+    bell: (
+      <>
+        <path d="M18 8a6 6 0 10-12 0c0 6-2 7-2 7h16s-2-1-2-7" />
+        <path d="M10.3 20a2 2 0 003.4 0" />
+      </>
+    ),
+
+    // Šipka dolů u rozbalovacích polí
+    chevronDown: (
+      <path d="M6 9.5l6 6 6-6" />
+    ),
+
+    // Zástupná plocha místo fotky sportoviště
+    image: (
+      <>
+        <rect x="3" y="4" width="18" height="16" rx="3" />
+        <circle cx="8.5" cy="9.5" r="1.5" />
+        <path d="M21 16l-5-5-6 6-2-2-5 5" />
+      </>
     )
 
   };
