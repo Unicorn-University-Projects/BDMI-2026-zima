@@ -4,6 +4,8 @@ import Icon from '../Icons';
 import { SPORT_OPTIONS } from '../../services/search';
 import { dateOptions } from '../../utils/searchParams';
 
+import '../../styles/search.css';
+
 // ==========================================
 // KARTA VYHLEDÁVÁNÍ (1.2)
 // ==========================================
@@ -11,7 +13,7 @@ import { dateOptions } from '../../utils/searchParams';
 // Řízená komponenta – hodnoty i jejich změny drží stránka, protože
 // kritéria se ukládají do URL.
 
-export default function SearchCard({ values, onChange, onSubmit, disabled }) {
+export default function SearchCard({ values, onChange, onSubmit, disabled, narrow = false }) {
   const dates = dateOptions();
 
   function handleChange(event) {
@@ -25,7 +27,11 @@ export default function SearchCard({ values, onChange, onSubmit, disabled }) {
   }
 
   return (
-    <form className="search-card" onSubmit={handleSubmit} noValidate>
+    <form
+      className={`search-card ${narrow ? 'narrow' : ''}`}
+      onSubmit={handleSubmit}
+      noValidate
+    >
 
       <div className="search-field">
         <label htmlFor="search-sport">

@@ -8,23 +8,8 @@
 //
 // Tvar: /hledat/vysledky?sport=tennis&lokalita=Praha&datum=2026-11-18&sort=price
 
-import { SPORT_OPTIONS } from '../services/searchFixtures';
-
 export const SEARCH_PATH = '/hledat/vysledky';
 export const DEFAULT_SORT = 'price';
-
-// Úvodní obrazovka nabízí sporty českými názvy, hledání pracuje s kódy.
-// Neznámý název se pošle beze změny – výsledek pak bude prázdný, což je
-// správně (např. pro fotbal zatím žádné sportoviště není).
-export function sportCodeFromName(value) {
-  if (!value) {
-    return '';
-  }
-  const found = SPORT_OPTIONS.find(
-    option => option.name.toLowerCase() === String(value).trim().toLowerCase()
-  );
-  return found ? found.code : value;
-}
 
 const DAY_SHORT = ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'];
 const DAY_LONG = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'];

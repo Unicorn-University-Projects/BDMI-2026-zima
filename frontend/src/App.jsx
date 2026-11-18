@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getToken, setToken as ulozitToken, clearToken } from './services/api';
-import { buildSearchUrl, dateOptions, sportCodeFromName, toIsoDate, today } from './utils/searchParams';
+import SearchCard from './components/search/SearchCard';
+import { SPORT_OPTIONS } from './services/search';
+import { buildSearchUrl, toIsoDate, today } from './utils/searchParams';
 import './App.css';
 
 // Adresa API gateway (backend na portu 4000)
@@ -340,9 +342,9 @@ function App() {
   const [datum, setDatum] = useState(() => toIsoDate(today()));
 
   // Odeslání formuláře přejde na výsledky; kritéria se předávají v URL.
-  const hledat = (e) => {
-    e.preventDefault();
-    navigate(buildSearchUrl({ sport: sportCodeFromName(sport), lokalita, datum }));
+  // SearchCard si preventDefault řeší sám a posílá rovnou hodnoty.
+  const hledat = (values) => {
+    navigate(buildSearchUrl(values));
   };
 
   // Při startu: když je v prohlížeči token, ověříme ho u backendu
@@ -641,7 +643,6 @@ function App() {
 
   if (screen === 'home') {
     const initials = `${uzivatel?.firstName?.[0] || ''}${uzivatel?.surName?.[0] || ''}`.toUpperCase();
-    const oblibene = ['Tenis', 'Fotbal', 'Badminton', 'Squash', 'Curling'];
 
     return (
       <div className="ps ps-home">
@@ -666,42 +667,30 @@ function App() {
             <small>Ahoj, {uzivatel?.firstName}</small>
             <h1>Kde si dnes zahraješ?</h1>
 
-            <form className="ps-search" onSubmit={hledat}>
-              <div>
-                <label className="ps-label">Sport *</label>
-                <div className="ps-input-wrap">
-                  <Icon name="grid" size={15} />
-                  <select value={sport} onChange={(e) => setSport(e.target.value)}>
-                    <option value="">Vyber sport</option>
-                    {oblibene.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <Icon name="chevron" size={14} />
-                </div>
-              </div>
-              <div>
-                <label className="ps-label">Lokalita *</label>
-                <div className="ps-input-wrap">
-                  <Icon name="pin" size={15} />
-                  <input type="text" placeholder="Např. Praha" value={lokalita} onChange={(e) => setLokalita(e.target.value)} />
-                </div>
-              </div>
-              <div>
-                <label className="ps-label">Datum *</label>
-                <div className="ps-input-wrap">
-                  <Icon name="calendar" size={15} />
-                  <select value={datum} onChange={(e) => setDatum(e.target.value)}>
-                    {dateOptions().map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
-                  </select>
-                  <Icon name="chevron" size={14} />
-                </div>
-              </div>
-              <button type="submit" className="ps-btn"><Icon name="search" size={14} strokeWidth={2.2} />Hledat</button>
-            </form>
+            {/* Stejná komponenta jako na výsledcích hledání, jen užší –
+                návrh má na obou obrazovkách shodnou kartu. */}
+            <SearchCard
+              narrow
+              values={{ sport, lokalita, datum }}
+              onChange={(next) => {
+                setSport(next.sport);
+                setLokalita(next.lokalita);
+                setDatum(next.datum);
+              }}
+              onSubmit={hledat}
+            />
 
             <div className="ps-chips">
               <span>Oblíbené:</span>
-              {oblibene.map((s) => (
-                <button key={s} type="button" className={`ps-chip${sport === s ? ' active' : ''}`} onClick={() => setSport(s)}>{s}</button>
+              {SPORT_OPTIONS.map((s) => (
+                <button
+                  key={s.code}
+                  type="button"
+                  className={`ps-chip${sport === s.code ? ' active' : ''}`}
+                  onClick={() => setSport(s.code)}
+                >
+                  {s.name}
+                </button>
               ))}
             </div>
           </section>

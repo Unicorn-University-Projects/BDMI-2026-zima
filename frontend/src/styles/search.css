@@ -132,6 +132,13 @@
 
 /* ---------- Karta vyhledávání ---------- */
 
+/* Úvodní obrazovka má obsah 960 px, výsledky 1200 px – jinak je karta
+   podle návrhu stejná. */
+.search-card.narrow {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 .search-card {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr auto;
