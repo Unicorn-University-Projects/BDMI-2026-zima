@@ -24,7 +24,6 @@ import VenueList from './pages/VenueList';
 import VenueForm from './pages/VenueForm';
 import VenueDetail from './pages/VenueDetail';
 import SportsGroundDetail from './pages/SportsGroundDetail';
-import OpeningHoursForm from './pages/OpeningHoursForm';
 
 // Styly
 import './style.css';
@@ -196,12 +195,6 @@ function Layout() {
             <Route
               path="/arealy/:id/upravit"
               element={<VenueForm key="edit" />}
-            />
-
-            {/* Nastavení otevírací doby a ceníku – formulář se doplní */}
-            <Route
-              path="/arealy/:id/sportoviste/:sportsGroundId/oteviraci-doba"
-              element={<OpeningHoursForm />}
             />
 
             {/* Detail sportoviště – otevírací doba, ceník a náhled slotů */}
