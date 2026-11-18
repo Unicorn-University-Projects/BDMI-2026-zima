@@ -216,14 +216,12 @@ export default function SportsGroundDetail() {
               <p>Nastav otevírací dobu a ceník – pak se objeví ve vyhledávání.</p>
             </div>
 
-            <button
-              type="button"
+            <Link
+              to={`/arealy/${id}/sportoviste/${sportsGroundId}/oteviraci-doba`}
               className="sports-ground-btn-primary"
-              disabled
-              title="Formulář otevírací doby a ceníku bude doplněn"
             >
               Nastavit otevírací dobu a ceník
-            </button>
+            </Link>
           </section>
         )}
 
@@ -247,15 +245,13 @@ export default function SportsGroundDetail() {
                 <strong>{summarizePeak(priceList)}</strong>
               </div>
 
-              <button
-                type="button"
+              <Link
+                to={`/arealy/${id}/sportoviste/${sportsGroundId}/oteviraci-doba`}
                 className="sports-ground-btn-ghost"
-                disabled
-                title="Formulář otevírací doby a ceníku bude doplněn"
               >
                 <Icon name="edit" size={20} />
                 Upravit
-              </button>
+              </Link>
             </section>
 
             <section className="sports-ground-preview">
