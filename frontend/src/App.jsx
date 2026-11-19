@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getToken, setToken as ulozitToken, clearToken } from './services/api';
+import { getToken, setToken as ulozitToken, clearToken } from './calls/api';
 import SearchCard from './components/search/SearchCard';
-import { SPORT_OPTIONS } from './services/search';
+import { SPORT_OPTIONS } from './utils/sportOptions';
 import { buildSearchUrl, toIsoDate, today } from './utils/searchParams';
 import './App.css';
 
@@ -568,7 +568,7 @@ function App() {
   // --- VOLBA ROLE PO PŘIHLÁŠENÍ PŘES POSKYTOVATELE ---
   // PŘIPRAVENO, ZATÍM BEZ FUNKČNOSTI. Až bude hotové přihlášení přes poskytovatele,
   // sem patří: POST /user/setRole { role, termsAccepted } s hlavičkou Authorization: Bearer <token>.
-  // Backend vrátí NOVÝ token (starý roli neobsahuje) -> uložit do localStorage (setToken z services/api) a setToken(...).
+  // Backend vrátí NOVÝ token (starý roli neobsahuje) -> uložit do localStorage (setToken z calls/api) a setToken(...).
   const handleRoleChoice = (e) => {
     e.preventDefault();
     vycistitZpravy();

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
-import Icon from '../components/Icons';
-import SportsGroundForm from '../components/SportsGroundForm';
+import Icon from '../../components/Icons';
+import SportsGroundForm from '../../components/sportsGround/SportsGroundForm';
 import {
   createSportsGround,
   getVenue,
   listSportsGrounds
-} from '../services/venues';
+} from '../../calls/venues';
 
 export default function VenueDetail() {
   const { id } = useParams();

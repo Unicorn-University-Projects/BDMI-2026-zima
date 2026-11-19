@@ -1,4 +1,4 @@
-import { SPORTS_GROUNDS, SPORT_OPTIONS, freeSlotsFor } from './searchFixtures';
+import { SPORTS_GROUNDS, freeSlotsFor } from './searchFixtures';
 import { addDays, fromIsoDate, toIsoDate, today } from '../utils/searchParams';
 
 // ==========================================
@@ -9,14 +9,6 @@ import { addDays, fromIsoDate, toIsoDate, today } from '../utils/searchParams';
 // searchFixtures.js; až vznikne booking služba, přepíše se tělo
 // searchSportsGrounds na apiFetch('/booking/sportsGround/search?...')
 // a komponenty se nezmění.
-
-export { SPORT_OPTIONS };
-
-export const SORT_OPTIONS = [
-  { code: 'price', name: 'Podle ceny' },
-  { code: 'rating', name: 'Podle hodnocení' },
-  { code: 'name', name: 'Podle názvu' }
-];
 
 // Kolik dní dopředu se hledá nejbližší volný termín.
 const NEXT_FREE_HORIZON = 14;

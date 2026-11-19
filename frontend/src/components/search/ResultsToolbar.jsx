@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Icon from '../Icons';
-import { SORT_OPTIONS } from '../../services/search';
+import { SORT_OPTIONS } from '../../utils/sportOptions';
 import { formatFoundCount } from '../../utils/searchParams';
 
 // ==========================================

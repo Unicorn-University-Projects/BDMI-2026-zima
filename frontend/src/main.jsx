@@ -14,17 +14,17 @@ import {
 
 // Přihlášení, registrace a obnova hesla (obrazovky z Figmy) a práce s tokenem
 import App from './App';
-import { apiFetch, clearToken, getToken } from './services/api';
+import { apiFetch, clearToken, getToken } from './calls/api';
 
 // Komponenty
 import Icon from './components/Icons';
 
 // Stránky aplikace
-import VenueList from './pages/VenueList';
-import VenueForm from './pages/VenueForm';
-import VenueDetail from './pages/VenueDetail';
-import SportsGroundDetail from './pages/SportsGroundDetail';
-import SearchResults from './pages/SearchResults';
+import VenueList from './screens/operator/VenueList';
+import VenueForm from './screens/operator/VenueForm';
+import VenueDetail from './screens/operator/VenueDetail';
+import SportsGroundDetail from './screens/operator/SportsGroundDetail';
+import SearchResults from './screens/athlete/SearchResults';
 
 // Styly
 import './style.css';

@@ -7,7 +7,7 @@
 // review služba s hodnoceními a fotky sportovišť nejsou nikde.
 // Dokud to nevznikne, běží obrazovka na těchto datech.
 //
-// Tvar položky odpovídá mapSportsGround z services/venues.js, aby se dal
+// Tvar položky odpovídá mapSportsGround z calls/venues.js, aby se dal
 // později vyměnit zdroj bez zásahu do komponent.
 
 // Dny, kdy je sportoviště volné, se počítají od dneška, ať data nezestárnou.
@@ -15,14 +15,6 @@
 //   dnes (0)   -> tři tenisové kurty v Praze
 //   za 3 dny   -> v Praze není volný tenis -> prázdný stav
 //   za 4 dny   -> zase volno -> nabídka „Nejbližší volno“
-
-export const SPORT_OPTIONS = [
-  { code: 'tennis', name: 'Tenis' },
-  { code: 'badminton', name: 'Badminton' },
-  { code: 'squash', name: 'Squash' },
-  { code: 'volleyball', name: 'Volejbal' },
-  { code: 'table_tennis', name: 'Stolní tenis' }
-];
 
 export const CITY_OPTIONS = ['Praha', 'Brno'];
 
@@ -86,7 +78,7 @@ function sportsGround({
   freeDayOffsets
 }) {
   return {
-    // --- shodné s mapSportsGround (services/venues.js) ---
+    // --- shodné s mapSportsGround (calls/venues.js) ---
     id,
     venueId: venue.id,
     sportId: `sport-${sportCode}`,

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Icon from '../Icons';
-import { SPORT_OPTIONS } from '../../services/search';
+import { SPORT_OPTIONS } from '../../utils/sportOptions';
 import { dateOptions } from '../../utils/searchParams';
 
 import '../../styles/search.css';

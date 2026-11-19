@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import playspotLogo from '../../assets/playspot-logo.png';
 import Icon from '../Icons';
-import { apiFetch } from '../../services/api';
+import { useCurrentUser } from '../../providers/CurrentUserProvider';
 
 // ==========================================
 // HORNÍ LIŠTA SPORTOVCE
@@ -13,30 +13,7 @@ import { apiFetch } from '../../services/api';
 // Stejnou lištu bude mít i úvodní obrazovka, až se sjednotí s App.jsx.
 
 export default function AthleteTopBar({ active = 'hledat' }) {
-  const [me, setMe] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    apiFetch('/auth/user/getMe')
-      .then(data => {
-        if (!cancelled) {
-          setMe(data.user || data);
-        }
-      })
-      .catch(() => {
-        // Jméno v liště není nic kritického, chybu tu neřešíme –
-        // o vypršený token se stará RequireAuth.
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const initials = me
-    ? `${me.firstName?.[0] || ''}${me.surName?.[0] || ''}`.toUpperCase()
-    : '';
+  const { initials, fullName } = useCurrentUser();
 
   return (
     <header className="athlete-topbar">
@@ -72,10 +49,7 @@ export default function AthleteTopBar({ active = 'hledat' }) {
           <Icon name="bell" size={20} />
         </button>
 
-        <span
-          className="athlete-topbar-avatar"
-          title={me ? `${me.firstName} ${me.surName}` : ''}
-        >
+        <span className="athlete-topbar-avatar" title={fullName}>
           {initials}
         </span>
       </div>

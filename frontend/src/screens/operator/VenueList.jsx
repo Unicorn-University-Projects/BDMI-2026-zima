@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import Icon from '../components/Icons';
+import Icon from '../../components/Icons';
 
 import {
   listVenues,
   deleteVenue
-} from '../services/venues';
+} from '../../calls/venues';
 
 export default function VenueList() {
   const [venues, setVenues] = useState([]);

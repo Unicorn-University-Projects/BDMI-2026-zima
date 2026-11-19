@@ -6,13 +6,13 @@ import {
   useParams
 } from 'react-router-dom';
 
-import Icon from '../components/Icons';
+import Icon from '../../components/Icons';
 
 import {
   getVenue,
   createVenue,
   updateVenue
-} from '../services/venues';
+} from '../../calls/venues';
 
 // ==========================================
 // VÝCHOZÍ HODNOTY FORMULÁŘE
