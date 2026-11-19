@@ -101,6 +101,21 @@ export function cityLocative(city) {
   return CITY_LOCATIVE[city.trim().toLowerCase()] ?? null;
 }
 
+// Popisek vybraného data v poli: „Dnes, pá 20. 11.“
+export function formatPickerLabel(value) {
+  const iso = typeof value === 'string' ? value : toIsoDate(value);
+  if (!iso) {
+    return '';
+  }
+  if (iso === toIsoDate(today())) {
+    return `Dnes, ${formatShortDate(iso)}`;
+  }
+  if (iso === toIsoDate(addDays(today(), 1))) {
+    return `Zítra, ${formatShortDate(iso)}`;
+  }
+  return formatShortDate(iso);
+}
+
 // Nabídka dnů pro select s datem: dnes, zítra a dál.
 export function dateOptions(count = 14, from = today()) {
   return Array.from({ length: count }, (unused, index) => {

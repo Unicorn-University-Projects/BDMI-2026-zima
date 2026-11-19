@@ -1,8 +1,8 @@
 import React from 'react';
 
+import DateField from '../common/DateField';
 import Icon from '../Icons';
 import { SPORT_OPTIONS } from '../../utils/sportOptions';
-import { dateOptions } from '../../utils/searchParams';
 
 import '../../styles/search.css';
 
@@ -14,8 +14,6 @@ import '../../styles/search.css';
 // kritéria se ukládají do URL.
 
 export default function SearchCard({ values, onChange, onSubmit, disabled, narrow = false }) {
-  const dates = dateOptions();
-
   function handleChange(event) {
     const { name, value } = event.target;
     onChange({ ...values, [name]: value });
@@ -70,25 +68,12 @@ export default function SearchCard({ values, onChange, onSubmit, disabled, narro
         </div>
       </div>
 
-      <div className="search-field">
-        <label htmlFor="search-datum">
-          Datum <span className="required">*</span>
-        </label>
-        <div className="search-input">
-          <Icon name="calendar" size={16} />
-          <select
-            id="search-datum"
-            name="datum"
-            value={values.datum}
-            onChange={handleChange}
-          >
-            {dates.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-          <Icon name="chevronDown" size={16} />
-        </div>
-      </div>
+      <DateField
+        id="search-datum"
+        label="Datum"
+        value={values.datum}
+        onChange={datum => onChange({ ...values, datum })}
+      />
 
       <button type="submit" className="search-submit" disabled={disabled}>
         <Icon name="search" size={18} />
