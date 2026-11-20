@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import Icon from '../components/Icons';
 import SportsGroundForm from '../components/SportsGroundForm';
@@ -29,6 +29,8 @@ import {
 
 export default function SportsGroundDetail() {
   const { id, sportsGroundId } = useParams();
+  const location = useLocation();
+  const pricingUrl = `/arealy/${id}/sportoviste/${sportsGroundId}/nastaveni`;
 
   const [venue, setVenue] = useState(null);
   const [sportsGround, setSportsGround] = useState(null);
@@ -136,6 +138,8 @@ export default function SportsGroundDetail() {
           {venue?.name ?? 'Zpět na areál'}
         </Link>
 
+        {location.state?.pricingSaved && <div className="sports-ground-saved" role="status">✓ &nbsp;Uloženo. Kurt se teď nabízí ve vyhledávání.</div>}
+
         {/* NADPIS A STAV */}
 
         <div className="sports-ground-header">
@@ -216,11 +220,9 @@ export default function SportsGroundDetail() {
               <p>Nastav otevírací dobu a ceník – pak se objeví ve vyhledávání.</p>
             </div>
 
-            {/* Formulář otevírací doby a ceníku (5.2) zatím neexistuje,
-                tlačítko je proto bez akce. */}
-            <button type="button" className="sports-ground-btn-primary">
+            <Link to={pricingUrl} className="sports-ground-btn-primary" style={{ textDecoration: "none" }}>
               Nastavit otevírací dobu a ceník
-            </button>
+            </Link>
           </section>
         )}
 
@@ -244,10 +246,10 @@ export default function SportsGroundDetail() {
                 <strong>{summarizePeak(priceList)}</strong>
               </div>
 
-              <button type="button" className="sports-ground-btn-ghost">
+              <Link to={pricingUrl} className="sports-ground-btn-ghost" style={{ textDecoration: "none" }}>
                 <Icon name="edit" size={20} />
                 Upravit
-              </button>
+              </Link>
             </section>
 
             <section className="sports-ground-preview">
