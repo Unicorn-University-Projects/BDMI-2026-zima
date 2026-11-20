@@ -24,6 +24,7 @@ import VenueList from './pages/VenueList';
 import VenueForm from './pages/VenueForm';
 import VenueDetail from './pages/VenueDetail';
 import SportsGroundDetail from './pages/SportsGroundDetail';
+import OpeningHoursPricing from './pages/OpeningHoursPricing';
 
 // Styly
 import './style.css';
@@ -196,6 +197,8 @@ function Layout() {
               path="/arealy/:id/upravit"
               element={<VenueForm key="edit" />}
             />
+
+            <Route path="/arealy/:id/sportoviste/:sportsGroundId/nastaveni" element={<OpeningHoursPricing />} />
 
             {/* Detail sportoviště – otevírací doba, ceník a náhled slotů */}
             <Route
