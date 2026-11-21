@@ -1,13 +1,9 @@
 import pool from "../db.js";
 import ensureSchema from "./ensure-schema.js";
 import memoryStore from "./memory-store.js";
-import { formatTime, normalizePeakDays } from "../utils/opening-hours.js";
+import { formatTime, parsePeakDays } from "../utils/opening-hours.js";
 
 const useMemory = process.env.VENUE_MEMORY_DB === "1";
-
-function parsePeakDays(value) {
-  return normalizePeakDays(value);
-}
 
 function mapPriceList(row) {
   if (!row || row.regularPrice == null) return null;
@@ -70,60 +66,20 @@ const selectSql = `
 `;
 
 async function loadOpeningHours(sportsGroundId, connection = pool) {
-  try {
-    const [rows] = await connection.execute(
-      `SELECT sportsGroundId, dayOfWeek, openFrom, openTo, isClosed
-       FROM opening_hours
-       WHERE sportsGroundId = ?
-       ORDER BY dayOfWeek ASC`,
-      [sportsGroundId],
-    );
-    return rows.map(mapOpeningHour);
-  } catch (e) {
-    if (e.code === "ER_BAD_FIELD_ERROR") {
-      const [rows] = await connection.execute(
-        `SELECT sportsGroundId, dayOfWeek, openFrom, openTo, isClosed
-         FROM opening_hours
-         WHERE sportsGroundId = ?
-         ORDER BY dayOfWeek ASC`,
-        [sportsGroundId],
-      );
-      return rows.map(mapOpeningHour);
-    }
-    throw e;
-  }
+  const [rows] = await connection.execute(
+    `SELECT sportsGroundId, dayOfWeek, openFrom, openTo, isClosed
+     FROM opening_hours
+     WHERE sportsGroundId = ?
+     ORDER BY dayOfWeek ASC`,
+    [sportsGroundId],
+  );
+  return rows.map(mapOpeningHour);
 }
 
 async function enrich(row, connection = pool) {
   if (!row) return null;
   const openingHours = await loadOpeningHours(row.id, connection);
-  let priceList = mapPriceList(row);
-  if (!priceList?.hasPeak && openingHours.length > 0) {
-    // legacy fallback when peak window lived on opening_hours
-  }
-  if (priceList && (!priceList.peakDays || priceList.peakDays.length === 0) && row.peakFrom == null) {
-    try {
-      const [peakRows] = await connection.execute(
-        `SELECT dayOfWeek, peakFrom, peakTo
-         FROM opening_hours
-         WHERE sportsGroundId = ? AND peakFrom IS NOT NULL
-         ORDER BY dayOfWeek ASC`,
-        [row.id],
-      );
-      if (peakRows.length > 0) {
-        priceList = {
-          ...priceList,
-          hasPeak: true,
-          peakDays: peakRows.map((item) => Number(item.dayOfWeek)),
-          peakFrom: formatTime(peakRows[0].peakFrom),
-          peakTo: formatTime(peakRows[0].peakTo),
-        };
-      }
-    } catch {
-      // opening_hours may not have peak columns
-    }
-  }
-  return mapSportsGround(row, openingHours, priceList);
+  return mapSportsGround(row, openingHours, mapPriceList(row));
 }
 
 function memorySport(sportId) {
@@ -191,23 +147,24 @@ async function create(sportsGround) {
 async function get(id) {
   if (useMemory) return memoryGet(id);
   await ensureSchema();
-  try {
-    const [rows] = await pool.execute(`${selectSql} WHERE sg.id = ?`, [id]);
-    return enrich(rows[0]);
-  } catch (e) {
-    if (e.code === "ER_BAD_FIELD_ERROR") {
-      const [rows] = await pool.execute(
-        `SELECT sg.*, s.code AS sportCode, s.name AS sportName, pl.regularPrice, pl.peakPrice
-         FROM sports_grounds sg
-         JOIN sports s ON s.id = sg.sportId
-         LEFT JOIN price_lists pl ON pl.sportsGroundId = sg.id
-         WHERE sg.id = ?`,
-        [id],
-      );
-      return enrich(rows[0]);
-    }
-    throw e;
+  const [rows] = await pool.execute(`${selectSql} WHERE sg.id = ?`, [id]);
+  return enrich(rows[0]);
+}
+
+async function getByVenueAndName(venueId, name) {
+  if (useMemory) {
+    const row = [...memoryStore.state.sportsGrounds.values()].find(
+      (item) => item.venueId === venueId && item.name.toLowerCase() === String(name).toLowerCase(),
+    );
+    return row ? memoryGet(row.id) : null;
   }
+
+  await ensureSchema();
+  const [rows] = await pool.execute(
+    `${selectSql} WHERE sg.venueId = ? AND LOWER(sg.name) = LOWER(?)`,
+    [venueId, name],
+  );
+  return enrich(rows[0]);
 }
 
 async function list({ venueId, status } = {}) {
@@ -230,23 +187,8 @@ async function list({ venueId, status } = {}) {
     params.push(status);
   }
   const sql = `${selectSql}${where.length ? ` WHERE ${where.join(" AND ")}` : ""} ORDER BY sg.name ASC`;
-  try {
-    const [rows] = await pool.execute(sql, params);
-    return Promise.all(rows.map((row) => enrich(row)));
-  } catch (e) {
-    if (e.code === "ER_BAD_FIELD_ERROR") {
-      const fallback = `
-        SELECT sg.*, s.code AS sportCode, s.name AS sportName, pl.regularPrice, pl.peakPrice
-        FROM sports_grounds sg
-        JOIN sports s ON s.id = sg.sportId
-        LEFT JOIN price_lists pl ON pl.sportsGroundId = sg.id
-        ${where.length ? ` WHERE ${where.join(" AND ")}` : ""}
-        ORDER BY sg.name ASC`;
-      const [rows] = await pool.execute(fallback, params);
-      return Promise.all(rows.map((row) => enrich(row)));
-    }
-    throw e;
-  }
+  const [rows] = await pool.execute(sql, params);
+  return Promise.all(rows.map((row) => enrich(row)));
 }
 
 async function update(id, sportsGround) {
@@ -335,51 +277,27 @@ async function setOpeningHoursAndPriceList(id, { openingHours, priceList }) {
     }
 
     const peakDaysJson = JSON.stringify(priceList.peakDays ?? []);
-    try {
-      await connection.execute(
-        `INSERT INTO price_lists
-          (sportsGroundId, regularPrice, peakPrice, hasPeak, peakDays, peakFrom, peakTo)
-         VALUES (?, ?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-           regularPrice = VALUES(regularPrice),
-           peakPrice = VALUES(peakPrice),
-           hasPeak = VALUES(hasPeak),
-           peakDays = VALUES(peakDays),
-           peakFrom = VALUES(peakFrom),
-           peakTo = VALUES(peakTo)`,
-        [
-          id,
-          priceList.regularPrice,
-          priceList.peakPrice,
-          priceList.hasPeak ? 1 : 0,
-          peakDaysJson,
-          priceList.peakFrom,
-          priceList.peakTo,
-        ],
-      );
-    } catch (e) {
-      if (e.code !== "ER_BAD_FIELD_ERROR") throw e;
-      await connection.execute(
-        `INSERT INTO price_lists (sportsGroundId, regularPrice, peakPrice)
-         VALUES (?, ?, ?)
-         ON DUPLICATE KEY UPDATE regularPrice = VALUES(regularPrice), peakPrice = VALUES(peakPrice)`,
-        [id, priceList.regularPrice, priceList.peakPrice],
-      );
-      if (priceList.hasPeak) {
-        for (const dayOfWeek of priceList.peakDays) {
-          try {
-            await connection.execute(
-              `UPDATE opening_hours
-               SET peakFrom = ?, peakTo = ?
-               WHERE sportsGroundId = ? AND dayOfWeek = ?`,
-              [priceList.peakFrom, priceList.peakTo, id, dayOfWeek],
-            );
-          } catch {
-            break;
-          }
-        }
-      }
-    }
+    await connection.execute(
+      `INSERT INTO price_lists
+        (sportsGroundId, regularPrice, peakPrice, hasPeak, peakDays, peakFrom, peakTo)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         regularPrice = VALUES(regularPrice),
+         peakPrice = VALUES(peakPrice),
+         hasPeak = VALUES(hasPeak),
+         peakDays = VALUES(peakDays),
+         peakFrom = VALUES(peakFrom),
+         peakTo = VALUES(peakTo)`,
+      [
+        id,
+        priceList.regularPrice,
+        priceList.peakPrice,
+        priceList.hasPeak ? 1 : 0,
+        peakDaysJson,
+        priceList.peakFrom,
+        priceList.peakTo,
+      ],
+    );
 
     await connection.execute("UPDATE sports_grounds SET status = 'active' WHERE id = ?", [id]);
     await connection.commit();
@@ -405,6 +323,7 @@ async function deleteById(id) {
 export default {
   create,
   get,
+  getByVenueAndName,
   list,
   update,
   hasOpeningHoursAndPriceList,

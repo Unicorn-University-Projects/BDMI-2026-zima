@@ -21,8 +21,6 @@ services:
 
   auth:
     build: ./services/auth
-    ports:
-      - "4001:4001"
     networks:
       - backend
     env_file:
@@ -34,8 +32,6 @@ services:
 
   venue:
     build: ./services/venue
-    ports:
-      - "4002:4002"
     networks:
       - backend
     env_file:
@@ -47,22 +43,16 @@ services:
 
   booking:
     build: ./services/booking
-    ports:
-      - "4003:4003"
     networks:
       - backend
 
   review:
     build: ./services/review
-    ports:
-      - "4004:4004"
     networks:
       - backend
 
   audit:
     build: ./services/audit
-    ports:
-      - "4005:4005"
     networks:
       - backend
     env_file:
