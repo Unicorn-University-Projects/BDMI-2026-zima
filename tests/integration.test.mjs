@@ -106,7 +106,10 @@ before(async () => {
     GATEWAY_INTERNAL_SECRET: gatewaySecret,
     VENUE_MEMORY_DB: "1",
   });
-  startService("booking", ports.booking);
+  startService("booking", ports.booking, {
+    GATEWAY_INTERNAL_SECRET: gatewaySecret,
+    BOOKING_MEMORY_DB: "1",
+  });
   startService("review", ports.review);
   startService("audit", ports.audit, { SYSTEM_KEY: systemKey });
 
@@ -595,4 +598,48 @@ test("sports ground starts inactive, stays hidden from athletes until hours and 
   ));
   assert.equal(athleteGetAfter.status, 200);
   assert.equal(athleteGetAfter.body.sportsGround.status, "active");
+});
+
+// Booking běží s ukázkovými daty v paměti (BOOKING_MEMORY_DB=1), viz services/booking/src/dao/memory-store.js.
+test("booking: volné sloty a vyhledávání sportovišť přes gateway", async () => {
+  const athleteHeaders = { Authorization: `Bearer ${createToken("athlete")}` };
+  const operatorHeaders = { Authorization: `Bearer ${createToken("operator")}` };
+  const date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const lipaCourt2 = "d0000000-0000-4000-8000-000000000002";
+
+  const availability = await readJson(await fetch(
+    serviceUrl("gateway", `/booking/sportsGround/getAvailability?sportsGroundId=${lipaCourt2}&date=${date}`),
+    { headers: athleteHeaders },
+  ));
+  assert.equal(availability.status, 200, JSON.stringify(availability.body));
+  assert.equal(availability.body.sportsGround.id, lipaCourt2);
+  assert.equal(availability.body.slotList.length, 14);
+  assert.ok(availability.body.slotList.every((slot) => slot.status === "free"));
+
+  const operatorAvailability = await fetch(
+    serviceUrl("gateway", `/booking/sportsGround/getAvailability?sportsGroundId=${lipaCourt2}&date=${date}`),
+    { headers: operatorHeaders },
+  );
+  assert.equal(operatorAvailability.status, 200);
+
+  const found = await readJson(await fetch(
+    serviceUrl("gateway", `/booking/sportsGround/search?sportCode=tennis&city=olomouc&date=${date}`),
+    { headers: athleteHeaders },
+  ));
+  assert.equal(found.status, 200, JSON.stringify(found.body));
+  // 3 kurty v Lípě + 2 v Hradisku (kurt A má v neděli zavřeno)
+  assert.ok(found.body.itemList.length >= 4, JSON.stringify(found.body));
+  assert.ok(found.body.itemList.every((item) => item.sportsGround.sport.code === "tennis"));
+
+  const operatorSearch = await readJson(await fetch(
+    serviceUrl("gateway", `/booking/sportsGround/search?sportCode=tennis&city=olomouc&date=${date}`),
+    { headers: operatorHeaders },
+  ));
+  assert.equal(operatorSearch.status, 403);
+  assert.equal(operatorSearch.body.code, "user/forbidden");
+
+  const direct = await fetch(serviceUrl("booking", `/sportsGround/search?sportCode=tennis&city=olomouc&date=${date}`), {
+    headers: { "X-User-Id": "integration-test-user", "X-User-Role": "athlete" },
+  });
+  assert.equal(direct.status, 403);
 });
