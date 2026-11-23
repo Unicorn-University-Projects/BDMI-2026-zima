@@ -51,7 +51,7 @@ cd BDMI-2026-zima
 | API Gateway | `gateway/` | 4000 | jediný vstupní bod pro frontend, ověřuje JWT a kontroluje oprávnění |
 | Auth service | `services/auth/` | 4001 | registrace, přihlášení, role, vydávání JWT |
 | Venue service | `services/venue/` | 4002 | areály a sportoviště |
-| Booking service | `services/booking/` | 4003 | rezervace (zatím jen kostra s `/health`) |
+| Booking service | `services/booking/` | 4003 | volné sloty sportoviště (`sportsGround/getAvailability`) a vyhledávání (`sportsGround/search`); rezervace zatím ne |
 | Review service | `services/review/` | 4004 | hodnocení (zatím jen kostra s `/health`) |
 | Audit service | `services/audit/` | 4005 | interní audit, volají ho jen jiné služby |
 | MySQL | (Docker image) | 3306 | databáze `rezervace_sportovist` |
@@ -82,6 +82,10 @@ cp services/venue/.env.example services/venue/.env
 ```
 
 ```bash
+cp services/booking/.env.example services/booking/.env
+```
+
+```bash
 cp services/audit/.env.example services/audit/.env
 ```
 
@@ -89,7 +93,7 @@ cp services/audit/.env.example services/audit/.env
 cp frontend/.env.example frontend/.env
 ```
 
-Booking a Review service zatím žádnou konfiguraci nepotřebují.
+Review service zatím žádnou konfiguraci nepotřebuje.
 
 ### 4.2 JWT klíče (povinné)
 
@@ -118,7 +122,7 @@ a vložte ho do `services/audit/.env` jako `SYSTEM_KEY=...`. Stejnou hodnotu bud
 
 ### 4.4 Připojení k databázi
 
-Auth a Venue service potřebují MySQL. Hodnoty `DB_*` v `services/auth/.env` a `services/venue/.env` nastavte podle toho, jakou databázi používáte:
+Auth, Venue a Booking service potřebují MySQL. Hodnoty `DB_*` v `services/auth/.env`, `services/venue/.env` a `services/booking/.env` nastavte podle toho, jakou databázi používáte:
 
 | Proměnná | Lokální MySQL z Dockeru, služby přes `npm start` (varianta B) | Vše v Dockeru (varianta A) | Sdílená týmová DB |
 |---|---|---|---|
@@ -168,7 +172,7 @@ Bez vyplněných OAuth proměnných vrací `signInWithProvider` chybu `providerN
 docker compose up --build
 ```
 
-Docker sestaví image všech služeb, spustí MySQL a při **prvním** startu (prázdný volume) do ní nahraje tabulky ze souborů `services/auth/db/init.sql` a `services/venue/db/init.sql`.
+Docker sestaví image všech služeb, spustí MySQL a při **prvním** startu (prázdný volume) do ní nahraje tabulky ze souborů `services/auth/db/init.sql`, `services/venue/db/init.sql` a `services/booking/db/init.sql` (v tomto pořadí).
 
 MySQL se při prvním startu inicializuje zhruba 10 až 30 sekund. Pokud Auth nebo Venue service v tu chvíli hlásí chybu připojení k databázi, počkejte a požadavek zopakujte, služby se připojují až při prvním dotazu.
 
@@ -210,6 +214,10 @@ mysql -u rezervace_app -p rezervace_sportovist < services/auth/db/init.sql
 
 ```bash
 mysql -u rezervace_app -p rezervace_sportovist < services/venue/db/init.sql
+```
+
+```bash
+mysql -u rezervace_app -p rezervace_sportovist < services/booking/db/init.sql
 ```
 
 Případně můžete použít sdílenou týmovou databázi, přístupové údaje vám dá správce týmu.
@@ -334,7 +342,7 @@ curl -s http://localhost:4000/venue/venue/list -H "Authorization: Bearer SEM_VLO
 | `403 user/forbidden` s `params.command` | Volaný příkaz není v `gateway/src/permissions.js`, nebo na něj vaše role nemá právo (např. správa areálů je jen pro roli `operator`). |
 | `403 user/roleNotSet` | Uživatel (typicky z OAuth) ještě nemá roli. Nastavte ji přes `POST /auth/user/setRole`. |
 | `502 gateway/serviceUnavailable` | Cílová služba neběží nebo gateway má špatnou adresu v `*_URL`. Zkontrolujte `/health` dané služby. |
-| `500 ... failed` z Auth nebo Venue, v logu `ECONNREFUSED` nebo `ER_ACCESS_DENIED_ERROR` | Špatné `DB_*` hodnoty nebo neběžící MySQL (kapitola 4.4). |
+| `500 ... failed` z Auth, Venue nebo Booking, v logu `ECONNREFUSED` nebo `ER_ACCESS_DENIED_ERROR` | Špatné `DB_*` hodnoty nebo neběžící MySQL (kapitola 4.4). |
 | V databázi chybí tabulky | `init.sql` se spouští jen při prvním startu s prázdným volume. Spusťte `docker compose down -v` a znovu `docker compose up --build`. |
 | `env file ... not found` při `docker compose up` | Chybí některý z `.env` souborů z kapitoly 4.1. |
 | `bad option: --env-file-if-exists` | Starší Node.js. Nainstalujte Node.js 24. |
