@@ -2,8 +2,10 @@
 // která přidává hlavičku X-Gateway-Secret (GATEWAY_INTERNAL_SECRET).
 import crypto from "node:crypto";
 
-const DEFAULT_SECRET = "local-dev-gateway-secret";
-const expectedSecret = process.env.GATEWAY_INTERNAL_SECRET || DEFAULT_SECRET;
+const expectedSecret = process.env.GATEWAY_INTERNAL_SECRET;
+if (!expectedSecret) {
+  throw new Error("GATEWAY_INTERNAL_SECRET environment variable is required");
+}
 
 function hash(value) {
   return crypto.createHash("sha256").update(value).digest();

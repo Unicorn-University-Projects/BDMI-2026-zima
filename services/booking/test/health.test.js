@@ -1,7 +1,11 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
-import app from "../src/app.js";
+import { GATEWAY_SECRET } from "./helpers.js";
+
+process.env.GATEWAY_INTERNAL_SECRET = GATEWAY_SECRET;
+process.env.BOOKING_MEMORY_DB = "1";
+const { default: app } = await import("../src/app.js");
 
 const server = http.createServer(app);
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
