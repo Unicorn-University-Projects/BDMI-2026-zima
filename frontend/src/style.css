@@ -946,18 +946,6 @@ textarea::placeholder {
    19. TLAČÍTKA FORMULÁŘE
 ========================================== */
 
-.venue-form-actions,
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-
-  margin-top: 30px;
-  padding-top: 24px;
-
-  border-top: 1px solid #eee9f4;
-}
-
 .venue-button {
   display: inline-flex;
   align-items: center;
@@ -1213,8 +1201,7 @@ textarea::placeholder {
     gap: 0;
   }
 
-  .venue-form-actions,
-  .form-actions {
+  .venue-form-actions {
     flex-wrap: wrap;
   }
 }
@@ -1860,16 +1847,6 @@ textarea::placeholder {
    SPODNÍ TLAČÍTKA
 ========================================== */
 
-.venue-form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 13px;
-
-  padding-top: 23px;
-  border-top: 1px solid #eeeaf3;
-}
-
 .venue-btn-cancel,
 .venue-btn-submit {
   display: inline-flex;
@@ -2194,14 +2171,21 @@ textarea::placeholder {
    TLAČÍTKA
 ========================================== */
 
+/* Formulář je jen obal – bílou kartu dělá .venue-form-card uvnitř,
+   tlačítka stojí pod ní jako její sourozenec (návrh 4.2 a 4.6).
+   Mezera 24px odpovídá rozestupu v návrhu. */
+.venue-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
 .venue-form-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  margin-top: 25px;
-  padding-top: 0;
-  border-top: none;
 }
 
 .venue-btn-cancel,

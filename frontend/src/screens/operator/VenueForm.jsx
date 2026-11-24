@@ -243,13 +243,19 @@ export default function VenueForm() {
         </p>
       </header>
 
-      {/* FORMULÁŘ */}
+      {/* FORMULÁŘ
+
+          Bílá karta a <form> jsou záměrně dva elementy: návrh má tlačítka
+          pod kartou, ne v ní. Odesílací tlačítko ale musí zůstat uvnitř
+          <form>, jinak přestane fungovat Enter i nativní validace. */}
 
       <form
-        className="venue-form-card"
+        className="venue-form"
         onSubmit={handleSubmit}
         noValidate
       >
+
+        <div className="venue-form-card">
 
         {/* ZÁKLADNÍ ÚDAJE */}
 
@@ -495,7 +501,9 @@ export default function VenueForm() {
           </div>
         )}
 
-        {/* TLAČÍTKA */}
+        </div>
+
+        {/* TLAČÍTKA – pod kartou, podle návrhu 4.2 a 4.6 */}
 
         <div className="venue-form-actions">
 
