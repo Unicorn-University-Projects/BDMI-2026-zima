@@ -27,6 +27,14 @@ const schema = {
 
 const validate = ajv.compile(schema);
 
+function duplicateNameError() {
+  return {
+    code: "sportsGround/create/sportsGroundAlreadyExists",
+    message: "Sportoviště s tímto názvem v areálu již existuje.",
+    params: {},
+  };
+}
+
 async function createAbl(req, res) {
   try {
     const userId = req.get("X-User-Id");
@@ -80,11 +88,16 @@ async function createAbl(req, res) {
       });
     }
 
+    const name = normalizeText(dtoIn.name);
+    if (await sportsGroundDao.getByVenueAndName(venue.id, name)) {
+      return res.status(409).json(duplicateNameError());
+    }
+
     const sportsGround = await sportsGroundDao.create({
       id: crypto.randomUUID(),
       venueId: venue.id,
       sportId: sport.id,
-      name: normalizeText(dtoIn.name),
+      name,
       surface: normalizeText(dtoIn.surface),
       coverType: dtoIn.coverType,
     });
@@ -101,6 +114,9 @@ async function createAbl(req, res) {
     }
     return res.status(201).json(dtoOut);
   } catch (e) {
+    if (e.code === "ER_DUP_ENTRY" || e.errno === 1062) {
+      return res.status(409).json(duplicateNameError());
+    }
     console.error(e);
     return res.status(500).json({
       code: "sportsGround/create/failed",

@@ -1,5 +1,7 @@
-const DEFAULT_SECRET = "local-dev-gateway-secret";
-const gatewaySecret = process.env.GATEWAY_INTERNAL_SECRET || DEFAULT_SECRET;
+const gatewaySecret = process.env.GATEWAY_INTERNAL_SECRET;
+if (!gatewaySecret) {
+  throw new Error("GATEWAY_INTERNAL_SECRET environment variable is required");
+}
 
 function forwardUser(req, res, next) {
   delete req.headers["x-user-id"];

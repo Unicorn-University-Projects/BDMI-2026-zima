@@ -10,19 +10,23 @@ const schema = {
   type: "object",
   properties: {
     id: { type: "string", format: "uuid" },
-    name: { type: "string", minLength: 1, maxLength: 150, pattern: "\\S" },
-    street: { type: "string", minLength: 1, maxLength: 150, pattern: "\\S" },
-    streetNumber: { type: "string", minLength: 1, maxLength: 50, pattern: "\\S" },
+    name: { type: "string", minLength: 1, maxLength: 100, pattern: "\\S" },
+    street: { type: "string", minLength: 1, maxLength: 100, pattern: "\\S" },
+    streetNumber: { type: "string", minLength: 1, maxLength: 20, pattern: "\\S" },
     city: { type: "string", minLength: 1, maxLength: 100, pattern: "\\S" },
     emailAddress: { type: "string", format: "email", maxLength: 255, pattern: "\\S" },
-    phoneNumber: { type: "string", minLength: 1, maxLength: 30, pattern: "\\S" },
-    operatorNote: { type: "string", maxLength: 1000 },
+    phoneNumber: { type: "string", minLength: 1, maxLength: 30, pattern: "^\\+?[\\d\\s()-]{9,20}$" },
+    operatorNote: { type: "string", maxLength: 500 },
   },
   required: ["id", "name", "street", "streetNumber", "city", "emailAddress", "phoneNumber"],
   additionalProperties: true,
 };
 
 const validate = ajv.compile(schema);
+
+function isValidPhone(phone) {
+  return /^\+?[\d\s()-]{9,20}$/.test(phone) && phone.replace(/\D/g, "").length >= 9;
+}
 
 async function updateAbl(req, res) {
   try {
@@ -38,6 +42,9 @@ async function updateAbl(req, res) {
     const dtoIn = trimDtoIn(req.body ?? {});
     if (!validate(dtoIn)) {
       return res.status(400).json(invalidDtoIn(validate.errors));
+    }
+    if (!isValidPhone(dtoIn.phoneNumber)) {
+      return res.status(400).json(invalidDtoIn([{ instancePath: "/phoneNumber" }]));
     }
 
     const unsupportedKeyList = Object.keys(dtoIn).filter((key) => !(key in schema.properties));
@@ -59,24 +66,32 @@ async function updateAbl(req, res) {
     }
 
     const name = normalizeText(dtoIn.name);
-    const street = normalizeText(`${dtoIn.street} ${dtoIn.streetNumber}`);
+    const street = normalizeText(dtoIn.street);
+    const streetNumber = normalizeText(dtoIn.streetNumber);
     const city = normalizeText(dtoIn.city);
     const email = normalizeText(dtoIn.emailAddress).toLowerCase();
     const phone = normalizeText(dtoIn.phoneNumber);
     const noteForAthletes = dtoIn.operatorNote ? normalizeText(dtoIn.operatorNote) : null;
 
-    const duplicate = await venueDao.getByNameAndAddress(venue.operatorId, name, street, city);
+    const duplicate = await venueDao.getByNameAndAddress(
+      venue.operatorId,
+      name,
+      street,
+      streetNumber,
+      city,
+    );
     if (duplicate && duplicate.id !== venue.id) {
       return res.status(409).json({
         code: "venue/update/venueAlreadyExists",
         message: "Areál s tímto názvem a adresou již existuje.",
-        params: { name, street, city },
+        params: { name, street, streetNumber, city },
       });
     }
 
     const updatedVenue = await venueDao.update(venue.id, {
       name,
       street,
+      streetNumber,
       city,
       noteForAthletes,
       email,

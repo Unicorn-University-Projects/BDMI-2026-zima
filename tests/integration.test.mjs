@@ -28,10 +28,10 @@ async function availablePort() {
   return port;
 }
 
-function createToken(role) {
+function createToken(role, userId = "integration-test-user") {
   const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT" })).toString("base64url");
   const payload = Buffer.from(
-    JSON.stringify({ sub: "integration-test-user", role }),
+    JSON.stringify({ sub: userId, role }),
   ).toString("base64url");
   const unsignedToken = `${header}.${payload}`;
   const signer = createSign("RSA-SHA256");
@@ -595,4 +595,400 @@ test("sports ground starts inactive, stays hidden from athletes until hours and 
   ));
   assert.equal(athleteGetAfter.status, 200);
   assert.equal(athleteGetAfter.body.sportsGround.status, "active");
+});
+
+test("gateway and venue fail fast without GATEWAY_INTERNAL_SECRET", async () => {
+  for (const [name, directory] of [
+    ["venue", resolve(repoRoot, "services/venue")],
+    ["gateway", resolve(repoRoot, "gateway")],
+  ]) {
+    const port = await availablePort();
+    const env = { ...process.env, PORT: String(port), VENUE_MEMORY_DB: "1" };
+    delete env.GATEWAY_INTERNAL_SECRET;
+    const child = spawn(process.execPath, ["src/server.js"], {
+      cwd: directory,
+      env,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let output = "";
+    child.stderr.setEncoding("utf8").on("data", (chunk) => {
+      output += chunk;
+    });
+    child.stdout.setEncoding("utf8").on("data", (chunk) => {
+      output += chunk;
+    });
+    const [code] = await Promise.race([
+      once(child, "exit"),
+      delay(5_000).then(() => {
+        child.kill("SIGKILL");
+        return ["timeout"];
+      }),
+    ]);
+    assert.notEqual(code, 0, `${name} should exit when secret is missing:\n${output}`);
+    assert.match(output, /GATEWAY_INTERNAL_SECRET/);
+  }
+});
+
+test("venue validation rejects invalid phone and oversized fields", async () => {
+  const headers = {
+    Authorization: `Bearer ${createToken("operator")}`,
+    "Content-Type": "application/json",
+  };
+  const invalidPhone = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Telefon Areál",
+      street: "Ulice",
+      streetNumber: "1",
+      city: "Praha",
+      emailAddress: "phone@example.com",
+      phoneNumber: "zavolejte mi",
+    }),
+  }));
+  assert.equal(invalidPhone.status, 400);
+  assert.equal(invalidPhone.body.code, "venue/invalidDtoIn");
+  assert.ok(invalidPhone.body.params.invalidFields.includes("phoneNumber"));
+
+  const tooLong = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "N".repeat(101),
+      street: "S".repeat(101),
+      streetNumber: "1".repeat(21),
+      city: "C".repeat(101),
+      emailAddress: "long@example.com",
+      phoneNumber: "+420777000222",
+      operatorNote: "X".repeat(501),
+    }),
+  }));
+  assert.equal(tooLong.status, 400);
+  assert.equal(tooLong.body.code, "venue/invalidDtoIn");
+  for (const field of ["name", "street", "streetNumber", "city", "operatorNote"]) {
+    assert.ok(tooLong.body.params.invalidFields.includes(field), field);
+  }
+
+  const created = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Oddělená adresa",
+      street: "Sportovní",
+      streetNumber: "12A",
+      city: "Brno",
+      emailAddress: "street@example.com",
+      phoneNumber: "+420777000333",
+    }),
+  }));
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+  assert.equal(created.body.venue.street, "Sportovní");
+  assert.equal(created.body.venue.streetNumber, "12A");
+});
+
+test("sportsGround list requires venueId and hides inactive grounds from foreign operators", async () => {
+  const ownerHeaders = {
+    Authorization: `Bearer ${createToken("operator", "owner-operator")}`,
+    "Content-Type": "application/json",
+  };
+  const foreignHeaders = {
+    Authorization: `Bearer ${createToken("operator", "foreign-operator")}`,
+    "Content-Type": "application/json",
+  };
+
+  const missingVenueId = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/list"),
+    { headers: ownerHeaders },
+  ));
+  assert.equal(missingVenueId.status, 400);
+  assert.equal(missingVenueId.body.code, "sportsGround/invalidDtoIn");
+  assert.ok(missingVenueId.body.params.invalidFields.includes("venueId"));
+
+  const venue = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers: ownerHeaders,
+    body: JSON.stringify({
+      name: "NP03 Areál",
+      street: "Skrytá",
+      streetNumber: "9",
+      city: "Praha",
+      emailAddress: "np03@example.com",
+      phoneNumber: "+420777000444",
+    }),
+  }));
+  assert.equal(venue.status, 201, JSON.stringify(venue.body));
+  const venueId = venue.body.venue.id;
+
+  const created = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers: ownerHeaders,
+    body: JSON.stringify({
+      venueId,
+      sportCode: "tennis",
+      name: "Skrytý kurt",
+      surface: "antuka",
+      coverType: "outdoor",
+    }),
+  }));
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+  const sportsGroundId = created.body.sportsGround.id;
+  assert.equal(created.body.sportsGround.status, "inactive");
+
+  const foreignList = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/list?venueId=${venueId}`),
+    { headers: foreignHeaders },
+  ));
+  assert.equal(foreignList.status, 200);
+  assert.equal(foreignList.body.itemList.length, 0);
+
+  const foreignGet = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/get?id=${sportsGroundId}`),
+    { headers: foreignHeaders },
+  ));
+  assert.equal(foreignGet.status, 404);
+  assert.equal(foreignGet.body.code, "sportsGround/notFound");
+
+  const ownerList = await readJson(await fetch(
+    serviceUrl("gateway", `/venue/sportsGround/list?venueId=${venueId}`),
+    { headers: ownerHeaders },
+  ));
+  assert.equal(ownerList.status, 200);
+  assert.equal(ownerList.body.itemList.length, 1);
+  assert.equal(ownerList.body.itemList[0].status, "inactive");
+});
+
+test("sportsGround create and update reject duplicate names in the same venue", async () => {
+  const headers = {
+    Authorization: `Bearer ${createToken("operator")}`,
+    "Content-Type": "application/json",
+  };
+  const venue = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "Duplikát Areál",
+      street: "Duplicitní",
+      streetNumber: "1",
+      city: "Praha",
+      emailAddress: "dup@example.com",
+      phoneNumber: "+420777000555",
+    }),
+  }));
+  assert.equal(venue.status, 201, JSON.stringify(venue.body));
+  const venueId = venue.body.venue.id;
+
+  const first = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      venueId,
+      sportCode: "tennis",
+      name: "Kurt 1",
+      surface: "antuka",
+      coverType: "outdoor",
+    }),
+  }));
+  assert.equal(first.status, 201, JSON.stringify(first.body));
+
+  const duplicateCreate = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      venueId,
+      sportCode: "badminton",
+      name: "kurt 1",
+      surface: "PVC",
+      coverType: "indoor",
+    }),
+  }));
+  assert.equal(duplicateCreate.status, 409);
+  assert.equal(duplicateCreate.body.code, "sportsGround/create/sportsGroundAlreadyExists");
+  assert.equal(duplicateCreate.body.message, "Sportoviště s tímto názvem v areálu již existuje.");
+
+  const second = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      venueId,
+      sportCode: "squash",
+      name: "Kurt 2",
+      surface: "parkety",
+      coverType: "indoor",
+    }),
+  }));
+  assert.equal(second.status, 201, JSON.stringify(second.body));
+
+  const duplicateUpdate = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/update"), {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      id: second.body.sportsGround.id,
+      sportCode: "squash",
+      name: "Kurt 1",
+      surface: "parkety",
+      coverType: "indoor",
+    }),
+  }));
+  assert.equal(duplicateUpdate.status, 409);
+  assert.equal(duplicateUpdate.body.code, "sportsGround/update/sportsGroundAlreadyExists");
+});
+
+test("opening hours and price list reject invalid peak, prices, and accept 24:00", async () => {
+  const headers = {
+    Authorization: `Bearer ${createToken("operator")}`,
+    "Content-Type": "application/json",
+  };
+  const venue = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: "US08 Edge Areál",
+      street: "Hraniční",
+      streetNumber: "24",
+      city: "Praha",
+      emailAddress: "edge@example.com",
+      phoneNumber: "+420777000666",
+    }),
+  }));
+  assert.equal(venue.status, 201, JSON.stringify(venue.body));
+
+  const created = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      venueId: venue.body.venue.id,
+      sportCode: "tennis",
+      name: "Noční kurt",
+      surface: "antuka",
+      coverType: "outdoor",
+    }),
+  }));
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+  const sportsGroundId = created.body.sportsGround.id;
+
+  const tinyPrice = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00" }),
+        priceList: { basePrice: 0.001, hasPeak: false },
+      }),
+    },
+  ));
+  assert.equal(tinyPrice.status, 400);
+  assert.equal(tinyPrice.body.code, "sportsGround/invalidDtoIn");
+  assert.ok(tinyPrice.body.params.invalidFields.includes("basePrice"));
+
+  const hugePrice = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00" }),
+        priceList: { basePrice: 10_000_000, hasPeak: false },
+      }),
+    },
+  ));
+  assert.equal(hugePrice.status, 400);
+  assert.equal(hugePrice.body.code, "sportsGround/invalidDtoIn");
+  assert.ok(hugePrice.body.params.invalidFields.includes("basePrice"));
+
+  const reversedPeak = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00" }),
+        priceList: {
+          basePrice: 400,
+          hasPeak: true,
+          peakPrice: 600,
+          peakDays: [1, 2],
+          peakFrom: "18:00",
+          peakTo: "17:00",
+        },
+      }),
+    },
+  ));
+  assert.equal(reversedPeak.status, 400);
+  assert.equal(reversedPeak.body.code, "sportsGround/invalidPeakTime");
+  assert.equal(reversedPeak.body.message, "Konec špičky musí být později než začátek.");
+  assert.equal(reversedPeak.body.params.field, "peak");
+
+  const invalidPeakDay = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00" }),
+        priceList: {
+          basePrice: 400,
+          hasPeak: true,
+          peakPrice: 600,
+          peakDays: [1, 8],
+          peakFrom: "17:00",
+          peakTo: "21:00",
+        },
+      }),
+    },
+  ));
+  assert.equal(invalidPeakDay.status, 400);
+  assert.equal(invalidPeakDay.body.code, "sportsGround/invalidDtoIn");
+  assert.deepEqual(invalidPeakDay.body.params.invalidFields, ["peakDays"]);
+
+  const duplicatePeakDay = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00" }),
+        priceList: {
+          basePrice: 400,
+          hasPeak: true,
+          peakPrice: 600,
+          peakDays: [1, 1],
+          peakFrom: "17:00",
+          peakTo: "21:00",
+        },
+      }),
+    },
+  ));
+  assert.equal(duplicatePeakDay.status, 400);
+  assert.equal(duplicatePeakDay.body.code, "sportsGround/invalidDtoIn");
+  assert.deepEqual(duplicatePeakDay.body.params.invalidFields, ["peakDays"]);
+
+  const untilMidnight = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "23:00", openTo: "24:00" }),
+        priceList: {
+          basePrice: 500,
+          hasPeak: true,
+          peakPrice: 700,
+          peakDays: [1, 2, 3, 4, 5],
+          peakFrom: "23:00",
+          peakTo: "24:00",
+        },
+      }),
+    },
+  ));
+  assert.equal(untilMidnight.status, 200, JSON.stringify(untilMidnight.body));
+  assert.equal(untilMidnight.body.sportsGround.status, "active");
+  assert.equal(untilMidnight.body.sportsGround.openingHours[0].openTo, "24:00");
+  assert.equal(untilMidnight.body.sportsGround.priceList.peakTo, "24:00");
 });
