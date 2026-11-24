@@ -95,7 +95,7 @@ export default function OpeningHoursPricing() {
 
   if (loading) return <div className="ohp-page">Načítám nastavení…</div>;
   return <div className="ohp-page">
-    <BackLink className="ohp-back" to={`/arealy/${id}`}>← &nbsp;{venue?.name || 'Zpět na areál'}</BackLink>
+    <BackLink className="ohp-back" to={`/arealy/${id}`}>← &nbsp;Zpět</BackLink>
     <h1>Otevírací doba a ceník</h1>
     <p className="ohp-subtitle">{ground?.name || 'Sportoviště'} · {venue?.name || 'Areál'}</p>
     {(serverError || Object.keys(errors).length > 0) && <div className="ohp-alert" role="alert">ⓘ &nbsp;{serverError || 'Nastavení nejde uložit. Oprav chyby níže.'}</div>}

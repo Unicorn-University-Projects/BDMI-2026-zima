@@ -205,7 +205,7 @@ export default function VenueForm() {
       <div className="venue-form-page">
         <BackLink to="/arealy" className="venue-form-back">
           <Icon name="arrow" size={16} />
-          Moje areály
+          Zpět
         </BackLink>
 
         <h1>Areál nebyl nalezen</h1>
@@ -227,7 +227,7 @@ export default function VenueForm() {
 
       <BackLink to="/arealy" className="venue-form-back">
         <Icon name="arrow" size={16} />
-        Moje areály
+        Zpět
       </BackLink>
 
       {/* NADPIS */}

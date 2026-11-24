@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Icon from '../../components/Icons';
+import BackLink from '../../components/common/BackLink';
 import EditSportsGroundDialog from '../../components/sportsGround/EditSportsGroundDialog';
 import SettingsSummary from '../../components/sportsGround/SettingsSummary';
 import SetupCallout from '../../components/sportsGround/SetupCallout';
@@ -18,17 +19,8 @@ import SportsGroundProvider, { useSportsGround } from '../../providers/SportsGro
 // Obrazovka jen skládá komponenty dohromady. Data, stavy a akce drží
 // SportsGroundProvider, volání API je v calls/venues.js.
 
-function BackLink({ venueId, children }) {
-  return (
-    <Link to={`/arealy/${venueId}`} className="sports-ground-back">
-      <Icon name="arrow" size={18} />
-      {children}
-    </Link>
-  );
-}
-
 function SportsGroundDetailContent({ venueId }) {
-  const { sportsGround, venue, loading, error, isActive, remove } = useSportsGround();
+  const { sportsGround, loading, error, isActive, remove } = useSportsGround();
   const [showEdit, setShowEdit] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -75,7 +67,10 @@ function SportsGroundDetailContent({ venueId }) {
           </div>
         )}
 
-        <BackLink venueId={venueId}>Zpět na areál</BackLink>
+        <BackLink to={`/arealy/${venueId}`} className="sports-ground-back">
+          <Icon name="arrow" size={18} />
+          Zpět
+        </BackLink>
       </div>
     );
   }
@@ -84,7 +79,10 @@ function SportsGroundDetailContent({ venueId }) {
     <div className="sports-ground-page">
       <div className="sports-ground-content">
 
-        <BackLink venueId={venueId}>{venue?.name ?? 'Zpět na areál'}</BackLink>
+        <BackLink to={`/arealy/${venueId}`} className="sports-ground-back">
+          <Icon name="arrow" size={18} />
+          Zpět
+        </BackLink>
 
         {location.state?.pricingSaved && (
           <div className="sports-ground-saved" role="status">

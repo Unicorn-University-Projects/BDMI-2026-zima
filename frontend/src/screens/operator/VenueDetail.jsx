@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Icon from '../../components/Icons';
+import BackLink from '../../components/common/BackLink';
 import AddSportsGroundDialog from '../../components/sportsGround/AddSportsGroundDialog';
 import SportsGroundList from '../../components/sportsGround/SportsGroundList';
 import {
@@ -101,10 +102,10 @@ export default function VenueDetail() {
         <div className="venue-submit-error" role="alert">
           {error}
         </div>
-        <Link to="/arealy" className="back">
+        <BackLink to="/arealy" className="back">
           <Icon name="arrow" size={17} />
-          Zpět na moje areály
-        </Link>
+          Zpět
+        </BackLink>
       </div>
     );
   }
@@ -114,10 +115,10 @@ export default function VenueDetail() {
       <div className="venue-detail-page">
         <h1>Areál nebyl nalezen</h1>
 
-        <Link to="/arealy" className="back">
+        <BackLink to="/arealy" className="back">
           <Icon name="arrow" size={17} />
-          Zpět na moje areály
-        </Link>
+          Zpět
+        </BackLink>
       </div>
     );
   }
@@ -131,10 +132,10 @@ export default function VenueDetail() {
 
   return (
     <div className="venue-detail-page">
-      <Link to="/arealy" className="venue-detail-back">
+      <BackLink to="/arealy" className="venue-detail-back">
         <Icon name="arrow" size={16} />
-        Moje areály
-      </Link>
+        Zpět
+      </BackLink>
 
       <div className="venue-detail-header">
         <div className="venue-detail-heading">
