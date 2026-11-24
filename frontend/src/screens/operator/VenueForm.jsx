@@ -243,31 +243,6 @@ export default function VenueForm() {
         </p>
       </header>
 
-      {/* KROKY */}
-
-      <div className="venue-form-steps">
-
-        <div className="venue-form-step active">
-          <span className="step-number">1</span>
-          <span>Areál</span>
-        </div>
-
-        <span className="venue-step-line" />
-
-        <div className="venue-form-step">
-          <span className="step-number">2</span>
-          <span>Sportoviště</span>
-        </div>
-
-        <span className="venue-step-line" />
-
-        <div className="venue-form-step">
-          <span className="step-number">3</span>
-          <span>Otevírací doba a ceník</span>
-        </div>
-
-      </div>
-
       {/* FORMULÁŘ */}
 
       <form

@@ -748,63 +748,6 @@ button {
 }
 
 /* ==========================================
-   15. KROKY FORMULÁŘE
-========================================== */
-
-.venue-steps,
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-
-  margin-bottom: 28px;
-}
-
-.venue-step,
-.step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  color: #a49caf;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-step span,
-.step b {
-  display: grid;
-  place-items: center;
-
-  width: 34px;
-  height: 34px;
-
-  border-radius: 50%;
-
-  background: #ebe7f0;
-  color: #928a9f;
-}
-
-.venue-step.active,
-.step.current {
-  color: #7447eb;
-}
-
-.venue-step.active span,
-.step.current b {
-  background: #7447eb;
-  color: #ffffff;
-}
-
-.venue-step-line,
-.step-line {
-  width: 65px;
-  height: 2px;
-  background: #e2dce9;
-}
-
-/* ==========================================
    16. KARTA FORMULÁŘE
 ========================================== */
 
@@ -1306,21 +1249,6 @@ textarea::placeholder {
     padding: 23px 18px;
   }
 
-  .venue-steps,
-  .steps {
-    gap: 9px;
-  }
-
-  .venue-step,
-  .step {
-    gap: 6px;
-    font-size: 11px;
-  }
-
-  .venue-step-line,
-  .step-line {
-    width: 25px;
-  }
 }
 
 /* ==========================================
@@ -1640,10 +1568,6 @@ textarea::placeholder {
   color: #1d1735;
 }
 
-.venue-form-page .steps {
-  margin-bottom: 28px;
-}
-
 .venue-form-page .form-card {
   width: 100%;
   padding: 35px;
@@ -1737,64 +1661,6 @@ textarea::placeholder {
   color: #817a96;
   font-size: 14px;
   line-height: 1.6;
-}
-
-/* ==========================================
-   TŘI KROKY
-========================================== */
-
-.venue-form-steps {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-
-  margin-bottom: 32px;
-}
-
-.venue-form-step {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-
-  flex-shrink: 0;
-
-  color: #938da5;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-form-step .step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 29px;
-  height: 29px;
-
-  border-radius: 50%;
-
-  background: #e9e6ef;
-  color: #938da5;
-
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.venue-form-step.active {
-  color: #1d1735;
-}
-
-.venue-form-step.active .step-number {
-  background: #7445eb;
-  color: #ffffff;
-}
-
-.venue-step-line {
-  flex: 1;
-  min-width: 15px;
-  height: 1px;
-  background: #ddd7e9;
 }
 
 /* ==========================================
@@ -2078,26 +1944,6 @@ textarea::placeholder {
     border-radius: 18px;
   }
 
-  .venue-form-steps {
-    gap: 5px;
-  }
-
-  .venue-form-step {
-    gap: 4px;
-    font-size: 10px;
-    white-space: normal;
-  }
-
-  .venue-form-step .step-number {
-    width: 25px;
-    height: 25px;
-    flex-shrink: 0;
-  }
-
-  .venue-step-line {
-    min-width: 8px;
-  }
-
   .venue-fields-row {
     grid-template-columns: 1fr;
     gap: 0;
@@ -2157,61 +2003,6 @@ textarea::placeholder {
   color: #77718b;
   font-size: 13px;
   line-height: 1.5;
-}
-
-/* ==========================================
-   TŘI KROKY - NEPŘES CELOU ŠÍŘKU
-========================================== */
-
-.venue-form-steps {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 11px;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 0 26px;
-}
-
-.venue-form-step {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: #858097;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-form-step .step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #e9e6ef;
-  color: #858097;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.venue-form-step.active {
-  color: #1c1735;
-}
-
-.venue-form-step.active .step-number {
-  background: #7444eb;
-  color: white;
-}
-
-.venue-step-line {
-  width: 36px;
-  height: 1px;
-  flex: 0 0 36px;
-  background: #ddd7e8;
 }
 
 /* ==========================================
@@ -2456,25 +2247,6 @@ textarea::placeholder {
     padding: 25px 20px;
   }
 
-  .venue-form-steps {
-    gap: 6px;
-  }
-
-  .venue-form-step {
-    gap: 5px;
-    font-size: 10px;
-    white-space: normal;
-  }
-
-  .venue-form-step .step-number {
-    width: 23px;
-    height: 23px;
-  }
-
-  .venue-step-line {
-    width: 15px;
-    flex-basis: 15px;
-  }
 }
 
 @media (max-width: 550px) {
