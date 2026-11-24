@@ -23,18 +23,14 @@
   --color-bg-surface: #ffffff;
   --color-bg-muted: #e4e0f0;
   --color-border-default: #e4e0f0;
+  --color-border-strong: #d3d0e2;
+  --color-border-focus: #8966ff;
   --color-border-input: #77728a;
 
-  /* Klikatelné karty (areály, sportoviště) – jemný fialový rámeček,
-     na hover se zesílí. Držet na jednom místě, aby seznamy vypadaly stejně. */
-  --color-border-card: #e4dcf6;
-  --color-border-card-hover: #c9b7f8;
-  --shadow-card-hover: 0 5px 18px #7447eb10;
-
-  /* Nevratné akce (odstranit areál, odstranit sportoviště) */
-  --color-danger-border: #e8b0b6;
-  --color-danger-text: #d34857;
-  --color-danger-bg-hover: #fff0f2;
+  /* Klikatelné karty (areály, sportoviště). Hodnoty podle komponenty
+     Sports ground card v návrhu – na hover se rámeček zesílí a karta
+     se nadzvedne stínem. */
+  --shadow-card-hover: 0 2px 4px rgba(23, 20, 41, 0.04), 0 12px 32px rgba(23, 20, 41, 0.1);
 
   /* Akce */
   --color-action-primary: #7447eb;
@@ -51,6 +47,8 @@
   --color-status-warning: #b27c07;
   --color-status-warning-subtle: #fef5e8;
   --color-status-danger: #c9263d;
+  --color-status-danger-hover: #a41f31;
+  --color-status-danger-subtle: #fef4f4;
 
   /* Hodinové sloty */
   --color-slot-available-bg: #e2fef9;
@@ -510,7 +508,7 @@ button {
 
   background: #ffffff;
 
-  border: 1px solid var(--color-border-card);
+  border: 1px solid var(--color-border-default);
   border-radius: 25px;
 
   transition:
@@ -519,7 +517,7 @@ button {
 }
 
 .venues-list-card:hover {
-  border-color: var(--color-border-card-hover);
+  border-color: var(--color-border-strong);
   box-shadow: var(--shadow-card-hover);
 }
 
@@ -1424,18 +1422,22 @@ textarea::placeholder {
   cursor: pointer;
 }
 
+/* Tloušťka 1.5px podle komponenty Button/Outline v návrhu, aby obě
+   tlačítka vedle sebe seděla. */
 .venue-detail-edit {
-  border: 2px solid #7447eb;
-  color: #7447eb;
+  border: 1.5px solid var(--color-action-outline);
+  color: var(--color-action-on-outline);
 }
 
 .venue-detail-delete {
-  border: 2px solid var(--color-danger-border);
-  color: var(--color-danger-text);
+  border: 1.5px solid var(--color-status-danger);
+  color: var(--color-status-danger);
 }
 
 .venue-detail-delete:hover {
-  background: var(--color-danger-bg-hover);
+  border-color: var(--color-status-danger-hover);
+  background: var(--color-status-danger-subtle);
+  color: var(--color-status-danger-hover);
 }
 
 .venue-detail-delete:disabled {
@@ -1546,7 +1548,7 @@ textarea::placeholder {
   min-height: 320px;
   padding: 45px 25px;
 
-  border: 1px dashed var(--color-border-card);
+  border: 1px dashed var(--color-border-default);
   border-radius: 22px;
 
   background: #ffffff;
@@ -2606,12 +2608,14 @@ textarea::placeholder {
 /* Smazat */
 
 .venue-action-btn.delete {
-  border: 1px solid var(--color-danger-border);
-  color: var(--color-danger-text);
+  border: 1px solid var(--color-status-danger);
+  color: var(--color-status-danger);
 }
 
 .venue-action-btn.delete:hover {
-  background: var(--color-danger-bg-hover);
+  border-color: var(--color-status-danger-hover);
+  background: var(--color-status-danger-subtle);
+  color: var(--color-status-danger-hover);
 }
 
 /* Spravovat sportoviště */
@@ -2778,14 +2782,16 @@ textarea::placeholder {
 }
 
 .sports-ground-btn-danger {
-  border: 1.5px solid var(--color-danger-border);
+  border: 1.5px solid var(--color-status-danger);
   background: var(--color-bg-surface);
-  color: var(--color-danger-text);
+  color: var(--color-status-danger);
   cursor: pointer;
 }
 
 .sports-ground-btn-danger:hover {
-  background: var(--color-danger-bg-hover);
+  border-color: var(--color-status-danger-hover);
+  background: var(--color-status-danger-subtle);
+  color: var(--color-status-danger-hover);
 }
 
 .sports-ground-btn-outline:disabled,
@@ -3489,7 +3495,7 @@ textarea::placeholder {
   align-items: center;
   gap: var(--spacing-16);
   padding: var(--spacing-16) var(--spacing-20);
-  border: 1px solid var(--color-border-card);
+  border: 1px solid var(--color-border-default);
   border-radius: var(--radius-card);
   background: var(--color-bg-surface);
 
@@ -3501,14 +3507,20 @@ textarea::placeholder {
 /* Stejná odezva jako u karet areálů (.venues-list-card). Hover drží
    položka, ne odkaz – zvýrazní se celá karta, i když myš míří na tlačítko. */
 .sg-list-item:hover {
-  border-color: var(--color-border-card-hover);
+  border-color: var(--color-border-strong);
   box-shadow: var(--shadow-card-hover);
 }
 
-/* Karta je klikatelná přes roztažený odkaz, takže ohraničení při
-   pohybu klávesnicí patří celé kartě, ne jen textu názvu. */
+/* Karta je klikatelná přes roztažený odkaz, takže obrys při pohybu
+   klávesnicí patří celé kartě, ne jen textu názvu. Návrh má u stavu
+   Focus prstenec, ne jen jiný rámeček. */
 .sg-list-item:focus-within {
-  border-color: var(--color-border-card-hover);
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.sg-list-name:focus-visible {
+  outline: none;
 }
 
 .sg-list-info {
