@@ -106,7 +106,11 @@ before(async () => {
     GATEWAY_INTERNAL_SECRET: gatewaySecret,
     VENUE_MEMORY_DB: "1",
   });
-  startService("booking", ports.booking);
+  startService("booking", ports.booking, {
+    GATEWAY_INTERNAL_SECRET: gatewaySecret,
+    BOOKING_MEMORY_DB: "1",
+    VENUE_URL: `http://127.0.0.1:${ports.venue}`,
+  });
   startService("review", ports.review);
   startService("audit", ports.audit, { SYSTEM_KEY: systemKey });
 
@@ -597,13 +601,14 @@ test("sports ground starts inactive, stays hidden from athletes until hours and 
   assert.equal(athleteGetAfter.body.sportsGround.status, "active");
 });
 
-test("gateway and venue fail fast without GATEWAY_INTERNAL_SECRET", async () => {
-  for (const [name, directory] of [
-    ["venue", resolve(repoRoot, "services/venue")],
-    ["gateway", resolve(repoRoot, "gateway")],
+test("gateway, venue and booking fail fast without GATEWAY_INTERNAL_SECRET", async () => {
+  for (const [name, directory, extraEnv] of [
+    ["venue", resolve(repoRoot, "services/venue"), { VENUE_MEMORY_DB: "1" }],
+    ["booking", resolve(repoRoot, "services/booking"), { BOOKING_MEMORY_DB: "1", VENUE_URL: "http://127.0.0.1:9" }],
+    ["gateway", resolve(repoRoot, "gateway"), {}],
   ]) {
     const port = await availablePort();
-    const env = { ...process.env, PORT: String(port), VENUE_MEMORY_DB: "1" };
+    const env = { ...process.env, PORT: String(port), ...extraEnv };
     delete env.GATEWAY_INTERNAL_SECRET;
     const child = spawn(process.execPath, ["src/server.js"], {
       cwd: directory,
@@ -991,4 +996,399 @@ test("opening hours and price list reject invalid peak, prices, and accept 24:00
   assert.equal(untilMidnight.body.sportsGround.status, "active");
   assert.equal(untilMidnight.body.sportsGround.openingHours[0].openTo, "24:00");
   assert.equal(untilMidnight.body.sportsGround.priceList.peakTo, "24:00");
+});
+
+function utcDayOfWeek(dateStr) {
+  const jsDay = new Date(`${dateStr}T00:00:00.000Z`).getUTCDay();
+  return jsDay === 0 ? 7 : jsDay;
+}
+
+function nextUtcDateForDayOfWeek(dayOfWeek, minHoursAhead = 36) {
+  const start = new Date(Date.now() + minHoursAhead * 3600_000);
+  const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+  for (let i = 0; i < 8; i += 1) {
+    if (utcDayOfWeek(cursor.toISOString().slice(0, 10)) === dayOfWeek) {
+      return cursor.toISOString().slice(0, 10);
+    }
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  throw new Error(`No date found for dayOfWeek=${dayOfWeek}`);
+}
+
+async function createActiveGroundForBooking({
+  operatorId = "booking-operator",
+  name,
+  openFrom = "08:00",
+  openTo = "22:00",
+  closedDays = [],
+  priceList = { basePrice: 400, hasPeak: false },
+}) {
+  const operatorHeaders = {
+    Authorization: `Bearer ${createToken("operator", operatorId)}`,
+    "Content-Type": "application/json",
+  };
+  const venue = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({
+      name: `Areál ${name}`,
+      street: "Sportovní",
+      streetNumber: "1",
+      city: "Praha",
+      emailAddress: `${name.replace(/\s+/g, "-").toLowerCase()}@example.com`,
+      phoneNumber: "+420777000222",
+    }),
+  }));
+  assert.equal(venue.status, 201, JSON.stringify(venue.body));
+
+  const created = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({
+      venueId: venue.body.venue.id,
+      sportCode: "tennis",
+      name,
+      surface: "antuka",
+      coverType: "outdoor",
+    }),
+  }));
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+
+  const activated = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers: operatorHeaders,
+      body: JSON.stringify({
+        sportsGroundId: created.body.sportsGround.id,
+        openingHours: weekOpeningHours({ openFrom, openTo, closedDays }),
+        priceList,
+      }),
+    },
+  ));
+  assert.equal(activated.status, 200, JSON.stringify(activated.body));
+  return {
+    operatorHeaders,
+    venueId: venue.body.venue.id,
+    sportsGroundId: created.body.sportsGround.id,
+  };
+}
+
+test("reservation/create stores base and peak price and rejects unavailable slots", async () => {
+  const athleteId = "booking-athlete-1";
+  const athleteHeaders = {
+    Authorization: `Bearer ${createToken("athlete", athleteId)}`,
+    "Content-Type": "application/json",
+  };
+  const { operatorHeaders, sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace Peak Kurt",
+    openFrom: "08:00",
+    openTo: "22:00",
+    priceList: {
+      basePrice: 400,
+      hasPeak: true,
+      peakPrice: 650,
+      peakDays: [1, 2, 3, 4, 5],
+      peakFrom: "16:00",
+      peakTo: "20:00",
+    },
+  });
+
+  const baseDate = nextUtcDateForDayOfWeek(1);
+  const peakDate = nextUtcDateForDayOfWeek(2);
+
+  const baseReservation = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: baseDate,
+      startTime: "10:00",
+      note: "základní cena",
+    }),
+  }));
+  assert.equal(baseReservation.status, 201, JSON.stringify(baseReservation.body));
+  assert.equal(baseReservation.body.reservation.state, "created");
+  assert.equal(baseReservation.body.reservation.athleteId, athleteId);
+  assert.equal(baseReservation.body.reservation.price, 400);
+  assert.equal(baseReservation.body.reservation.isPeak, false);
+  assert.equal(baseReservation.body.reservation.endTime, "11:00");
+  assert.equal(baseReservation.body.reservation.rejectionReason, null);
+
+  const peakReservation = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: peakDate,
+      startTime: "17:00",
+    }),
+  }));
+  assert.equal(peakReservation.status, 201, JSON.stringify(peakReservation.body));
+  assert.equal(peakReservation.body.reservation.price, 650);
+  assert.equal(peakReservation.body.reservation.isPeak, true);
+  assert.equal(peakReservation.body.reservation.endTime, "18:00");
+
+  const updatedPriceList = await readJson(await fetch(
+    serviceUrl("gateway", "/venue/sportsGround/setOpeningHoursAndPriceList"),
+    {
+      method: "POST",
+      headers: operatorHeaders,
+      body: JSON.stringify({
+        sportsGroundId,
+        openingHours: weekOpeningHours({ openFrom: "08:00", openTo: "22:00" }),
+        priceList: {
+          basePrice: 500,
+          hasPeak: true,
+          peakPrice: 900,
+          peakDays: [1, 2, 3, 4, 5],
+          peakFrom: "16:00",
+          peakTo: "20:00",
+        },
+      }),
+    },
+  ));
+  assert.equal(updatedPriceList.status, 200, JSON.stringify(updatedPriceList.body));
+
+  const laterPeakDate = nextUtcDateForDayOfWeek(3);
+  const afterChange = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: laterPeakDate,
+      startTime: "18:00",
+    }),
+  }));
+  assert.equal(afterChange.status, 201, JSON.stringify(afterChange.body));
+  assert.equal(afterChange.body.reservation.price, 900);
+  assert.equal(peakReservation.body.reservation.price, 650);
+
+  const duplicate = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${createToken("athlete", "booking-athlete-2")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sportsGroundId,
+      date: peakDate,
+      startTime: "17:00",
+    }),
+  }));
+  assert.equal(duplicate.status, 409);
+  assert.equal(duplicate.body.code, "reservation/create/slotUnavailable");
+  assert.equal(duplicate.body.message, "Tento termín už není volný.");
+});
+
+test("reservation/create rejects unauthorized roles and unavailable sports grounds", async () => {
+  const { sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace Auth Kurt",
+    priceList: { basePrice: 350, hasPeak: false },
+  });
+  const futureDate = nextUtcDateForDayOfWeek(3);
+
+  const unauthenticated = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sportsGroundId,
+      date: futureDate,
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(unauthenticated.status, 401);
+  assert.equal(unauthenticated.body.code, "user/unauthenticated");
+
+  const operatorForbidden = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${createToken("operator", "booking-operator-forbidden")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sportsGroundId,
+      date: futureDate,
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(operatorForbidden.status, 403);
+  assert.equal(operatorForbidden.body.code, "user/forbidden");
+
+  const missingGround = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${createToken("athlete", "booking-athlete-missing")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sportsGroundId: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+      date: futureDate,
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(missingGround.status, 404);
+  assert.equal(missingGround.body.code, "reservation/create/sportsGroundNotAvailable");
+
+  const operatorHeaders = {
+    Authorization: `Bearer ${createToken("operator", "booking-operator-inactive")}`,
+    "Content-Type": "application/json",
+  };
+  const venue = await readJson(await fetch(serviceUrl("gateway", "/venue/venue/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({
+      name: "Neaktivní Areál",
+      street: "Sportovní",
+      streetNumber: "9",
+      city: "Brno",
+      emailAddress: "inactive-booking@example.com",
+      phoneNumber: "+420777000333",
+    }),
+  }));
+  assert.equal(venue.status, 201, JSON.stringify(venue.body));
+  const inactive = await readJson(await fetch(serviceUrl("gateway", "/venue/sportsGround/create"), {
+    method: "POST",
+    headers: operatorHeaders,
+    body: JSON.stringify({
+      venueId: venue.body.venue.id,
+      sportCode: "tennis",
+      name: "Neaktivní kurt",
+      surface: "antuka",
+      coverType: "outdoor",
+    }),
+  }));
+  assert.equal(inactive.status, 201, JSON.stringify(inactive.body));
+  assert.equal(inactive.body.sportsGround.status, "inactive");
+
+  const inactiveReject = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${createToken("athlete", "booking-athlete-inactive")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sportsGroundId: inactive.body.sportsGround.id,
+      date: futureDate,
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(inactiveReject.status, 404);
+  assert.equal(inactiveReject.body.code, "reservation/create/sportsGroundNotAvailable");
+});
+
+test("reservation/create rejects past slots, closed days and hours outside opening time", async () => {
+  const athleteHeaders = {
+    Authorization: `Bearer ${createToken("athlete", "booking-athlete-hours")}`,
+    "Content-Type": "application/json",
+  };
+  const { sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace Hodiny Kurt",
+    openFrom: "08:00",
+    openTo: "24:00",
+    closedDays: [7],
+    priceList: { basePrice: 420, hasPeak: false },
+  });
+
+  const past = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: "2020-01-06",
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(past.status, 400);
+  assert.equal(past.body.code, "reservation/create/slotInPast");
+
+  const sunday = nextUtcDateForDayOfWeek(7);
+  const closedDay = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: sunday,
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(closedDay.status, 400);
+  assert.equal(closedDay.body.code, "reservation/create/outsideOpeningHours");
+
+  const beforeOpen = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: nextUtcDateForDayOfWeek(1),
+      startTime: "07:00",
+    }),
+  }));
+  assert.equal(beforeOpen.status, 400);
+  assert.equal(beforeOpen.body.code, "reservation/create/outsideOpeningHours");
+
+  const untilMidnight = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: nextUtcDateForDayOfWeek(2),
+      startTime: "23:00",
+    }),
+  }));
+  assert.equal(untilMidnight.status, 201, JSON.stringify(untilMidnight.body));
+  assert.equal(untilMidnight.body.reservation.endTime, "24:00");
+  assert.equal(untilMidnight.body.reservation.price, 420);
+});
+
+test("reservation/create rejects invalid dtoIn values", async () => {
+  const athleteHeaders = {
+    Authorization: `Bearer ${createToken("athlete", "booking-athlete-dto")}`,
+    "Content-Type": "application/json",
+  };
+  const { sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace DTO Kurt",
+    priceList: { basePrice: 300, hasPeak: false },
+  });
+  const futureDate = nextUtcDateForDayOfWeek(4);
+
+  const halfHour = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: futureDate,
+      startTime: "10:30",
+    }),
+  }));
+  assert.equal(halfHour.status, 400);
+  assert.equal(halfHour.body.code, "reservation/invalidDtoIn");
+  assert.ok(halfHour.body.params.invalidFields.includes("startTime"));
+
+  const invalidDate = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: "2026-02-30",
+      startTime: "10:00",
+    }),
+  }));
+  assert.equal(invalidDate.status, 400);
+  assert.equal(invalidDate.body.code, "reservation/invalidDtoIn");
+  assert.ok(invalidDate.body.params.invalidFields.includes("date"));
+
+  const longNote = await readJson(await fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: athleteHeaders,
+    body: JSON.stringify({
+      sportsGroundId,
+      date: futureDate,
+      startTime: "11:00",
+      note: "x".repeat(201),
+    }),
+  }));
+  assert.equal(longNote.status, 400);
+  assert.equal(longNote.body.code, "reservation/invalidDtoIn");
+  assert.ok(longNote.body.params.invalidFields.includes("note"));
 });
