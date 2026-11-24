@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Icon from '../Icons';
 import SportsGroundForm from './SportsGroundForm';
 import { useSportsGround } from '../../providers/SportsGroundProvider';
 
@@ -41,7 +42,7 @@ export default function EditSportsGroundDialog({ onClose }) {
             onClick={onClose}
             aria-label="Zavřít"
           >
-            ×
+            <Icon name="close" size={24} />
           </button>
         </div>
 

@@ -345,6 +345,28 @@ phone: (
         <circle cx="8.5" cy="9.5" r="1.5" />
         <path d="M21 16l-5-5-6 6-2-2-5 5" />
       </>
+    ),
+
+    // Zavření dialogu
+    close: (
+      <path d="M6 6l12 12M18 6L6 18" />
+    ),
+
+    // Čeká na nastavení – hodiny v odznaku i v tlačítku
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </>
+    ),
+
+    // Informační blok nad seznamem sportovišť
+    info: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v5" />
+        <circle cx="12" cy="7.75" r="1" fill="currentColor" stroke="none" />
+      </>
     )
 
   };

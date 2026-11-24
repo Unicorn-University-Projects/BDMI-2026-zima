@@ -1549,57 +1549,6 @@ textarea::placeholder {
   line-height: 1.6;
 }
 
-.venue-sport-form {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 22px;
-  padding: 20px;
-  border: 1px solid #e4dcf6;
-  border-radius: 18px;
-  background: #ffffff;
-}
-
-.venue-sports-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-
-.venue-sports-item {
-  padding: 16px 18px;
-  border: 1px solid #e4dcf6;
-  border-radius: 16px;
-  background: #ffffff;
-}
-
-.venue-sports-item strong {
-  display: block;
-  margin-bottom: 4px;
-  color: #1d1735;
-  font-size: 15px;
-}
-
-.venue-sports-item span {
-  color: #77708d;
-  font-size: 13px;
-}
-
-.venue-sports-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.venue-sports-item p {
-  margin: 10px 0 0;
-  color: #5b5470;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
 /* ==========================================
    RESPONZIVNÍ ZOBRAZENÍ
 ========================================== */
@@ -2655,15 +2604,6 @@ textarea::placeholder {
    24. DETAIL SPORTOVIŠTĚ (BUC-08, obrazovky 5.1 a 5.3)
 ========================================== */
 
-/* Celá položka v seznamu sportovišť (detail areálu) vede na jeho detail */
-.venue-sports-link {
-  display: block;
-}
-
-.venue-sports-item:hover {
-  border-color: var(--color-action-primary);
-}
-
 .sports-ground-page {
   position: relative;
   display: flex;
@@ -3114,12 +3054,15 @@ textarea::placeholder {
 
 .sports-ground-modal {
   width: 100%;
-  max-width: 560px;
+  max-width: 544px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: var(--spacing-24);
-  border-radius: var(--radius-card);
+  padding: var(--spacing-32);
+  border-radius: var(--radius-sheet);
   background: var(--color-bg-surface);
+  box-shadow:
+    0 24px 48px rgba(23, 20, 41, 0.16),
+    0 4px 8px rgba(23, 20, 41, 0.06);
 }
 
 .sports-ground-modal-header {
@@ -3127,14 +3070,14 @@ textarea::placeholder {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-16);
-  margin-bottom: var(--spacing-16);
+  margin-bottom: var(--spacing-24);
 }
 
 .sports-ground-modal-header h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 26px;
   color: var(--color-text-primary);
 }
 
@@ -3145,17 +3088,430 @@ textarea::placeholder {
   color: var(--color-text-secondary);
 }
 
+/* Dotyková plocha 44×44 podle popisu komponenty Icon button v návrhu */
 .sports-ground-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: none;
+  border-radius: var(--radius-full);
   background: none;
-  padding: 0 var(--spacing-4);
-  font-size: 26px;
-  line-height: 1;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
+  cursor: pointer;
 }
 
 .sports-ground-modal-close:hover {
+  background: var(--color-action-subtle);
+  color: var(--color-action-on-subtle);
+}
+
+/* ==========================================
+   FORMULÁŘ A SEZNAM SPORTOVIŠŤ (4.3–4.5)
+==========================================
+   Rozměry, barvy i mezery odpovídají návrhu – pole 48 px, zaoblení 16 px,
+   tlačítka 44 px. Hodnoty se berou z tokenů v hlavičce souboru. */
+
+.sg-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+
+.sg-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
+}
+
+.sg-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-field-gap);
+  min-width: 0;
+}
+
+.sg-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
   color: var(--color-text-primary);
+}
+
+.sg-required {
+  color: var(--color-action-primary);
+}
+
+/* Název a povrch stojí v návrhu vedle sebe */
+.sg-row {
+  display: flex;
+  gap: var(--spacing-16);
+}
+
+.sg-row > .sg-field {
+  flex: 1 0 0;
+}
+
+/* ---------- Textové pole ---------- */
+
+.sg-control {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.sg-control::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.sg-control:focus {
+  outline: none;
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 3px rgba(116, 71, 235, 0.12);
+}
+
+.sg-control.invalid {
+  border-color: var(--color-status-danger);
+}
+
+.sg-hint {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.sg-error {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-status-danger);
+}
+
+/* ---------- Rozbalovací pole ---------- */
+
+.sg-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+}
+
+.sg-select:focus-within {
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 3px rgba(116, 71, 235, 0.12);
+}
+
+.sg-select.invalid {
+  border-color: var(--color-status-danger);
+}
+
+/* Vlastní šipka z návrhu, nativní se proto skrývá */
+.sg-select select {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 15px;
+  line-height: 22px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.sg-select-icon,
+.sg-select-chevron {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.sg-select-icon {
+  color: var(--color-action-primary);
+}
+
+.sg-select-chevron {
+  color: var(--color-text-secondary);
+}
+
+/* ---------- Přepínač krytí ---------- */
+
+.sg-segmented {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  height: 48px;
+  padding: var(--spacing-4);
+  border-radius: var(--radius-button);
+  background: #f1eefa;
+}
+
+.sg-segment {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--spacing-12);
+  border: 0;
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.sg-segment.selected {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  line-height: 20px;
+  box-shadow: 0 1px 1.5px rgba(15, 10, 33, 0.1);
+}
+
+/* ---------- Chyba uložení ---------- */
+
+.sg-submit-error {
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-control);
+  background: #fdecef;
+  color: var(--color-status-danger);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* ---------- Tlačítka dialogu ---------- */
+
+.sg-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+}
+
+.sg-actions-right {
+  display: flex;
+  gap: var(--spacing-12);
+}
+
+.sg-btn-ghost,
+.sg-btn-outline,
+.sg-btn-primary,
+.sg-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border: 0;
+  border-radius: var(--radius-button);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sg-btn-ghost {
+  background: none;
+  color: var(--color-action-ghost-text);
+}
+
+.sg-btn-ghost:hover {
+  background: var(--color-action-subtle);
+}
+
+.sg-btn-outline {
+  border: 1.5px solid var(--color-action-outline);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+}
+
+.sg-btn-outline:hover {
+  background: var(--color-action-subtle);
+}
+
+.sg-btn-primary {
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.sg-btn-primary:hover {
+  background: #6032d3;
+}
+
+.sg-btn-outline:disabled,
+.sg-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sg-btn-secondary {
+  flex-shrink: 0;
+  background: #ad94ff;
+  color: var(--color-action-on-primary);
+}
+
+.sg-btn-secondary:hover {
+  background: #9a7cff;
+}
+
+/* ---------- Hláška nad seznamem ---------- */
+
+.sg-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  width: 100%;
+  margin-bottom: 35px;
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-control);
+  background: var(--color-action-subtle);
+}
+
+.sg-alert > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-action-primary);
+}
+
+.sg-alert strong {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  color: var(--color-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.sg-alert p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* ---------- Seznam sportovišť ---------- */
+
+.sg-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+  padding: var(--spacing-16) var(--spacing-20);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+}
+
+.sg-list-info {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+.sg-list-top {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.sg-list-name {
+  color: var(--color-text-primary);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  text-decoration: none;
+}
+
+.sg-list-name:hover {
+  text-decoration: underline;
+}
+
+.sg-setup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  flex-shrink: 0;
+  padding: var(--spacing-2) var(--spacing-8);
+  border-radius: var(--radius-full);
+  background: var(--color-status-warning-subtle);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.sg-setup-badge > svg {
+  color: var(--color-status-warning);
+}
+
+.sg-list-meta {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* ---------- Mobil ---------- */
+
+@media (max-width: 700px) {
+
+  .sg-row {
+    flex-direction: column;
+    gap: var(--spacing-20);
+  }
+
+  .sg-list-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sg-btn-secondary {
+    width: 100%;
+  }
+
+  .sg-actions {
+    flex-wrap: wrap;
+  }
+
+  .sg-actions-right {
+    flex: 1 0 0;
+    justify-content: flex-end;
+  }
+
 }
 
 .sports-ground-saved{background:#211936;color:white;border-radius:14px;padding:14px 18px;margin-bottom:18px;font-size:13px}
