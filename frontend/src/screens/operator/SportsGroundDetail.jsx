@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Icon from '../../components/Icons';
 import EditSportsGroundDialog from '../../components/sportsGround/EditSportsGroundDialog';
@@ -28,12 +28,33 @@ function BackLink({ venueId, children }) {
 }
 
 function SportsGroundDetailContent({ venueId }) {
-  const { sportsGround, venue, loading, error, isActive } = useSportsGround();
+  const { sportsGround, venue, loading, error, isActive, remove } = useSportsGround();
   const [showEdit, setShowEdit] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Obrazovka nastavení (5.2) se po uložení vrací sem a přes stav cesty
   // si vyžádá potvrzení.
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Smazané sportoviště už nelze zobrazit, proto se po úspěchu odchází
+  // na areál. Chybu hlásí backend – třeba když na sportoviště odkazují
+  // rezervace a smazat ho nejde.
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      `Opravdu chcete odstranit sportoviště "${sportsGround.name}"?`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      await remove();
+      navigate(`/arealy/${venueId}`, { replace: true });
+    } catch (e) {
+      window.alert(e.message || 'Sportoviště se nepodařilo odstranit.');
+      setDeleting(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -71,7 +92,11 @@ function SportsGroundDetailContent({ venueId }) {
           </div>
         )}
 
-        <SportsGroundHeader onEdit={() => setShowEdit(true)} />
+        <SportsGroundHeader
+          onEdit={() => setShowEdit(true)}
+          onDelete={handleDelete}
+          deleting={deleting}
+        />
 
         {showEdit && <EditSportsGroundDialog onClose={() => setShowEdit(false)} />}
 

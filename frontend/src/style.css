@@ -25,6 +25,17 @@
   --color-border-default: #e4e0f0;
   --color-border-input: #77728a;
 
+  /* Klikatelné karty (areály, sportoviště) – jemný fialový rámeček,
+     na hover se zesílí. Držet na jednom místě, aby seznamy vypadaly stejně. */
+  --color-border-card: #e4dcf6;
+  --color-border-card-hover: #c9b7f8;
+  --shadow-card-hover: 0 5px 18px #7447eb10;
+
+  /* Nevratné akce (odstranit areál, odstranit sportoviště) */
+  --color-danger-border: #e8b0b6;
+  --color-danger-text: #d34857;
+  --color-danger-bg-hover: #fff0f2;
+
   /* Akce */
   --color-action-primary: #7447eb;
   --color-action-on-primary: #ffffff;
@@ -499,7 +510,7 @@ button {
 
   background: #ffffff;
 
-  border: 1px solid #e4dcf6;
+  border: 1px solid var(--color-border-card);
   border-radius: 25px;
 
   transition:
@@ -508,8 +519,8 @@ button {
 }
 
 .venues-list-card:hover {
-  border-color: #c9b7f8;
-  box-shadow: 0 5px 18px #7447eb10;
+  border-color: var(--color-border-card-hover);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* Ikona areálu */
@@ -1383,9 +1394,17 @@ textarea::placeholder {
   flex-shrink: 0;
 }
 
-/* Upravit areál */
+/* Upravit a odstranit areál – stejný tvar, liší se jen barvou */
 
-.venue-detail-edit {
+.venue-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.venue-detail-edit,
+.venue-detail-delete {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1395,17 +1414,35 @@ textarea::placeholder {
 
   padding: 10px 20px;
 
-  border: 2px solid #7447eb;
   border-radius: 30px;
 
   background: #ffffff;
-  color: #7447eb;
 
   font-size: 13px;
   font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.venue-detail-edit:disabled,
+.venue-detail-edit {
+  border: 2px solid #7447eb;
+  color: #7447eb;
+}
+
+.venue-detail-delete {
+  border: 2px solid var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+
+.venue-detail-delete:hover {
+  background: var(--color-danger-bg-hover);
+}
+
+.venue-detail-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .venue-add-sport:disabled {
   cursor: not-allowed;
 }
@@ -1509,7 +1546,7 @@ textarea::placeholder {
   min-height: 320px;
   padding: 45px 25px;
 
-  border: 1px dashed #e4dcf6;
+  border: 1px dashed var(--color-border-card);
   border-radius: 22px;
 
   background: #ffffff;
@@ -2569,12 +2606,12 @@ textarea::placeholder {
 /* Smazat */
 
 .venue-action-btn.delete {
-  border: 1px solid #e8b0b6;
-  color: #d34857;
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger-text);
 }
 
 .venue-action-btn.delete:hover {
-  background: #fff0f2;
+  background: var(--color-danger-bg-hover);
 }
 
 /* Spravovat sportoviště */
@@ -2699,7 +2736,8 @@ textarea::placeholder {
 
 .sports-ground-btn-outline,
 .sports-ground-btn-primary,
-.sports-ground-btn-ghost {
+.sports-ground-btn-ghost,
+.sports-ground-btn-danger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2711,6 +2749,14 @@ textarea::placeholder {
   font-weight: 600;
   line-height: 20px;
   white-space: nowrap;
+}
+
+/* Úprava a odstranění stojí v hlavičce vedle sebe. */
+.sports-ground-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  flex-shrink: 0;
 }
 
 .sports-ground-btn-outline {
@@ -2731,9 +2777,21 @@ textarea::placeholder {
   color: var(--color-action-ghost-text);
 }
 
+.sports-ground-btn-danger {
+  border: 1.5px solid var(--color-danger-border);
+  background: var(--color-bg-surface);
+  color: var(--color-danger-text);
+  cursor: pointer;
+}
+
+.sports-ground-btn-danger:hover {
+  background: var(--color-danger-bg-hover);
+}
+
 .sports-ground-btn-outline:disabled,
 .sports-ground-btn-primary:disabled,
-.sports-ground-btn-ghost:disabled {
+.sports-ground-btn-ghost:disabled,
+.sports-ground-btn-danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -3353,12 +3411,16 @@ textarea::placeholder {
   background: var(--color-action-subtle);
 }
 
-.sg-btn-primary {
+/* Tlačítko na kartě sportoviště nese stejnou barvu jako „Přidat
+   sportoviště“ a potvrzení v dialogu – světlejší odstín vypadal vypnutě. */
+.sg-btn-primary,
+.sg-btn-secondary {
   background: var(--color-action-primary);
   color: var(--color-action-on-primary);
 }
 
-.sg-btn-primary:hover {
+.sg-btn-primary:hover,
+.sg-btn-secondary:hover {
   background: #6032d3;
 }
 
@@ -3368,14 +3430,11 @@ textarea::placeholder {
   cursor: not-allowed;
 }
 
+/* Leží nad odkazem roztaženým přes celou kartu, jinak by ho karta překryla. */
 .sg-btn-secondary {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  background: #ad94ff;
-  color: var(--color-action-on-primary);
-}
-
-.sg-btn-secondary:hover {
-  background: #9a7cff;
 }
 
 /* ---------- Hláška nad seznamem ---------- */
@@ -3425,13 +3484,31 @@ textarea::placeholder {
 }
 
 .sg-list-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--spacing-16);
   padding: var(--spacing-16) var(--spacing-20);
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--color-border-card);
   border-radius: var(--radius-card);
   background: var(--color-bg-surface);
+
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+
+/* Stejná odezva jako u karet areálů (.venues-list-card). Hover drží
+   položka, ne odkaz – zvýrazní se celá karta, i když myš míří na tlačítko. */
+.sg-list-item:hover {
+  border-color: var(--color-border-card-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Karta je klikatelná přes roztažený odkaz, takže ohraničení při
+   pohybu klávesnicí patří celé kartě, ne jen textu názvu. */
+.sg-list-item:focus-within {
+  border-color: var(--color-border-card-hover);
 }
 
 .sg-list-info {
@@ -3456,8 +3533,13 @@ textarea::placeholder {
   text-decoration: none;
 }
 
-.sg-list-name:hover {
-  text-decoration: underline;
+/* Klik kamkoli do karty vede na detail sportoviště. Odkaz se roztáhne
+   přes celou kartu, tlačítko nastavení pak leží nad ním (z-index). */
+.sg-list-name::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
 }
 
 .sg-setup-badge {

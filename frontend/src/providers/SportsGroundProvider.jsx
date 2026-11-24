@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
+  deleteSportsGround,
   getSportsGround,
   getVenue,
   updateSportsGround
@@ -68,6 +69,12 @@ export default function SportsGroundProvider({ venueId, sportsGroundId, children
     return updated;
   }
 
+  // Po smazání už není co zobrazovat, takže se stav nepřepisuje – obrazovka
+  // na úspěch reaguje odchodem zpět na areál.
+  async function remove() {
+    await deleteSportsGround(sportsGroundId);
+  }
+
   const value = useMemo(() => {
     const openingHours = sportsGround?.openingHours ?? [];
     const priceList = sportsGround?.priceList ?? null;
@@ -89,7 +96,8 @@ export default function SportsGroundProvider({ venueId, sportsGroundId, children
       // Nastavení otevírací doby a ceníku (5.2) má vlastní obrazovku,
       // odkazuje na ni výzva i souhrn.
       pricingUrl: `/arealy/${venueId}/sportoviste/${sportsGroundId}/nastaveni`,
-      update
+      update,
+      remove
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sportsGround, venue, loading, error, venueId, sportsGroundId]);

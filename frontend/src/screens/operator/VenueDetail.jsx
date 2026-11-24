@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Icon from '../../components/Icons';
 import AddSportsGroundDialog from '../../components/sportsGround/AddSportsGroundDialog';
 import SportsGroundList from '../../components/sportsGround/SportsGroundList';
 import {
   createSportsGround,
+  deleteVenue,
   getVenue,
   listSportsGrounds
 } from '../../calls/venues';
@@ -13,6 +14,7 @@ import {
 export default function VenueDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [venue, setVenue] = useState(null);
   const [sportsGrounds, setSportsGrounds] = useState([]);
@@ -20,7 +22,26 @@ export default function VenueDetail() {
   const [error, setError] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const isCreated = location.state?.created === true;
+
+  // Smazaný areál nelze zobrazit, proto se po úspěchu odchází na seznam.
+  // Backend areál s existujícími sportovišti odmítne smazat a chybu vrátí.
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      `Opravdu chcete odstranit areál "${venue.name}"?`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      await deleteVenue(id);
+      navigate('/arealy', { replace: true });
+    } catch (e) {
+      window.alert(e.message || 'Areál se nepodařilo odstranit.');
+      setDeleting(false);
+    }
+  }
 
   async function load() {
     const item = await getVenue(id);
@@ -141,15 +162,22 @@ export default function VenueDetail() {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="venue-detail-edit"
-          disabled
-          title="Úprava areálu bude doplněna"
-        >
-          <Icon name="edit" size={17} />
-          Upravit areál
-        </button>
+        <div className="venue-detail-actions">
+          <Link to={`/arealy/${id}/upravit`} className="venue-detail-edit">
+            <Icon name="edit" size={17} />
+            Upravit areál
+          </Link>
+
+          <button
+            type="button"
+            className="venue-detail-delete"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            <Icon name="trash" size={17} />
+            {deleting ? 'Odstraňuji…' : 'Odstranit areál'}
+          </button>
+        </div>
       </div>
 
       {justSaved ? (
