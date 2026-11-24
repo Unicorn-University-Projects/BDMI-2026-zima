@@ -45,6 +45,15 @@ services:
     build: ./services/booking
     networks:
       - backend
+    env_file:
+      - path: ./services/booking/.env
+        required: false
+    environment:
+      DB_HOST: mysql
+      VENUE_URL: http://venue:4002
+    depends_on:
+      - mysql
+      - venue
 
   review:
     build: ./services/review
@@ -72,6 +81,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./services/auth/db/init.sql:/docker-entrypoint-initdb.d/auth.sql
       - ./services/venue/db/init.sql:/docker-entrypoint-initdb.d/venue.sql
+      - ./services/booking/db/init.sql:/docker-entrypoint-initdb.d/booking.sql
     networks:
       - backend
 
