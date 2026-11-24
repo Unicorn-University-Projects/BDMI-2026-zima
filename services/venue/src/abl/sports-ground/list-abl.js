@@ -1,6 +1,7 @@
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import sportsGroundDao from "../../dao/sports-ground-dao.js";
+import venueDao from "../../dao/venue-dao.js";
 import { sportsGroundInvalidDtoIn, trimDtoIn } from "../../utils/validation.js";
 
 const ajv = new Ajv({ allErrors: true });
@@ -11,6 +12,7 @@ const schema = {
   properties: {
     venueId: { type: "string", format: "uuid" },
   },
+  required: ["venueId"],
   additionalProperties: true,
 };
 
@@ -42,9 +44,19 @@ async function listAbl(req, res) {
       return res.status(400).json(sportsGroundInvalidDtoIn(validate.errors));
     }
 
+    const venue = await venueDao.get(dtoIn.venueId);
+    if (!venue) {
+      return res.status(404).json({
+        code: "venue/notFound",
+        message: "Areál neexistuje.",
+        params: { id: dtoIn.venueId },
+      });
+    }
+
+    const isOwner = role === "operator" && venue.operatorId === userId;
     const itemList = await sportsGroundDao.list({
       venueId: dtoIn.venueId,
-      status: role === "athlete" ? "active" : undefined,
+      status: isOwner ? undefined : "active",
     });
     return res.json({ itemList });
   } catch (e) {

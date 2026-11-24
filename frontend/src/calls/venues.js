@@ -1,19 +1,12 @@
 import { apiFetch } from './api';
 
-// Backend ukládá ulici i číslo popisné dohromady, pro formulář je rozdělíme.
-function splitStreet(street = '') {
-  const match = street.match(/^(.*\S)\s+(\S*\d\S*)$/);
-  return match ? [match[1], match[2]] : [street, ''];
-}
-
 function mapVenue(venue) {
-  const [street, streetNumber] = splitStreet(venue.street);
   return {
     id: venue.id,
     operatorId: venue.operatorId,
     name: venue.name,
-    street,
-    streetNumber,
+    street: venue.street,
+    streetNumber: venue.streetNumber,
     city: venue.city,
     phoneNumber: venue.phone,
     emailAddress: venue.email,

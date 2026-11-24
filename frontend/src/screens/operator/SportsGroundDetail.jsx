@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import Icon from '../../components/Icons';
 import EditSportsGroundDialog from '../../components/sportsGround/EditSportsGroundDialog';
@@ -31,6 +31,10 @@ function SportsGroundDetailContent({ venueId }) {
   const { sportsGround, venue, loading, error, isActive } = useSportsGround();
   const [showEdit, setShowEdit] = useState(false);
 
+  // Obrazovka nastavení (5.2) se po uložení vrací sem a přes stav cesty
+  // si vyžádá potvrzení.
+  const location = useLocation();
+
   if (loading) {
     return (
       <div className="sports-ground-page">
@@ -60,6 +64,12 @@ function SportsGroundDetailContent({ venueId }) {
       <div className="sports-ground-content">
 
         <BackLink venueId={venueId}>{venue?.name ?? 'Zpět na areál'}</BackLink>
+
+        {location.state?.pricingSaved && (
+          <div className="sports-ground-saved" role="status">
+            ✓ &nbsp;Uloženo. Kurt se teď nabízí ve vyhledávání.
+          </div>
+        )}
 
         <SportsGroundHeader onEdit={() => setShowEdit(true)} />
 

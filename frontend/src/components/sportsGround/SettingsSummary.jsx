@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import Icon from '../Icons';
 import { useSportsGround } from '../../providers/SportsGroundProvider';
@@ -6,7 +7,7 @@ import { formatPrice, summarizeOpeningHours, summarizePeak } from '../../utils/o
 
 // Souhrn otevírací doby a ceníku (obrazovka 5.3).
 export default function SettingsSummary() {
-  const { openingHours, priceList } = useSportsGround();
+  const { openingHours, priceList, pricingUrl } = useSportsGround();
 
   return (
     <section className="sports-ground-summary">
@@ -25,11 +26,10 @@ export default function SettingsSummary() {
         <strong>{summarizePeak(priceList)}</strong>
       </div>
 
-      {/* Vede na formulář 5.2, který zatím neexistuje. */}
-      <button type="button" className="sports-ground-btn-ghost">
+      <Link to={pricingUrl} className="sports-ground-btn-ghost">
         <Icon name="edit" size={20} />
         Upravit
-      </button>
+      </Link>
     </section>
   );
 }

@@ -3157,3 +3157,5 @@ textarea::placeholder {
 .sports-ground-modal-close:hover {
   color: var(--color-text-primary);
 }
+
+.sports-ground-saved{background:#211936;color:white;border-radius:14px;padding:14px 18px;margin-bottom:18px;font-size:13px}

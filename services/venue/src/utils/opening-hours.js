@@ -1,30 +1,55 @@
-const HOUR_PATTERN = /^([01]\d|2[0-3]):00$/;
+const START_HOUR_PATTERN = /^([01]\d|2[0-3]):00$/;
+const END_HOUR_PATTERN = /^([01]\d|2[0-3]|24):00$/;
 
 function timeToMinutes(value) {
   const [hours, minutes] = String(value).split(":").map(Number);
   return hours * 60 + minutes;
 }
 
-function isFullHour(value) {
-  return typeof value === "string" && HOUR_PATTERN.test(value);
+function isStartHour(value) {
+  return typeof value === "string" && START_HOUR_PATTERN.test(value);
 }
 
-function normalizePeakDays(peakDays) {
+function isEndHour(value) {
+  return typeof value === "string" && END_HOUR_PATTERN.test(value);
+}
+
+function parsePeakDays(peakDays) {
   if (Array.isArray(peakDays)) {
-    return peakDays.map((day) => Number(day)).filter((day) => day >= 1 && day <= 7);
+    return peakDays.map((day) => Number(day)).filter((day) => Number.isInteger(day) && day >= 1 && day <= 7);
   }
   if (typeof peakDays === "string" && peakDays.trim()) {
     try {
       const parsed = JSON.parse(peakDays);
-      if (Array.isArray(parsed)) return normalizePeakDays(parsed);
+      if (Array.isArray(parsed)) return parsePeakDays(parsed);
     } catch {
       return peakDays
         .split(",")
         .map((day) => Number(day.trim()))
-        .filter((day) => day >= 1 && day <= 7);
+        .filter((day) => Number.isInteger(day) && day >= 1 && day <= 7);
     }
   }
   return [];
+}
+
+function validatePeakDays(peakDays) {
+  if (!Array.isArray(peakDays)) return false;
+  const seen = new Set();
+  for (const day of peakDays) {
+    if (typeof day !== "number" || !Number.isInteger(day) || day < 1 || day > 7) {
+      return false;
+    }
+    if (seen.has(day)) return false;
+    seen.add(day);
+  }
+  return true;
+}
+
+function isValidPrice(value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return false;
+  if (value < 1 || value > 99999) return false;
+  const cents = value * 100;
+  return Math.abs(cents - Math.round(cents)) < 1e-6;
 }
 
 function formatTime(value) {
@@ -33,6 +58,14 @@ function formatTime(value) {
   if (/^\d{2}:\d{2}:\d{2}$/.test(text)) return text.slice(0, 5);
   if (/^\d{2}:\d{2}$/.test(text)) return text;
   return text;
+}
+
+function priceError(field) {
+  return {
+    code: "sportsGround/invalidDtoIn",
+    message: "Vstupní data nejsou validní.",
+    params: { invalidFields: [field] },
+  };
 }
 
 function validateOpeningHoursAndPriceList({ openingHours, priceList }) {
@@ -69,7 +102,7 @@ function validateOpeningHoursAndPriceList({ openingHours, priceList }) {
       continue;
     }
     openDayCount += 1;
-    if (!isFullHour(day.openFrom) || !isFullHour(day.openTo)) {
+    if (!isStartHour(day.openFrom) || !isEndHour(day.openTo)) {
       return {
         code: "sportsGround/invalidDtoIn",
         message: "Vstupní data nejsou validní.",
@@ -94,36 +127,30 @@ function validateOpeningHoursAndPriceList({ openingHours, priceList }) {
   }
 
   const basePrice = Number(priceList.basePrice ?? priceList.regularPrice);
-  if (!Number.isFinite(basePrice) || basePrice <= 0) {
-    return {
-      code: "sportsGround/invalidDtoIn",
-      message: "Vstupní data nejsou validní.",
-      params: { invalidFields: ["basePrice"] },
-    };
+  if (!isValidPrice(basePrice)) {
+    const field =
+      priceList.regularPrice != null && priceList.basePrice == null ? "regularPrice" : "basePrice";
+    return priceError(field);
   }
 
   const hasPeak = Boolean(priceList.hasPeak);
-  const peakDays = normalizePeakDays(priceList.peakDays);
+  const rawPeakDays = priceList.peakDays ?? [];
   const peakFrom = priceList.peakFrom == null || priceList.peakFrom === "" ? null : formatTime(priceList.peakFrom);
   const peakTo = priceList.peakTo == null || priceList.peakTo === "" ? null : formatTime(priceList.peakTo);
   const peakPrice = priceList.peakPrice == null || priceList.peakPrice === "" ? null : Number(priceList.peakPrice);
 
   if (hasPeak) {
-    if (!Number.isFinite(peakPrice) || peakPrice <= 0) {
-      return {
-        code: "sportsGround/invalidDtoIn",
-        message: "Vstupní data nejsou validní.",
-        params: { invalidFields: ["peakPrice"] },
-      };
+    if (!isValidPrice(peakPrice)) {
+      return priceError("peakPrice");
     }
-    if (peakDays.length === 0) {
+    if (!validatePeakDays(rawPeakDays) || rawPeakDays.length === 0) {
       return {
         code: "sportsGround/invalidDtoIn",
         message: "Vstupní data nejsou validní.",
         params: { invalidFields: ["peakDays"] },
       };
     }
-    if (!isFullHour(peakFrom) || !isFullHour(peakTo)) {
+    if (!isStartHour(peakFrom) || !isEndHour(peakTo)) {
       return {
         code: "sportsGround/invalidDtoIn",
         message: "Vstupní data nejsou validní.",
@@ -132,14 +159,14 @@ function validateOpeningHoursAndPriceList({ openingHours, priceList }) {
     }
     if (timeToMinutes(peakTo) <= timeToMinutes(peakFrom)) {
       return {
-        code: "sportsGround/invalidOpeningHours",
-        message: "Konec otevírací doby musí být později než začátek.",
+        code: "sportsGround/invalidPeakTime",
+        message: "Konec špičky musí být později než začátek.",
         params: { field: "peak" },
       };
     }
 
     const byDay = new Map(days.map((day) => [day.dayOfWeek, day]));
-    for (const dayOfWeek of peakDays) {
+    for (const dayOfWeek of rawPeakDays) {
       const day = byDay.get(dayOfWeek);
       if (!day || day.isClosed) {
         return {
@@ -168,7 +195,7 @@ function validateOpeningHoursAndPriceList({ openingHours, priceList }) {
       regularPrice: basePrice,
       hasPeak,
       peakPrice: hasPeak ? peakPrice : null,
-      peakDays: hasPeak ? peakDays : [],
+      peakDays: hasPeak ? [...rawPeakDays] : [],
       peakFrom: hasPeak ? peakFrom : null,
       peakTo: hasPeak ? peakTo : null,
     },
@@ -177,6 +204,7 @@ function validateOpeningHoursAndPriceList({ openingHours, priceList }) {
 
 export {
   formatTime,
-  normalizePeakDays,
+  parsePeakDays as normalizePeakDays,
+  parsePeakDays,
   validateOpeningHoursAndPriceList,
 };

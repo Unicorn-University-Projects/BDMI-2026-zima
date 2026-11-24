@@ -1,11 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import iconTime from '../../assets/icon-time.svg';
 import { useSportsGround } from '../../providers/SportsGroundProvider';
 
 // Výzva pro sportoviště bez otevírací doby a ceníku (obrazovka 5.1).
 export default function SetupCallout() {
-  const { sportsGround } = useSportsGround();
+  const { sportsGround, pricingUrl } = useSportsGround();
 
   return (
     <section className="sports-ground-callout">
@@ -18,11 +19,9 @@ export default function SetupCallout() {
         <p>Nastav otevírací dobu a ceník – pak se objeví ve vyhledávání.</p>
       </div>
 
-      {/* Formulář otevírací doby a ceníku (5.2) zatím neexistuje,
-          tlačítko je proto bez akce. */}
-      <button type="button" className="sports-ground-btn-primary">
+      <Link to={pricingUrl} className="sports-ground-btn-primary">
         Nastavit otevírací dobu a ceník
-      </button>
+      </Link>
     </section>
   );
 }

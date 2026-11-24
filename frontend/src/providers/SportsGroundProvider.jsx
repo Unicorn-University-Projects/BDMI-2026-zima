@@ -86,10 +86,13 @@ export default function SportsGroundProvider({ venueId, sportsGroundId, children
       priceList,
       previewDate,
       slots: isActive ? buildSlots(openingHours, priceList, previewDate) : [],
+      // Nastavení otevírací doby a ceníku (5.2) má vlastní obrazovku,
+      // odkazuje na ni výzva i souhrn.
+      pricingUrl: `/arealy/${venueId}/sportoviste/${sportsGroundId}/nastaveni`,
       update
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sportsGround, venue, loading, error]);
+  }, [sportsGround, venue, loading, error, venueId, sportsGroundId]);
 
   return (
     <SportsGroundContext.Provider value={value}>
