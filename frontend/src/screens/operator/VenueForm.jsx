@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 
 import Icon from '../../components/Icons';
+import BackLink from '../../components/common/BackLink';
 
 import {
   getVenue,
@@ -202,10 +203,10 @@ export default function VenueForm() {
   if (notFound) {
     return (
       <div className="venue-form-page">
-        <Link to="/arealy" className="venue-form-back">
+        <BackLink to="/arealy" className="venue-form-back">
           <Icon name="arrow" size={16} />
           Moje areály
-        </Link>
+        </BackLink>
 
         <h1>Areál nebyl nalezen</h1>
         <p>
@@ -224,10 +225,10 @@ export default function VenueForm() {
 
       {/* NAVIGACE */}
 
-      <Link to="/arealy" className="venue-form-back">
+      <BackLink to="/arealy" className="venue-form-back">
         <Icon name="arrow" size={16} />
         Moje areály
-      </Link>
+      </BackLink>
 
       {/* NADPIS */}
 
