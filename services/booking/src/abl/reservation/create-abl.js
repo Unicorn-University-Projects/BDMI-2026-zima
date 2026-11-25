@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import reservationDao from "../../dao/reservation-dao.js";
+import reservationDao, { SlotTakenError } from "../../dao/reservation-dao.js";
 import sportsGroundDao from "../../dao/sports-ground-dao.js";
 import {
   addOneHour,
@@ -28,6 +28,14 @@ const schema = {
 };
 
 const validate = ajv.compile(schema);
+
+function slotUnavailableError({ sportsGroundId, date, startTime }) {
+  return {
+    code: "reservation/create/slotUnavailable",
+    message: "Tento termín už není volný.",
+    params: { sportsGroundId, date, startTime },
+  };
+}
 
 async function createAbl(req, res) {
   try {
@@ -109,15 +117,7 @@ async function createAbl(req, res) {
       dtoIn.startTime,
     );
     if (existing) {
-      return res.status(409).json({
-        code: "reservation/create/slotUnavailable",
-        message: "Tento termín už není volný.",
-        params: {
-          sportsGroundId: dtoIn.sportsGroundId,
-          date: dtoIn.date,
-          startTime: dtoIn.startTime,
-        },
-      });
+      return res.status(409).json(slotUnavailableError(dtoIn));
     }
 
     const { price, isPeak } = resolveSlotPrice(
@@ -154,6 +154,9 @@ async function createAbl(req, res) {
     }
     return res.status(201).json(dtoOut);
   } catch (e) {
+    if (e instanceof SlotTakenError) {
+      return res.status(409).json(slotUnavailableError(e.slot));
+    }
     console.error(e);
     return res.status(500).json({
       code: "reservation/create/failed",
