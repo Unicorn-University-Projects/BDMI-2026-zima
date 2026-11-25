@@ -1,6 +1,16 @@
 const START_HOUR_PATTERN = /^([01]\d|2[0-3]):00$/;
 const END_HOUR_PATTERN = /^([01]\d|2[0-3]|24):00$/;
 
+const pragueDateTimeFormat = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Prague",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
 function timeToMinutes(value) {
   const [hours, minutes] = String(value).split(":").map(Number);
   return hours * 60 + minutes;
@@ -18,8 +28,19 @@ function dayOfWeekFromDate(date) {
   return jsDay === 0 ? 7 : jsDay;
 }
 
+function getPragueNow(now) {
+  const parts = Object.fromEntries(
+    pragueDateTimeFormat.formatToParts(now).map((part) => [part.type, part.value]),
+  );
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    time: `${parts.hour}:${parts.minute}`,
+  };
+}
+
 function isSlotInPast(date, startTime, now = new Date()) {
-  return new Date(`${date}T${startTime}:00.000Z`).getTime() <= now.getTime();
+  const pragueNow = getPragueNow(now);
+  return date < pragueNow.date || (date === pragueNow.date && startTime <= pragueNow.time);
 }
 
 function isWithinOpeningHours(dayHours, startTime) {

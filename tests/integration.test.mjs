@@ -1392,3 +1392,89 @@ test("reservation/create rejects invalid dtoIn values", async () => {
   assert.equal(longNote.body.code, "reservation/invalidDtoIn");
   assert.ok(longNote.body.params.invalidFields.includes("note"));
 });
+
+function createReservation(athleteId, body) {
+  return fetch(serviceUrl("gateway", "/booking/reservation/create"), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${createToken("athlete", athleteId)}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  }).then(readJson);
+}
+
+function assertSlotUnavailable(result, slot) {
+  assert.equal(result.status, 409, JSON.stringify(result.body));
+  assert.deepEqual(result.body, {
+    code: "reservation/create/slotUnavailable",
+    message: "Tento termín už není volný.",
+    params: slot,
+  });
+}
+
+test("reservation/create lets only one of concurrent requests book the same slot", async () => {
+  const { sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace Soubeh Kurt",
+    priceList: { basePrice: 300, hasPeak: false },
+  });
+  const slot = { sportsGroundId, date: nextUtcDateForDayOfWeek(5), startTime: "18:00" };
+
+  const results = await Promise.all(
+    Array.from({ length: 10 }, (unused, index) => createReservation(`booking-race-athlete-${index}`, slot)),
+  );
+  const statuses = JSON.stringify(results.map((result) => result.status));
+
+  const created = results.filter((result) => result.status === 201);
+  assert.equal(created.length, 1, statuses);
+  assert.equal(created[0].body.reservation.state, "created");
+  const rejected = results.filter((result) => result.status !== 201);
+  assert.equal(rejected.length, 9, statuses);
+  for (const result of rejected) {
+    assertSlotUnavailable(result, slot);
+  }
+
+  assertSlotUnavailable(await createReservation("booking-race-athlete-late", slot), slot);
+});
+
+test("reservation/create books a double-clicked slot only once", async () => {
+  const { sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace Dvojklik Kurt",
+    priceList: { basePrice: 300, hasPeak: false },
+  });
+  const slot = { sportsGroundId, date: nextUtcDateForDayOfWeek(5), startTime: "10:00" };
+
+  const [first, second] = await Promise.all([
+    createReservation("booking-double-click-athlete", slot),
+    createReservation("booking-double-click-athlete", slot),
+  ]);
+  const [created, rejected] = first.status === 201 ? [first, second] : [second, first];
+
+  assert.equal(created.status, 201, JSON.stringify([first.body, second.body]));
+  assertSlotUnavailable(rejected, slot);
+});
+
+test("reservation/create books different slots concurrently without false conflicts", async () => {
+  const { sportsGroundId } = await createActiveGroundForBooking({
+    name: "Rezervace Paralelni Kurt",
+    priceList: { basePrice: 300, hasPeak: false },
+  });
+  const date = nextUtcDateForDayOfWeek(5);
+  const startTimes = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"];
+
+  const results = await Promise.all(
+    startTimes.map((startTime, index) =>
+      createReservation(`booking-parallel-athlete-${index}`, { sportsGroundId, date, startTime }),
+    ),
+  );
+
+  assert.deepEqual(
+    results.map((result) => result.status),
+    startTimes.map(() => 201),
+    JSON.stringify(results.map((result) => result.body)),
+  );
+  assert.deepEqual(
+    results.map((result) => result.body.reservation.startTime),
+    startTimes,
+  );
+});
