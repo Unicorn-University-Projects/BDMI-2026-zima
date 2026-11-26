@@ -1,0 +1,487 @@
+/* ==========================================
+   REZERVACE SPORTOVIŠTĚ (BUC-02, obrazovky 1.4, 1.4-E a 1.5)
+==========================================
+   Barvy a rozměry berou designové tokeny z :root ve style.css.
+   Horní lišta sportovce je společná s vyhledáváním, styly k ní
+   zůstávají v search.css. */
+
+.reservation-page {
+  min-height: 100vh;
+  font-family: 'Outfit', Inter, Arial, sans-serif;
+  color: var(--color-text-primary);
+  background:
+    linear-gradient(
+      to bottom,
+      var(--color-gradient-hero-start) 0,
+      var(--color-gradient-hero-accent) 200px,
+      var(--color-gradient-hero-end) 360px
+    )
+    no-repeat;
+}
+
+/* Obsah je podle návrhu užší než u vyhledávání – je to jeden sloupec
+   s kartou a formulářem, ne mřížka výsledků. */
+.reservation-content {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--spacing-32) var(--spacing-24) 80px;
+}
+
+/* ---------- Odkaz zpět a nadpis ---------- */
+
+.reservation-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-action-ghost-text);
+  text-decoration: none;
+}
+
+.reservation-back:hover {
+  text-decoration: underline;
+}
+
+.reservation-title {
+  margin: var(--spacing-24) 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.reservation-message {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+.reservation-error {
+  display: block;
+  margin: var(--spacing-16) 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-status-danger);
+}
+
+/* ---------- Karta souhrnu ---------- */
+
+.reservation-summary-card {
+  margin: 0;
+  padding: var(--spacing-8) var(--spacing-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 1px 2px rgba(23, 20, 41, 0.04),
+    0 6px 20px rgba(23, 20, 41, 0.06);
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  padding: var(--spacing-12) 0;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row dt {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+.summary-row dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: right;
+  color: var(--color-text-primary);
+}
+
+/* Hlavní údaj obrazovky – cena. */
+.summary-row.strong dd {
+  font-size: 17px;
+  line-height: 22px;
+}
+
+/* Areál a adresa: na širokém jeden řádek, na úzkém dva (návrh Mobile). */
+.summary-row.only-narrow {
+  display: none;
+}
+
+/* ---------- Informační blok ---------- */
+
+.reservation-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  margin: var(--spacing-24) 0;
+  padding: var(--spacing-12) var(--spacing-16);
+  background: var(--color-action-subtle);
+  border-radius: var(--radius-control);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.reservation-alert svg {
+  flex: none;
+  color: var(--color-action-on-subtle);
+}
+
+/* ---------- Poznámka pro provozovatele ---------- */
+
+.reservation-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-field-gap);
+}
+
+.reservation-field label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--color-text-primary);
+}
+
+/* Počítadlo znaků sedí v pravém dolním rohu pole, proto obal. */
+.reservation-textarea {
+  position: relative;
+}
+
+.reservation-textarea textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 112px;
+  padding: var(--spacing-12) var(--spacing-16) var(--spacing-32);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-primary);
+  resize: none;
+}
+
+.reservation-textarea textarea:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -1px;
+}
+
+.reservation-counter {
+  position: absolute;
+  right: var(--spacing-16);
+  bottom: var(--spacing-12);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.reservation-field small {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+/* ---------- Tlačítka ---------- */
+
+.reservation-submit {
+  margin-top: var(--spacing-24);
+}
+
+.reservation-btn-primary,
+.reservation-btn-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--spacing-24);
+  border-radius: var(--radius-button);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reservation-btn-primary {
+  border: 1px solid var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.reservation-btn-primary:hover:not(:disabled):not(.disabled) {
+  background: var(--color-action-ghost-text);
+  border-color: var(--color-action-ghost-text);
+}
+
+.reservation-btn-outline {
+  border: 1px solid var(--color-action-outline);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+}
+
+.reservation-btn-outline:hover {
+  background: var(--color-action-subtle);
+}
+
+.reservation-btn-primary:disabled,
+.reservation-btn-primary.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- 1.5 Rezervace vytvořena ---------- */
+
+.reservation-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.reservation-done-check {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  margin-top: var(--spacing-40);
+  border-radius: var(--radius-full);
+  background: var(--color-status-success);
+  color: var(--color-text-inverse);
+}
+
+.reservation-done h1 {
+  margin: var(--spacing-24) 0 var(--spacing-8);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.reservation-done-note {
+  margin: 0 0 var(--spacing-24);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+.reservation-done-card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--spacing-20) var(--spacing-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 1px 2px rgba(23, 20, 41, 0.04),
+    0 6px 20px rgba(23, 20, 41, 0.06);
+  text-align: left;
+}
+
+.reservation-done-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.reservation-done-card-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.reservation-state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  flex: none;
+  padding: var(--spacing-4) var(--spacing-12);
+  border-radius: var(--radius-full);
+  background: var(--color-status-warning-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-status-warning);
+}
+
+/* Tečka před popiskem stavu (návrh obrazovky 1.5). */
+.reservation-state-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.reservation-done-place {
+  margin: var(--spacing-8) 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.reservation-done-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8) var(--spacing-20);
+  margin: var(--spacing-12) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reservation-done-facts li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.reservation-done-facts svg {
+  flex: none;
+  color: var(--color-text-tertiary);
+}
+
+.reservation-done-actions {
+  display: flex;
+  gap: var(--spacing-16);
+  width: 100%;
+  margin-top: var(--spacing-24);
+}
+
+/* ---------- 1.4-E Termín už není volný ---------- */
+
+.reservation-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-24);
+  background: rgba(29, 23, 53, 0.45);
+}
+
+.reservation-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 440px;
+  padding: var(--spacing-32);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sheet);
+  text-align: center;
+}
+
+/* Dialog dostane fokus kvůli čtečkám, rámeček kolem něj ale nepotřebuje. */
+.reservation-modal:focus {
+  outline: none;
+}
+
+.reservation-modal-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-status-warning-subtle);
+  color: var(--color-status-warning);
+}
+
+.reservation-modal h2 {
+  margin: var(--spacing-16) 0 var(--spacing-8);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.reservation-modal p {
+  margin: 0 0 var(--spacing-24);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.reservation-modal .reservation-btn-outline {
+  margin-top: var(--spacing-12);
+}
+
+/* ==========================================
+   ÚZKÉ OBRAZOVKY
+========================================== */
+
+@media (max-width: 650px) {
+  .reservation-content {
+    padding: var(--spacing-24) var(--spacing-16) var(--spacing-32);
+  }
+
+  .reservation-title {
+    margin: var(--spacing-16) 0;
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .reservation-summary-card {
+    padding: var(--spacing-8) var(--spacing-16);
+  }
+
+  /* Areál a adresa se rozdělí na dva řádky. */
+  .summary-row.only-wide {
+    display: none;
+  }
+
+  .summary-row.only-narrow {
+    display: flex;
+  }
+
+  /* Tlačítko drží u spodní hrany, ať je po rolování pořád po ruce. */
+  .reservation-submit {
+    position: sticky;
+    bottom: 0;
+    margin: var(--spacing-24) calc(-1 * var(--spacing-16)) 0;
+    padding: var(--spacing-12) var(--spacing-16);
+    background: var(--color-bg-surface);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  .reservation-done-actions {
+    flex-direction: column;
+  }
+}
+
+/* Velmi úzké displeje: popis a hodnota se nevejdou vedle sebe.
+   Hranice je schválně pod 390 px (iPhone), tam se podle návrhu
+   popis a hodnota drží na jednom řádku. */
+@media (max-width: 360px) {
+  .summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+
+  .summary-row dd {
+    text-align: left;
+  }
+}

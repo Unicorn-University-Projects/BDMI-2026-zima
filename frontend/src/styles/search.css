@@ -462,3 +462,46 @@
   }
 
 }
+
+/* Na telefonu se logo, obě záložky, zvonek i avatar na jeden řádek
+   nevejdou – „Moje rezervace“ se lámalo na dva řádky a naráželo do
+   zvonku. Lišta se proto zmenší a názvy záložek se nelámou. */
+@media (max-width: 480px) {
+
+  .athlete-topbar {
+    gap: var(--spacing-12);
+    padding: 0 var(--spacing-16);
+  }
+
+  .athlete-topbar-left {
+    gap: var(--spacing-12);
+  }
+
+  .athlete-topbar-logo img {
+    width: 92px;
+  }
+
+  .athlete-topbar-tabs {
+    gap: var(--spacing-12);
+  }
+
+  .athlete-topbar-tab {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .athlete-topbar-right {
+    gap: var(--spacing-4);
+  }
+
+  .athlete-topbar-bell {
+    width: 36px;
+    height: 36px;
+  }
+
+  .athlete-topbar-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+}

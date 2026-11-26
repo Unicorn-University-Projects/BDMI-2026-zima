@@ -367,6 +367,28 @@ phone: (
         <path d="M12 11v5" />
         <circle cx="12" cy="7.75" r="1" fill="currentColor" stroke="none" />
       </>
+    ),
+
+    // Fajfka bez rámečku – do barevného kolečka (vytvořená rezervace)
+    checkPlain: (
+      <path d="m5 12.5 4.5 4.5L19 7" strokeWidth="2.4" />
+    ),
+
+    // Obsazený termín – dialog 1.4-E
+    warning: (
+      <>
+        <path d="M10.3 3.9 2.5 17.4A2 2 0 0 0 4.2 20.4h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+        <path d="M12 9v4" />
+        <circle cx="12" cy="16.5" r="1" fill="currentColor" stroke="none" />
+      </>
+    ),
+
+    // Cena v souhrnu vytvořené rezervace
+    tag: (
+      <>
+        <path d="M3 11.5V4a1 1 0 0 1 1-1h7.5a1 1 0 0 1 .7.3l8.5 8.5a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 12.2a1 1 0 0 1-.3-.7Z" />
+        <circle cx="7.75" cy="7.75" r="1.25" />
+      </>
     )
 
   };

@@ -26,6 +26,7 @@ import VenueDetail from './screens/operator/VenueDetail';
 import SportsGroundDetail from './screens/operator/SportsGroundDetail';
 import OpeningHoursPricing from './screens/operator/OpeningHoursPricing';
 import SearchResults from './screens/athlete/SearchResults';
+import ReservationSummary from './screens/athlete/ReservationSummary';
 
 // Styly
 import './style.css';
@@ -257,6 +258,18 @@ function Root() {
         element={
           <RequireAuth>
             <SearchResults />
+          </RequireAuth>
+        }
+      />
+
+      {/* Souhrn rezervace (sportovec) – co se rezervuje, nese adresa:
+          ?sportoviste=<uuid>&datum=2026-11-03&cas=17:00.
+          Stejně jako výsledky vyhledávání má horní lištu, ne boční panel. */}
+      <Route
+        path="/rezervace/nova"
+        element={
+          <RequireAuth>
+            <ReservationSummary />
           </RequireAuth>
         }
       />
