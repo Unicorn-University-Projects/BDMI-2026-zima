@@ -63,7 +63,7 @@ export default function SlotTakenDialog({ slotLabel, onPickAnother, onClose }) {
 
         <button
           type="button"
-          className="reservation-btn-primary"
+          className="ps-btn ps-btn-primary ps-btn-block"
           onClick={onPickAnother}
         >
           Vybrat jiný čas
@@ -71,7 +71,7 @@ export default function SlotTakenDialog({ slotLabel, onPickAnother, onClose }) {
 
         <button
           type="button"
-          className="reservation-btn-outline"
+          className="ps-btn ps-btn-outline ps-btn-block"
           onClick={onClose}
         >
           Zavřít

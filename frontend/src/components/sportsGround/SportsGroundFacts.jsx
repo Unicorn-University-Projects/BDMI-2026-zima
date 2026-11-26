@@ -1,8 +1,10 @@
 import React from 'react';
 
+import KeyValueRow from '../common/KeyValueRow';
 import { useSportsGround } from '../../providers/SportsGroundProvider';
 
-// Neměnné údaje o sportovišti.
+// Neměnné údaje o sportovišti. Řádky sdílí komponentu KeyValueRow
+// se souhrnem rezervace – v návrhu je to jedna komponenta „Key value“.
 export default function SportsGroundFacts() {
   const { sportsGround } = useSportsGround();
 
@@ -11,20 +13,12 @@ export default function SportsGroundFacts() {
       <h2>Údaje sportoviště</h2>
 
       <dl>
-        <div className="sports-ground-fact">
-          <dt>Druh sportu</dt>
-          <dd>{sportsGround.sportName ?? '—'}</dd>
-        </div>
-
-        <div className="sports-ground-fact">
-          <dt>Povrch</dt>
-          <dd>{sportsGround.surface || '—'}</dd>
-        </div>
-
-        <div className="sports-ground-fact last">
-          <dt>Typ</dt>
-          <dd>{sportsGround.coverType === 'indoor' ? 'Kryté' : 'Venkovní'}</dd>
-        </div>
+        <KeyValueRow label="Druh sportu" value={sportsGround.sportName ?? '—'} />
+        <KeyValueRow label="Povrch" value={sportsGround.surface || '—'} />
+        <KeyValueRow
+          label="Typ"
+          value={sportsGround.coverType === 'indoor' ? 'Kryté' : 'Venkovní'}
+        />
       </dl>
     </section>
   );

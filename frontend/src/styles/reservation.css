@@ -80,43 +80,9 @@
     0 6px 20px rgba(23, 20, 41, 0.06);
 }
 
-.summary-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-16);
-  padding: var(--spacing-12) 0;
-  border-bottom: 1px solid var(--color-border-default);
-}
-
-.summary-row:last-child {
-  border-bottom: none;
-}
-
-.summary-row dt {
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--color-text-secondary);
-}
-
-.summary-row dd {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 20px;
-  text-align: right;
-  color: var(--color-text-primary);
-}
-
-/* Hlavní údaj obrazovky – cena. */
-.summary-row.strong dd {
-  font-size: 17px;
-  line-height: 22px;
-}
-
-/* Areál a adresa: na širokém jeden řádek, na úzkém dva (návrh Mobile). */
-.summary-row.only-narrow {
+/* Areál a adresa: na širokém jeden řádek, na úzkém dva (návrh Mobile).
+   Samotný řádek je sdílená komponenta .key-value ve style.css. */
+.key-value.only-narrow {
   display: none;
 }
 
@@ -202,51 +168,6 @@
 
 .reservation-submit {
   margin-top: var(--spacing-24);
-}
-
-.reservation-btn-primary,
-.reservation-btn-outline {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 100%;
-  height: 52px;
-  padding: 0 var(--spacing-24);
-  border-radius: var(--radius-button);
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 20px;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.reservation-btn-primary {
-  border: 1px solid var(--color-action-primary);
-  background: var(--color-action-primary);
-  color: var(--color-action-on-primary);
-}
-
-.reservation-btn-primary:hover:not(:disabled):not(.disabled) {
-  background: var(--color-action-ghost-text);
-  border-color: var(--color-action-ghost-text);
-}
-
-.reservation-btn-outline {
-  border: 1px solid var(--color-action-outline);
-  background: var(--color-bg-surface);
-  color: var(--color-action-on-outline);
-}
-
-.reservation-btn-outline:hover {
-  background: var(--color-action-subtle);
-}
-
-.reservation-btn-primary:disabled,
-.reservation-btn-primary.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 /* ---------- 1.5 Rezervace vytvořena ---------- */
@@ -424,7 +345,7 @@
   color: var(--color-text-secondary);
 }
 
-.reservation-modal .reservation-btn-outline {
+.reservation-modal .ps-btn-outline {
   margin-top: var(--spacing-12);
 }
 
@@ -448,11 +369,11 @@
   }
 
   /* Areál a adresa se rozdělí na dva řádky. */
-  .summary-row.only-wide {
+  .key-value.only-wide {
     display: none;
   }
 
-  .summary-row.only-narrow {
+  .key-value.only-narrow {
     display: flex;
   }
 
@@ -468,20 +389,5 @@
 
   .reservation-done-actions {
     flex-direction: column;
-  }
-}
-
-/* Velmi úzké displeje: popis a hodnota se nevejdou vedle sebe.
-   Hranice je schválně pod 390 px (iPhone), tam se podle návrhu
-   popis a hodnota drží na jednom řádku. */
-@media (max-width: 360px) {
-  .summary-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-2);
-  }
-
-  .summary-row dd {
-    text-align: left;
   }
 }

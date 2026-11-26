@@ -2731,7 +2731,10 @@ textarea::placeholder {
   margin: 0;
 }
 
-.sports-ground-fact {
+/* Řádek popis–hodnota sdílí souhrn rezervace, detail rezervace i údaje
+   sportoviště – v návrhu je to jedna komponenta „Key value“.
+   Komponenta: components/common/KeyValueRow.jsx */
+.key-value {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2740,24 +2743,47 @@ textarea::placeholder {
   border-bottom: 1px solid var(--color-border-default);
 }
 
-.sports-ground-fact.last {
+.key-value:last-child {
   border-bottom: none;
 }
 
-.sports-ground-fact dt {
+.key-value dt {
   font-size: 15px;
   font-weight: 400;
   line-height: 22px;
   color: var(--color-text-secondary);
 }
 
-.sports-ground-fact dd {
+.key-value dd {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
   line-height: 20px;
   text-align: right;
   color: var(--color-text-primary);
+}
+
+/* Hlavní údaj obrazovky, v souhrnu rezervace cena. */
+.key-value.strong dd {
+  font-size: 17px;
+  line-height: 22px;
+}
+
+/* Velmi úzké displeje: popis a hodnota se nevejdou vedle sebe.
+   Hranice je schválně pod 390 px (iPhone), tam se podle návrhu
+   popis a hodnota drží na jednom řádku. */
+@media (max-width: 360px) {
+
+  .key-value {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+
+  .key-value dd {
+    text-align: left;
+  }
+
 }
 
 /* ---------- Responzivní zobrazení ---------- */
@@ -3365,3 +3391,64 @@ textarea::placeholder {
 }
 
 .sports-ground-saved{background:#211936;color:white;border-radius:14px;padding:14px 18px;margin-bottom:18px;font-size:13px}
+
+/* ==========================================
+   TLAČÍTKA
+==========================================
+   Sdílená rodina. V souboru jsou zatím i starší .venue-btn-*,
+   .sports-ground-btn-* a .sg-btn-*, které vznikly dřív a dělají totéž –
+   nové obrazovky ať používají .ps-btn, aby se daly postupně sjednotit. */
+
+.ps-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  box-sizing: border-box;
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Hlavní akce obrazovky – podle návrhu vyšší a přes celou šířku. */
+.ps-btn-block {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--spacing-24);
+  font-size: 16px;
+}
+
+.ps-btn-primary {
+  border-color: var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.ps-btn-primary:hover:not(:disabled):not(.disabled) {
+  border-color: var(--color-action-ghost-text);
+  background: var(--color-action-ghost-text);
+}
+
+.ps-btn-outline {
+  border-color: var(--color-action-outline);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+}
+
+.ps-btn-outline:hover:not(:disabled):not(.disabled) {
+  background: var(--color-action-subtle);
+}
+
+.ps-btn:disabled,
+.ps-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
