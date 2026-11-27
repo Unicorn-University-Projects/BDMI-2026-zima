@@ -1,3 +1,5 @@
+// Společné odpovědi a pomocné funkce pro ABL – stejný tvar jako ve službě venue.
+
 function trimDtoIn(dtoIn = {}) {
   const result = {};
   for (const [key, value] of Object.entries(dtoIn)) {
@@ -30,4 +32,44 @@ function invalidDtoIn(errors) {
   };
 }
 
-export { trimDtoIn, normalizeText, invalidDtoIn };
+function sportsGroundInvalidDtoIn(errors) {
+  return {
+    code: "sportsGround/invalidDtoIn",
+    message: "Vstupní data nejsou validní.",
+    params: { invalidFields: invalidFieldsFromErrors(errors) },
+  };
+}
+
+function unauthenticated(res) {
+  return res.status(401).json({
+    code: "user/unauthenticated",
+    message: "Uživatel není přihlášený.",
+    params: {},
+  });
+}
+
+function forbidden(res, role) {
+  return res.status(403).json({
+    code: "user/forbidden",
+    message: "K této akci nemáte oprávnění.",
+    params: { role },
+  });
+}
+
+function dateInPast(res, date, today) {
+  return res.status(400).json({
+    code: "sportsGround/dateInPast",
+    message: "Datum nesmí být v minulosti.",
+    params: { date, today },
+  });
+}
+
+export {
+  trimDtoIn,
+  normalizeText,
+  invalidDtoIn,
+  sportsGroundInvalidDtoIn,
+  unauthenticated,
+  forbidden,
+  dateInPast,
+};

@@ -1,0 +1,129 @@
+### =====================================================================
+### sportsGround/getAvailability – volné a obsazené sloty přes gateway
+###
+### Předpoklady: běží gateway (4000), auth (4001) a booking (4003) proti sdílené
+### DB s testovacími daty, nebo booking s BOOKING_MEMORY_DB=1 (ukázková data).
+### Spuštění: prostředí „local“, ▶▶ Run All Requests in File, výsledky v záložce Tests.
+### =====================================================================
+
+
+### Přihlášení sportovkyně
+POST {{baseUrl}}/auth/user/signIn
+Content-Type: application/json
+
+{ "email": "{{athleteEmail}}", "password": "{{password}}" }
+
+> {%
+  client.test("Sportovkyně se přihlásí", function () {
+    client.assert(response.status === 200, "Očekáván stav 200, přišel " + response.status);
+  });
+  client.global.set("athleteToken", response.body.token);
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  client.global.set("tomorrow", tomorrow.toISOString().slice(0, 10));
+  client.global.set("yesterday", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+%}
+
+
+### Přihlášení provozovatele
+POST {{baseUrl}}/auth/user/signIn
+Content-Type: application/json
+
+{ "email": "{{operatorEmail}}", "password": "{{password}}" }
+
+> {%
+  client.global.set("operatorToken", response.body.token);
+%}
+
+
+### Sloty tenisového kurtu č. 2 na zítřek
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId={{lipaCourt2Id}}&date={{tomorrow}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Vrátí hodinové sloty", function () {
+    client.assert(response.status === 200, "Očekáván stav 200, přišel " + response.status + " " + JSON.stringify(response.body));
+    const slots = response.body.slotList;
+    client.assert(Array.isArray(slots), "Chybí slotList");
+    if (!response.body.isClosed) {
+      client.assert(slots.length > 0, "Otevřený den bez slotů");
+      for (const slot of slots) {
+        client.assert(/^\d{2}:00$/.test(slot.startTime), "Slot nezačíná v celou: " + slot.startTime);
+        client.assert(["free", "occupied"].indexOf(slot.status) !== -1, "Zítra nemá být slot v minulosti");
+        client.assert(typeof slot.price === "number" && slot.price > 0, "Chybí cena");
+      }
+    }
+  });
+%}
+
+
+### Hradisko kurt A – cena ve špičce po–pá 17–21
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId={{hradiskoCourtAId}}&date={{tomorrow}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Ve špičce je vyšší cena", function () {
+    client.assert(response.status === 200, "Očekáván stav 200, přišel " + response.status);
+    const peak = response.body.slotList.filter(function (slot) { return slot.isPeak; });
+    const regular = response.body.slotList.filter(function (slot) { return !slot.isPeak; });
+    if (peak.length > 0 && regular.length > 0) {
+      client.assert(peak[0].price > regular[0].price, "Cena ve špičce není vyšší");
+    }
+  });
+%}
+
+
+### Neaktivní sportoviště – sportovec ho nevidí
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId={{inactiveSportsGroundId}}&date={{tomorrow}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("404 pro sportovce", function () {
+    client.assert(response.status === 404, "Očekáván stav 404, přišel " + response.status);
+    client.assert(response.body.code === "sportsGround/notFound", response.body.code);
+  });
+%}
+
+
+### Provozovatel smí zobrazit sloty
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId={{lipaCourt2Id}}&date={{tomorrow}}
+Authorization: Bearer {{operatorToken}}
+
+> {%
+  client.test("Provozovatel dostane sloty", function () {
+    client.assert(response.status === 200, "Očekáván stav 200, přišel " + response.status);
+  });
+%}
+
+
+### Datum v minulosti
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId={{lipaCourt2Id}}&date={{yesterday}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Minulost je odmítnuta", function () {
+    client.assert(response.status === 400, "Očekáván stav 400, přišel " + response.status);
+    client.assert(response.body.code === "sportsGround/dateInPast", response.body.code);
+  });
+%}
+
+
+### Neplatné vstupy
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId=abc&date=zitra
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Neplatné vstupy 400", function () {
+    client.assert(response.status === 400, "Očekáván stav 400, přišel " + response.status);
+    client.assert(response.body.code === "sportsGround/invalidDtoIn", response.body.code);
+  });
+%}
+
+
+### Bez přihlášení
+GET {{baseUrl}}/booking/sportsGround/getAvailability?sportsGroundId={{lipaCourt2Id}}&date={{tomorrow}}
+
+> {%
+  client.test("401 bez tokenu", function () {
+    client.assert(response.status === 401, "Očekáván stav 401, přišel " + response.status);
+  });
+%}

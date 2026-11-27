@@ -1,7 +1,5 @@
-import pool from "../db.js";
+import pool, { useMemory } from "../db.js";
 import memoryStore from "./memory-store.js";
-
-const useMemory = process.env.BOOKING_MEMORY_DB === "1";
 const ACTIVE_STATES = ["created", "confirmed"];
 const ACTIVE_SLOT_INDEX = "uq_reservations_active_slot";
 
@@ -131,10 +129,55 @@ async function getActiveBySlot(sportsGroundId, date, startTime) {
   return mapReservation(rows[0]);
 }
 
+function placeholders(list) {
+  return list.map(() => "?").join(", ");
+}
+
+// Obsazený slot pro generování slotů: jen sportoviště, den a začátek.
+function mapOccupiedSlot(row) {
+  return {
+    sportsGroundId: row.sportsGroundId,
+    date: formatDate(row.date),
+    startTime: formatTime(row.startTime),
+  };
+}
+
+// Aktivní rezervace více sportovišť v rozmezí dnů (dateFrom i dateTo včetně).
+async function listActiveBySportsGroundListAndDateRange(sportsGroundIdList, dateFrom, dateTo) {
+  if (sportsGroundIdList.length === 0) return [];
+  if (useMemory) {
+    return [...memoryStore.state.reservations.values()]
+      .filter(
+        (item) =>
+          sportsGroundIdList.includes(item.sportsGroundId) &&
+          item.date >= dateFrom &&
+          item.date <= dateTo &&
+          ACTIVE_STATES.includes(item.state),
+      )
+      .map(mapOccupiedSlot);
+  }
+  const [rows] = await pool.execute(
+    `SELECT sportsGroundId, DATE_FORMAT(\`date\`, '%Y-%m-%d') AS \`date\`, startTime
+     FROM reservations
+     WHERE sportsGroundId IN (${placeholders(sportsGroundIdList)})
+       AND \`date\` BETWEEN ? AND ?
+       AND state IN ('created', 'confirmed')`,
+    [...sportsGroundIdList, dateFrom, dateTo],
+  );
+  return rows.map(mapOccupiedSlot);
+}
+
+// Aktivní rezervace jednoho sportoviště pro jeden den (Application Model).
+async function listActiveBySportsGroundAndDate(sportsGroundId, date) {
+  return listActiveBySportsGroundListAndDateRange([sportsGroundId], date, date);
+}
+
 export { SlotTakenError };
 
 export default {
   create,
   get,
   getActiveBySlot,
+  listActiveBySportsGroundAndDate,
+  listActiveBySportsGroundListAndDateRange,
 };

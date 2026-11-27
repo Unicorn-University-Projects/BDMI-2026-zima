@@ -1,0 +1,96 @@
+### =====================================================================
+### sportsGround/search – vyhledání sportovišť s volným termínem přes gateway
+###
+### Předpoklady: viz get-availability.http (gateway, auth, booking).
+### Spuštění: prostředí „local“, ▶▶ Run All Requests in File, výsledky v záložce Tests.
+### =====================================================================
+
+
+### Přihlášení sportovkyně
+POST {{baseUrl}}/auth/user/signIn
+Content-Type: application/json
+
+{ "email": "{{athleteEmail}}", "password": "{{password}}" }
+
+> {%
+  client.global.set("athleteToken", response.body.token);
+  client.global.set("tomorrow", new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+%}
+
+
+### Přihlášení provozovatele
+POST {{baseUrl}}/auth/user/signIn
+Content-Type: application/json
+
+{ "email": "{{operatorEmail}}", "password": "{{password}}" }
+
+> {%
+  client.global.set("operatorToken", response.body.token);
+%}
+
+
+### Tenis v Olomouci na zítřek (malá písmena, bez celé části názvu)
+GET {{baseUrl}}/booking/sportsGround/search?sportCode=tennis&city=olom&date={{tomorrow}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Najde tenisová sportoviště s volným termínem", function () {
+    client.assert(response.status === 200, "Očekáván stav 200, přišel " + response.status + " " + JSON.stringify(response.body));
+    const items = response.body.itemList;
+    client.assert(items.length > 0, "Nic nenalezeno – chybí testovací data?");
+    for (const item of items) {
+      client.assert(item.sportsGround.sport.code === "tennis", "Jiný sport: " + item.sportsGround.sport.code);
+      client.assert(item.venue.city.toLowerCase().indexOf("olom") === 0, "Jiné město: " + item.venue.city);
+      client.assert(item.freeSlotCount > 0, "Bez volného slotu");
+      client.assert(item.priceFrom > 0, "Chybí cena od");
+    }
+  });
+%}
+
+
+### Neznámé město – prázdný výsledek bez návrhu dalšího dne
+GET {{baseUrl}}/booking/sportsGround/search?sportCode=tennis&city=Neexistujiciměsto&date={{tomorrow}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Prázdný výsledek", function () {
+    client.assert(response.status === 200, "Očekáván stav 200, přišel " + response.status);
+    client.assert(response.body.itemList.length === 0, "Něco nalezeno");
+    client.assert(response.body.nextAvailableDate === null, "Návrh dne bez sportovišť");
+  });
+%}
+
+
+### Neznámý sport
+GET {{baseUrl}}/booking/sportsGround/search?sportCode=golf&city=Olomouc&date={{tomorrow}}
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Neznámý sport 400", function () {
+    client.assert(response.status === 400, "Očekáván stav 400, přišel " + response.status);
+    client.assert(response.body.params.invalidFields.indexOf("sportCode") !== -1, JSON.stringify(response.body));
+  });
+%}
+
+
+### Provozovatel vyhledávat nemůže (zastaví gateway)
+GET {{baseUrl}}/booking/sportsGround/search?sportCode=tennis&city=Olomouc&date={{tomorrow}}
+Authorization: Bearer {{operatorToken}}
+
+> {%
+  client.test("403 pro provozovatele", function () {
+    client.assert(response.status === 403, "Očekáván stav 403, přišel " + response.status);
+  });
+%}
+
+
+### Chybí parametry
+GET {{baseUrl}}/booking/sportsGround/search?sportCode=tennis
+Authorization: Bearer {{athleteToken}}
+
+> {%
+  client.test("Chybí město a datum", function () {
+    client.assert(response.status === 400, "Očekáván stav 400, přišel " + response.status);
+    client.assert(response.body.code === "sportsGround/invalidDtoIn", response.body.code);
+  });
+%}

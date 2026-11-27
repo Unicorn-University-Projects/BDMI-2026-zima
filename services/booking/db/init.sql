@@ -1,7 +1,11 @@
+-- Rezervace (vlastník: booking service). Spouští se po auth a venue init.sql
+-- (cizí klíče na users a sports_grounds), viz pořadí v docker-compose.yml.
+
 CREATE TABLE IF NOT EXISTS reservations (
   id CHAR(36) PRIMARY KEY,
   sportsGroundId CHAR(36) NOT NULL,
-  athleteId CHAR(36) NOT NULL COMMENT 'Sportovec (users.role = athlete)',
+  -- Stejná collation jako users.id (auth/db/init.sql), jinak cizí klíč nejde vytvořit.
+  athleteId CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Sportovec (users.role = athlete)',
   date DATE NOT NULL,
   startTime CHAR(5) NOT NULL,
   price DECIMAL(8, 2) NOT NULL COMMENT 'Cena slotu podle ceníku v okamžiku rezervace',

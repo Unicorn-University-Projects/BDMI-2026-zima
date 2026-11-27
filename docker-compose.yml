@@ -79,9 +79,10 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./services/auth/db/init.sql:/docker-entrypoint-initdb.d/auth.sql
-      - ./services/venue/db/init.sql:/docker-entrypoint-initdb.d/venue.sql
-      - ./services/booking/db/init.sql:/docker-entrypoint-initdb.d/booking.sql
+      # Pořadí podle názvu souboru: booking má cizí klíče na tabulky auth a venue.
+      - ./services/auth/db/init.sql:/docker-entrypoint-initdb.d/1-auth.sql
+      - ./services/venue/db/init.sql:/docker-entrypoint-initdb.d/2-venue.sql
+      - ./services/booking/db/init.sql:/docker-entrypoint-initdb.d/3-booking.sql
     networks:
       - backend
 

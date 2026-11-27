@@ -1,6 +1,8 @@
 import mysql from "mysql2/promise";
 
-const useMemory = process.env.BOOKING_MEMORY_DB === "1";
+// BOOKING_MEMORY_DB=1 – služba místo MySQL pracuje s daty v paměti (dao/memory-store.js).
+// Slouží pro automatické testy a lokální spuštění bez databáze.
+export const useMemory = process.env.BOOKING_MEMORY_DB === "1";
 
 const pool = useMemory
   ? {
