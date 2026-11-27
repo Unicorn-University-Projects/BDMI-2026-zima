@@ -1,0 +1,428 @@
+/* ==========================================
+   DETAIL SPORTOVIŠTĚ PRO SPORTOVCE (BUC-02, obrazovka 1.3)
+==========================================
+   Barvy a rozměry berou designové tokeny z :root ve style.css.
+   Horní lišta sportovce je společná s vyhledáváním, její styly jsou v search.css. */
+
+.sgd-page {
+  min-height: 100vh;
+  padding-bottom: 64px;
+  font-family: 'Outfit', Inter, Arial, sans-serif;
+  color: var(--color-text-primary);
+  background:
+    linear-gradient(
+      to bottom,
+      var(--color-gradient-hero-start) 0,
+      var(--color-gradient-hero-accent) 200px,
+      var(--color-gradient-hero-end) 360px
+    )
+    no-repeat;
+}
+
+/* Podle návrhu je obsah detailu široký 960 px. */
+.sgd-main {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--spacing-32) var(--spacing-24) 0;
+}
+
+.sgd-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-20);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-action-ghost-text);
+  text-decoration: none;
+}
+
+.sgd-back:hover {
+  text-decoration: underline;
+}
+
+.sgd-title {
+  margin: 0 0 var(--spacing-6);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.sgd-address {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  margin: 0 0 var(--spacing-12);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.sgd-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  margin-bottom: var(--spacing-24);
+}
+
+.sgd-tag {
+  padding: var(--spacing-6) var(--spacing-12);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.sgd-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--spacing-24);
+  align-items: start;
+}
+
+/* ---------- Levý sloupec ---------- */
+
+.sgd-info {
+  min-width: 0;
+}
+
+/* Fotky backend neumí – zástupná plocha jako u karet ve výsledcích. */
+.sgd-photo {
+  display: grid;
+  place-items: center;
+  height: 280px;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-muted);
+  color: var(--color-text-tertiary);
+}
+
+.sgd-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  margin-top: var(--spacing-16);
+  padding: var(--spacing-16);
+  border-radius: var(--radius-md);
+  background: var(--color-action-subtle);
+  color: var(--color-action-on-subtle);
+}
+
+.sgd-note svg {
+  flex: none;
+  margin-top: var(--spacing-2);
+}
+
+.sgd-note strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+.sgd-note p {
+  margin: var(--spacing-2) 0 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Pravý sloupec: výběr termínu ---------- */
+
+.sgd-booking {
+  min-width: 0;
+  padding: var(--spacing-20);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.sgd-booking h2 {
+  margin: 0 0 var(--spacing-16);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.sgd-days {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.sgd-days-list {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--spacing-6);
+  min-width: 0;
+}
+
+.sgd-arrow {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.sgd-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.sgd-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.sgd-day small {
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--color-text-secondary);
+}
+
+.sgd-day strong {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.sgd-day:hover {
+  border-color: var(--color-action-primary);
+}
+
+.sgd-day.active {
+  border-color: var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.sgd-day.active small {
+  color: var(--color-action-on-primary);
+  opacity: 0.85;
+}
+
+.sgd-date-label {
+  margin: var(--spacing-20) 0 var(--spacing-12);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+/* ---------- Sloty ---------- */
+
+.sgd-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-8);
+}
+
+.sgd-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  height: 52px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.sgd-slot strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.sgd-slot small {
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.sgd-slot.free {
+  border-color: var(--color-slot-available-border);
+  background: var(--color-slot-available-bg);
+  color: var(--color-slot-available-text);
+}
+
+.sgd-slot.free:hover {
+  box-shadow: 0 0 0 2px var(--color-slot-available-border);
+}
+
+/* Špičkový slot má v rohu tečku, cena ve špičce je v souhrnu pod sloty. */
+.sgd-slot.peak::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-status-warning);
+}
+
+.sgd-slot.busy {
+  background: var(--color-bg-muted);
+  color: var(--color-text-tertiary);
+  cursor: default;
+}
+
+.sgd-slot.selected {
+  border-color: var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.sgd-slot.selected:hover {
+  box-shadow: none;
+}
+
+.sgd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-16);
+  margin: var(--spacing-16) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.sgd-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.sgd-legend .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.sgd-legend .dot.free {
+  border: 1.5px solid var(--color-slot-available-border);
+  background: var(--color-slot-available-bg);
+}
+
+.sgd-legend .dot.peak {
+  background: var(--color-status-warning);
+}
+
+.sgd-legend .dot.selected {
+  background: var(--color-action-primary);
+}
+
+.sgd-legend .dot.busy {
+  background: var(--color-bg-muted);
+}
+
+.sgd-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-20);
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-md);
+  background: var(--color-action-subtle);
+}
+
+.sgd-summary strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.sgd-summary span {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.sgd-continue {
+  margin-top: var(--spacing-16);
+}
+
+/* ---------- Stavy ---------- */
+
+.sgd-state {
+  margin: var(--spacing-12) 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.sgd-alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+  margin: var(--spacing-12) 0;
+  padding: var(--spacing-12) var(--spacing-16);
+  border: 1px solid var(--color-status-danger);
+  border-radius: var(--radius-md);
+  background: var(--color-status-danger-subtle);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-status-danger);
+}
+
+.sgd-retry {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-status-danger);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Mobil ---------- */
+
+@media (max-width: 800px) {
+  .sgd-main {
+    padding: var(--spacing-24) var(--spacing-16) 0;
+  }
+
+  .sgd-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sgd-photo {
+    height: 200px;
+  }
+
+  .sgd-title {
+    font-size: 22px;
+    line-height: 28px;
+  }
+}
