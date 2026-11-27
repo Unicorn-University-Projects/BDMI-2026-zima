@@ -33,18 +33,25 @@ export async function startBooking() {
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const baseUrl = `http://127.0.0.1:${server.address().port}`;
 
-  async function call(path, { headers = ATHLETE, gatewaySecret = GATEWAY_SECRET } = {}) {
+  async function call(path, { headers = ATHLETE, gatewaySecret = GATEWAY_SECRET, body } = {}) {
     const requestHeaders = { ...headers };
     if (gatewaySecret) requestHeaders["X-Gateway-Secret"] = gatewaySecret;
-    const res = await fetch(`${baseUrl}${path}`, { headers: requestHeaders });
+    const options = { headers: requestHeaders };
+    if (body !== undefined) {
+      options.method = "POST";
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(body);
+    }
+    const res = await fetch(`${baseUrl}${path}`, options);
     const text = await res.text();
     return { status: res.status, body: text ? JSON.parse(text) : null };
   }
 
   function reserve(sportsGroundId, date, startTimes, state = "created") {
     for (const startTime of startTimes) {
-      memoryStore.state.reservations.push({
-        id: `r-${sportsGroundId}-${date}-${startTime}-${memoryStore.state.reservations.length}`,
+      const id = `r-${sportsGroundId}-${date}-${startTime}-${memoryStore.state.reservations.size}`;
+      memoryStore.state.reservations.set(id, {
+        id,
         sportsGroundId,
         athleteId: ATHLETE["X-User-Id"],
         date,

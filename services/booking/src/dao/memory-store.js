@@ -109,8 +109,8 @@ function createSeed() {
     [sportsGrounds[7].id, noPeak(200)],
   ]);
 
-  // Rezervace: { id, sportsGroundId, athleteId, date, startTime, price, state }
-  const reservations = [];
+  // Rezervace podle id: { id, sportsGroundId, athleteId, date, startTime, price, state, ... }
+  const reservations = new Map();
 
   // Hodnocení: { sportsGroundId, stars }
   const ratings = [

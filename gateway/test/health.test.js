@@ -1,7 +1,11 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { listen } from "./helpers.js";
-import app from "../src/app.js";
+
+// Middleware forward-user vyžaduje GATEWAY_INTERNAL_SECRET už při načtení aplikace,
+// proto se proměnná nastaví před dynamickým importem.
+process.env.GATEWAY_INTERNAL_SECRET ??= "test-gateway-secret";
+const { default: app } = await import("../src/app.js");
 
 const server = await listen(app);
 after(() => server.close());

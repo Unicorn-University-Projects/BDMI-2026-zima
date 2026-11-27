@@ -8,7 +8,7 @@ import {
   getPragueNow,
   parseHour,
 } from "../src/utils/slots.js";
-import { mapPriceList, parsePeakDays } from "../src/dao/sports-ground-dao.js";
+import { formatTime, mapPriceList, parsePeakDays } from "../src/dao/sports-ground-dao.js";
 
 const week = (openFrom, openTo, closedDays = []) =>
   Array.from({ length: 7 }, (unused, index) => ({
@@ -176,7 +176,7 @@ describe("Ceník z databáze (nové i starší schéma)", () => {
       peakFrom: "17:00",
       peakTo: "21:00",
     });
-    assert.deepEqual(priceList, weekdayPeak);
+    assert.deepEqual(priceList, { ...weekdayPeak, basePrice: 350 });
   });
 
   test("starší schéma: čas špičky u otevírací doby (opening_hours.peakFrom/peakTo)", () => {
@@ -188,13 +188,26 @@ describe("Ceník z databáze (nové i starší schéma)", () => {
     const priceList = mapPriceList({ regularPrice: "350.00", peakPrice: "450.00" }, hours);
     assert.equal(priceList.hasPeak, true);
     assert.deepEqual(priceList.peakDays, [1, 2, 3, 4, 5]);
+    assert.equal(priceList.peakFrom, "17:00");
+    assert.equal(priceList.peakTo, "21:00");
     const { slotList } = generateSlots({ openingHours: week("16:00", "18:00"), priceList, date: MONDAY });
     assert.deepEqual(slotList.map((slot) => slot.price), [350, 450]);
   });
 
   test("bez ceny ve špičce špička neplatí", () => {
     const priceList = mapPriceList({ regularPrice: "300.00", peakPrice: null, hasPeak: 0, peakDays: "[]" });
-    assert.deepEqual(priceList, noPeak);
+    assert.deepEqual(priceList, { ...noPeak, basePrice: 300 });
+  });
+
+  test("čas ze sloupce TIME se zkrátí na HH:MM, 24:00 zůstane", () => {
+    assert.equal(formatTime("08:00:00"), "08:00");
+    assert.equal(formatTime("24:00"), "24:00");
+    assert.equal(formatTime(null), null);
+  });
+
+  test("otevřeno do 24:00: poslední slot je 23:00–24:00", () => {
+    const { slotList } = generateSlots({ openingHours: week("22:00", "24:00"), priceList: noPeak, date: MONDAY });
+    assert.deepEqual(slotList.map((slot) => [slot.startTime, slot.endTime]), [["22:00", "23:00"], ["23:00", "24:00"]]);
   });
 
   test("bez řádku ceníku vrací null", () => {

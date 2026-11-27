@@ -21,8 +21,6 @@ services:
 
   auth:
     build: ./services/auth
-    ports:
-      - "4001:4001"
     networks:
       - backend
     env_file:
@@ -34,8 +32,6 @@ services:
 
   venue:
     build: ./services/venue
-    ports:
-      - "4002:4002"
     networks:
       - backend
     env_file:
@@ -47,28 +43,25 @@ services:
 
   booking:
     build: ./services/booking
-    ports:
-      - "4003:4003"
     networks:
       - backend
     env_file:
-      - ./services/booking/.env
+      - path: ./services/booking/.env
+        required: false
     environment:
       DB_HOST: mysql
+      VENUE_URL: http://venue:4002
     depends_on:
       - mysql
+      - venue
 
   review:
     build: ./services/review
-    ports:
-      - "4004:4004"
     networks:
       - backend
 
   audit:
     build: ./services/audit
-    ports:
-      - "4005:4005"
     networks:
       - backend
     env_file:
@@ -86,7 +79,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      # Pořadí podle názvu souboru: booking má cizí klíč na tabulky venue.
+      # Pořadí podle názvu souboru: booking má cizí klíče na tabulky auth a venue.
       - ./services/auth/db/init.sql:/docker-entrypoint-initdb.d/1-auth.sql
       - ./services/venue/db/init.sql:/docker-entrypoint-initdb.d/2-venue.sql
       - ./services/booking/db/init.sql:/docker-entrypoint-initdb.d/3-booking.sql

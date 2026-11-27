@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getToken, setToken as ulozitToken, clearToken } from './services/api';
+import { getToken, setToken as ulozitToken, clearToken } from './calls/api';
+import SearchCard from './components/search/SearchCard';
+import { SPORT_OPTIONS } from './utils/sportOptions';
+import { buildSearchUrl, toIsoDate, today } from './utils/searchParams';
 import './App.css';
 
 // Adresa API gateway (backend na portu 4000)
@@ -336,6 +339,13 @@ function App() {
   // --- HOME (vyhledávání) ---
   const [sport, setSport] = useState('');
   const [lokalita, setLokalita] = useState('');
+  const [datum, setDatum] = useState(() => toIsoDate(today()));
+
+  // Odeslání formuláře přejde na výsledky; kritéria se předávají v URL.
+  // SearchCard si preventDefault řeší sám a posílá rovnou hodnoty.
+  const hledat = (values) => {
+    navigate(buildSearchUrl(values));
+  };
 
   // Při startu: když je v prohlížeči token, ověříme ho u backendu
   useEffect(() => {
@@ -558,7 +568,7 @@ function App() {
   // --- VOLBA ROLE PO PŘIHLÁŠENÍ PŘES POSKYTOVATELE ---
   // PŘIPRAVENO, ZATÍM BEZ FUNKČNOSTI. Až bude hotové přihlášení přes poskytovatele,
   // sem patří: POST /user/setRole { role, termsAccepted } s hlavičkou Authorization: Bearer <token>.
-  // Backend vrátí NOVÝ token (starý roli neobsahuje) -> uložit do localStorage (setToken z services/api) a setToken(...).
+  // Backend vrátí NOVÝ token (starý roli neobsahuje) -> uložit do localStorage (setToken z calls/api) a setToken(...).
   const handleRoleChoice = (e) => {
     e.preventDefault();
     vycistitZpravy();
@@ -633,8 +643,6 @@ function App() {
 
   if (screen === 'home') {
     const initials = `${uzivatel?.firstName?.[0] || ''}${uzivatel?.surName?.[0] || ''}`.toUpperCase();
-    const dnes = new Date().toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'numeric' });
-    const oblibene = ['Tenis', 'Fotbal', 'Badminton', 'Squash', 'Curling'];
 
     return (
       <div className="ps ps-home">
@@ -648,7 +656,7 @@ function App() {
             </nav>
           </div>
           <div className="ps-nav-right">
-            <button className="ps-bell" aria-label="Oznámení"><Icon name="bell" size={18} /></button>
+            <button className="ps-bell" aria-label="Oznámení"><Icon name="bell" size={20} /></button>
             <span className="ps-avatar" title={`${uzivatel?.firstName || ''} ${uzivatel?.surName || ''}`}>{initials}</span>
             <button className="ps-logout" onClick={odhlasit}>Odhlásit se</button>
           </div>
@@ -659,57 +667,47 @@ function App() {
             <small>Ahoj, {uzivatel?.firstName}</small>
             <h1>Kde si dnes zahraješ?</h1>
 
-            <form className="ps-search" onSubmit={(e) => e.preventDefault()}>
-              <div>
-                <label className="ps-label">Sport *</label>
-                <div className="ps-input-wrap">
-                  <Icon name="grid" size={15} />
-                  <select value={sport} onChange={(e) => setSport(e.target.value)}>
-                    <option value="">Vyber sport</option>
-                    {oblibene.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <Icon name="chevron" size={14} />
-                </div>
-              </div>
-              <div>
-                <label className="ps-label">Lokalita *</label>
-                <div className="ps-input-wrap">
-                  <Icon name="pin" size={15} />
-                  <input type="text" placeholder="Např. Praha" value={lokalita} onChange={(e) => setLokalita(e.target.value)} />
-                </div>
-              </div>
-              <div>
-                <label className="ps-label">Datum *</label>
-                <div className="ps-input-wrap">
-                  <Icon name="calendar" size={15} />
-                  <select defaultValue="dnes"><option value="dnes">Dnes, {dnes}</option></select>
-                  <Icon name="chevron" size={14} />
-                </div>
-              </div>
-              <button type="submit" className="ps-btn"><Icon name="search" size={14} strokeWidth={2.2} />Hledat</button>
-            </form>
+            {/* Stejná komponenta jako na výsledcích hledání, jen užší –
+                návrh má na obou obrazovkách shodnou kartu. */}
+            <SearchCard
+              narrow
+              values={{ sport, lokalita, datum }}
+              onChange={(next) => {
+                setSport(next.sport);
+                setLokalita(next.lokalita);
+                setDatum(next.datum);
+              }}
+              onSubmit={hledat}
+            />
 
             <div className="ps-chips">
               <span>Oblíbené:</span>
-              {oblibene.map((s) => (
-                <button key={s} type="button" className={`ps-chip${sport === s ? ' active' : ''}`} onClick={() => setSport(s)}>{s}</button>
+              {SPORT_OPTIONS.map((s) => (
+                <button
+                  key={s.code}
+                  type="button"
+                  className={`ps-chip${sport === s.code ? ' active' : ''}`}
+                  onClick={() => setSport(s.code)}
+                >
+                  {s.name}
+                </button>
               ))}
             </div>
           </section>
 
           <section className="ps-steps">
             <div className="ps-step">
-              <div className="ps-step-ico"><Icon name="search" size={16} /></div>
+              <div className="ps-step-ico"><Icon name="search" size={22} /></div>
               <h3>Vyber sport a město</h3>
               <p>Uvidíš všechna sportoviště v okolí na jednom místě.</p>
             </div>
             <div className="ps-step">
-              <div className="ps-step-ico"><Icon name="calendar" size={16} /></div>
+              <div className="ps-step-ico"><Icon name="calendar" size={22} /></div>
               <h3>Najdi volný termín</h3>
               <p>Volné hodiny a ceny vidíš hned, bez telefonování.</p>
             </div>
             <div className="ps-step">
-              <div className="ps-step-ico"><Icon name="ticket" size={16} /></div>
+              <div className="ps-step-ico"><Icon name="ticket" size={22} /></div>
               <h3>Zarezervuj</h3>
               <p>Provozovatel rezervaci potvrdí a dáme ti vědět.</p>
             </div>

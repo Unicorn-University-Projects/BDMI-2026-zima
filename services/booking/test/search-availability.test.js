@@ -105,7 +105,7 @@ describe("Změna rezervací se projeví v obou hned", () => {
     booking.reserve(GROUND.lipaCourt3, TUESDAY, hours(8, 22));
     assert.equal((await search(TUESDAY)).body.itemList.some((item) => item.sportsGround.id === GROUND.lipaCourt3), false);
 
-    const reservation = booking.memoryStore.state.reservations.find(
+    const reservation = [...booking.memoryStore.state.reservations.values()].find(
       (item) => item.sportsGroundId === GROUND.lipaCourt3 && item.startTime === "19:00",
     );
     reservation.state = "cancelled";

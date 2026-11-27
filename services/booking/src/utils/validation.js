@@ -8,6 +8,10 @@ function trimDtoIn(dtoIn = {}) {
   return result;
 }
 
+function normalizeText(value) {
+  return String(value).trim().replace(/\s+/g, " ");
+}
+
 function invalidFieldsFromErrors(errors = []) {
   const fields = new Set();
   for (const error of errors) {
@@ -18,6 +22,14 @@ function invalidFieldsFromErrors(errors = []) {
     }
   }
   return [...fields].filter(Boolean);
+}
+
+function invalidDtoIn(errors) {
+  return {
+    code: "reservation/invalidDtoIn",
+    message: "Vstupní data nejsou validní.",
+    params: { invalidFields: invalidFieldsFromErrors(errors) },
+  };
 }
 
 function sportsGroundInvalidDtoIn(errors) {
@@ -52,4 +64,12 @@ function dateInPast(res, date, today) {
   });
 }
 
-export { trimDtoIn, sportsGroundInvalidDtoIn, unauthenticated, forbidden, dateInPast };
+export {
+  trimDtoIn,
+  normalizeText,
+  invalidDtoIn,
+  sportsGroundInvalidDtoIn,
+  unauthenticated,
+  forbidden,
+  dateInPast,
+};

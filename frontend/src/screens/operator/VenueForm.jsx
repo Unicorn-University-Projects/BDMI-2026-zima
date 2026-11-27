@@ -6,13 +6,14 @@ import {
   useParams
 } from 'react-router-dom';
 
-import Icon from '../components/Icons';
+import Icon from '../../components/Icons';
+import BackLink from '../../components/common/BackLink';
 
 import {
   getVenue,
   createVenue,
   updateVenue
-} from '../services/venues';
+} from '../../calls/venues';
 
 // ==========================================
 // VÝCHOZÍ HODNOTY FORMULÁŘE
@@ -202,10 +203,10 @@ export default function VenueForm() {
   if (notFound) {
     return (
       <div className="venue-form-page">
-        <Link to="/arealy" className="venue-form-back">
+        <BackLink to="/arealy" className="venue-form-back">
           <Icon name="arrow" size={16} />
-          Moje areály
-        </Link>
+          Zpět
+        </BackLink>
 
         <h1>Areál nebyl nalezen</h1>
         <p>
@@ -224,10 +225,10 @@ export default function VenueForm() {
 
       {/* NAVIGACE */}
 
-      <Link to="/arealy" className="venue-form-back">
+      <BackLink to="/arealy" className="venue-form-back">
         <Icon name="arrow" size={16} />
-        Moje areály
-      </Link>
+        Zpět
+      </BackLink>
 
       {/* NADPIS */}
 
@@ -243,38 +244,19 @@ export default function VenueForm() {
         </p>
       </header>
 
-      {/* KROKY */}
+      {/* FORMULÁŘ
 
-      <div className="venue-form-steps">
-
-        <div className="venue-form-step active">
-          <span className="step-number">1</span>
-          <span>Areál</span>
-        </div>
-
-        <span className="venue-step-line" />
-
-        <div className="venue-form-step">
-          <span className="step-number">2</span>
-          <span>Sportoviště</span>
-        </div>
-
-        <span className="venue-step-line" />
-
-        <div className="venue-form-step">
-          <span className="step-number">3</span>
-          <span>Otevírací doba a ceník</span>
-        </div>
-
-      </div>
-
-      {/* FORMULÁŘ */}
+          Bílá karta a <form> jsou záměrně dva elementy: návrh má tlačítka
+          pod kartou, ne v ní. Odesílací tlačítko ale musí zůstat uvnitř
+          <form>, jinak přestane fungovat Enter i nativní validace. */}
 
       <form
-        className="venue-form-card"
+        className="venue-form"
         onSubmit={handleSubmit}
         noValidate
       >
+
+        <div className="venue-form-card">
 
         {/* ZÁKLADNÍ ÚDAJE */}
 
@@ -520,7 +502,9 @@ export default function VenueForm() {
           </div>
         )}
 
-        {/* TLAČÍTKA */}
+        </div>
+
+        {/* TLAČÍTKA – pod kartou, podle návrhu 4.2 a 4.6 */}
 
         <div className="venue-form-actions">
 

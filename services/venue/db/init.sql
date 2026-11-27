@@ -1,16 +1,17 @@
 CREATE TABLE IF NOT EXISTS venues (
   id CHAR(36) PRIMARY KEY,
   operatorId CHAR(36) NOT NULL,
-  name VARCHAR(150) NOT NULL,
-  street VARCHAR(150) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  street VARCHAR(100) NOT NULL,
+  streetNumber VARCHAR(20) NOT NULL,
   city VARCHAR(100) NOT NULL,
-  noteForAthletes VARCHAR(1000) NULL,
+  noteForAthletes VARCHAR(500) NULL,
   email VARCHAR(255) NOT NULL,
   phone VARCHAR(30) NOT NULL,
   createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_venues_operatorId (operatorId),
-  INDEX idx_venues_operator_name_address (operatorId, name, street, city)
+  INDEX idx_venues_operator_name_address (operatorId, name, street, streetNumber, city)
 );
 
 CREATE TABLE IF NOT EXISTS sports (
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS sports_grounds (
   updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_sports_grounds_venueId (venueId),
   INDEX idx_sports_grounds_sportId (sportId),
+  UNIQUE KEY uq_sports_grounds_venue_name (venueId, name),
   CONSTRAINT fk_sports_grounds_venue
     FOREIGN KEY (venueId) REFERENCES venues (id) ON DELETE RESTRICT,
   CONSTRAINT fk_sports_grounds_sport

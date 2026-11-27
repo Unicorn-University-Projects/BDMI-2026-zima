@@ -314,6 +314,81 @@ phone: (
           rx="2"
         />
       </>
+    ),
+
+    // ======================================
+    // VYHLEDÁVÁNÍ SPORTOVIŠŤ
+    // ======================================
+
+    // Hodnocení. Vyplněnou hvězdu udělá <Icon name="star" fill="currentColor" />
+    star: (
+      <path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85-5.25-2.75-5.25 2.75 1-5.85L3.5 9.65l5.9-.85z" />
+    ),
+
+    // Oznámení v horní liště
+    bell: (
+      <>
+        <path d="M18 8a6 6 0 10-12 0c0 6-2 7-2 7h16s-2-1-2-7" />
+        <path d="M10.3 20a2 2 0 003.4 0" />
+      </>
+    ),
+
+    // Šipka dolů u rozbalovacích polí
+    chevronDown: (
+      <path d="M6 9.5l6 6 6-6" />
+    ),
+
+    // Zástupná plocha místo fotky sportoviště
+    image: (
+      <>
+        <rect x="3" y="4" width="18" height="16" rx="3" />
+        <circle cx="8.5" cy="9.5" r="1.5" />
+        <path d="M21 16l-5-5-6 6-2-2-5 5" />
+      </>
+    ),
+
+    // Zavření dialogu
+    close: (
+      <path d="M6 6l12 12M18 6L6 18" />
+    ),
+
+    // Čeká na nastavení – hodiny v odznaku i v tlačítku
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </>
+    ),
+
+    // Informační blok nad seznamem sportovišť
+    info: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v5" />
+        <circle cx="12" cy="7.75" r="1" fill="currentColor" stroke="none" />
+      </>
+    ),
+
+    // Fajfka bez rámečku – do barevného kolečka (vytvořená rezervace)
+    checkPlain: (
+      <path d="m5 12.5 4.5 4.5L19 7" strokeWidth="2.4" />
+    ),
+
+    // Obsazený termín – dialog 1.4-E
+    warning: (
+      <>
+        <path d="M10.3 3.9 2.5 17.4A2 2 0 0 0 4.2 20.4h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+        <path d="M12 9v4" />
+        <circle cx="12" cy="16.5" r="1" fill="currentColor" stroke="none" />
+      </>
+    ),
+
+    // Cena v souhrnu vytvořené rezervace
+    tag: (
+      <>
+        <path d="M3 11.5V4a1 1 0 0 1 1-1h7.5a1 1 0 0 1 .7.3l8.5 8.5a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 12.2a1 1 0 0 1-.3-.7Z" />
+        <circle cx="7.75" cy="7.75" r="1.25" />
+      </>
     )
 
   };

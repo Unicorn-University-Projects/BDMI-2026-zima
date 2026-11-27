@@ -39,13 +39,14 @@ async function create(venue) {
   }
 
   await pool.execute(
-    `INSERT INTO venues (id, operatorId, name, street, city, noteForAthletes, email, phone)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO venues (id, operatorId, name, street, streetNumber, city, noteForAthletes, email, phone)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       venue.id,
       venue.operatorId,
       venue.name,
       venue.street,
+      venue.streetNumber,
       venue.city,
       venue.noteForAthletes,
       venue.email,
@@ -61,7 +62,7 @@ async function get(id) {
   return mapVenue(rows[0]);
 }
 
-async function getByNameAndAddress(operatorId, name, street, city) {
+async function getByNameAndAddress(operatorId, name, street, streetNumber, city) {
   if (useMemory) {
     return (
       [...memoryStore.state.venues.values()].find(
@@ -69,14 +70,19 @@ async function getByNameAndAddress(operatorId, name, street, city) {
           item.operatorId === operatorId &&
           item.name === name &&
           item.street === street &&
+          item.streetNumber === streetNumber &&
           item.city === city,
       ) ?? null
     );
   }
   const [rows] = await pool.execute(
     `${venueSelect}
-     WHERE venues.operatorId = ? AND venues.name = ? AND venues.street = ? AND venues.city = ?`,
-    [operatorId, name, street, city],
+     WHERE venues.operatorId = ?
+       AND venues.name = ?
+       AND venues.street = ?
+       AND venues.streetNumber = ?
+       AND venues.city = ?`,
+    [operatorId, name, street, streetNumber, city],
   );
   return mapVenue(rows[0]);
 }
@@ -107,9 +113,18 @@ async function update(id, venue) {
   }
   await pool.execute(
     `UPDATE venues
-     SET name = ?, street = ?, city = ?, noteForAthletes = ?, email = ?, phone = ?
+     SET name = ?, street = ?, streetNumber = ?, city = ?, noteForAthletes = ?, email = ?, phone = ?
      WHERE id = ?`,
-    [venue.name, venue.street, venue.city, venue.noteForAthletes, venue.email, venue.phone, id],
+    [
+      venue.name,
+      venue.street,
+      venue.streetNumber,
+      venue.city,
+      venue.noteForAthletes,
+      venue.email,
+      venue.phone,
+      id,
+    ],
   );
   return get(id);
 }

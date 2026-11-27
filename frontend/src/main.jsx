@@ -14,17 +14,20 @@ import {
 
 // Přihlášení, registrace a obnova hesla (obrazovky z Figmy) a práce s tokenem
 import App from './App';
-import { apiFetch, clearToken, getToken } from './services/api';
+import { apiFetch, clearToken, getToken } from './calls/api';
 
 // Komponenty
 import Icon from './components/Icons';
 
 // Stránky aplikace
-import VenueList from './pages/VenueList';
-import VenueForm from './pages/VenueForm';
-import VenueDetail from './pages/VenueDetail';
-import SportsGroundDetail from './pages/SportsGroundDetail';
-import OpeningHoursPricing from './pages/OpeningHoursPricing';
+import VenueList from './screens/operator/VenueList';
+import VenueForm from './screens/operator/VenueForm';
+import VenueDetail from './screens/operator/VenueDetail';
+import SportsGroundDetail from './screens/operator/SportsGroundDetail';
+import OpeningHoursPricing from './screens/operator/OpeningHoursPricing';
+import SearchResults from './screens/athlete/SearchResults';
+import ReservationSummary from './screens/athlete/ReservationSummary';
+import AthleteSportsGroundDetail from './screens/athlete/AthleteSportsGroundDetail';
 
 // Styly
 import './style.css';
@@ -246,6 +249,42 @@ function Root() {
         <Route path="/obnova-hesla/:token" element={null} />
         <Route path="/hledat" element={null} />
       </Route>
+
+      {/* Výsledky vyhledávání (sportovec) – má vlastní horní lištu, proto
+          stojí mimo Layout s bočním panelem provozovatele.
+          Pozor: kdyby se cesta /hledat výše změnila na "/hledat/*",
+          přebila by tuhle obrazovku komponenta App. */}
+      <Route
+        path="/hledat/vysledky"
+        element={
+          <RequireAuth>
+            <SearchResults />
+          </RequireAuth>
+        }
+      />
+
+      {/* Souhrn rezervace (sportovec) – co se rezervuje, nese adresa:
+          ?sportoviste=<uuid>&datum=2026-11-03&cas=17:00.
+          Stejně jako výsledky vyhledávání má horní lištu, ne boční panel. */}
+      <Route
+        path="/rezervace/nova"
+        element={
+          <RequireAuth>
+            <ReservationSummary />
+          </RequireAuth>
+        }
+      />
+
+      {/* Detail sportoviště (sportovec) – adresa /sportoviste/<uuid>?datum=2026-11-03.
+          Má horní lištu sportovce, ne boční panel provozovatele. */}
+      <Route
+        path="/sportoviste/:sportsGroundId"
+        element={
+          <RequireAuth>
+            <AthleteSportsGroundDetail />
+          </RequireAuth>
+        }
+      />
 
       {/* Zbytek aplikace (správa areálů) je jen pro přihlášené */}
       <Route

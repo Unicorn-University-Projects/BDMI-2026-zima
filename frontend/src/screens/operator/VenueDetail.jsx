@@ -1,24 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import Icon from '../components/Icons';
-import SportsGroundForm from '../components/SportsGroundForm';
+import Icon from '../../components/Icons';
+import BackLink from '../../components/common/BackLink';
+import AddSportsGroundDialog from '../../components/sportsGround/AddSportsGroundDialog';
+import SportsGroundList from '../../components/sportsGround/SportsGroundList';
 import {
   createSportsGround,
+  deleteVenue,
   getVenue,
   listSportsGrounds
-} from '../services/venues';
+} from '../../calls/venues';
 
 export default function VenueDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [venue, setVenue] = useState(null);
   const [sportsGrounds, setSportsGrounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showForm, setShowForm] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const isCreated = location.state?.created === true;
+
+  // Smazaný areál nelze zobrazit, proto se po úspěchu odchází na seznam.
+  // Backend areál s existujícími sportovišti odmítne smazat a chybu vrátí.
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      `Opravdu chcete odstranit areál "${venue.name}"?`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      await deleteVenue(id);
+      navigate('/arealy', { replace: true });
+    } catch (e) {
+      window.alert(e.message || 'Areál se nepodařilo odstranit.');
+      setDeleting(false);
+    }
+  }
 
   async function load() {
     const item = await getVenue(id);
@@ -51,10 +75,16 @@ export default function VenueDetail() {
     };
   }, [id]);
 
-  async function handleCreateSportsGround(values) {
+  // Vazba na areál je tady: venueId bere detail z adresy, formulář ho neřeší.
+  async function createAndReload(values) {
     await createSportsGround({ venueId: id, ...values });
-    setShowForm(false);
     await load();
+    setJustSaved(true);
+  }
+
+  async function handleCreateSportsGround(values) {
+    await createAndReload(values);
+    setShowDialog(false);
   }
 
   if (loading) {
@@ -72,10 +102,10 @@ export default function VenueDetail() {
         <div className="venue-submit-error" role="alert">
           {error}
         </div>
-        <Link to="/arealy" className="back">
+        <BackLink to="/arealy" className="back">
           <Icon name="arrow" size={17} />
-          Zpět na moje areály
-        </Link>
+          Zpět
+        </BackLink>
       </div>
     );
   }
@@ -85,10 +115,10 @@ export default function VenueDetail() {
       <div className="venue-detail-page">
         <h1>Areál nebyl nalezen</h1>
 
-        <Link to="/arealy" className="back">
+        <BackLink to="/arealy" className="back">
           <Icon name="arrow" size={17} />
-          Zpět na moje areály
-        </Link>
+          Zpět
+        </BackLink>
       </div>
     );
   }
@@ -102,10 +132,10 @@ export default function VenueDetail() {
 
   return (
     <div className="venue-detail-page">
-      <Link to="/arealy" className="venue-detail-back">
+      <BackLink to="/arealy" className="venue-detail-back">
         <Icon name="arrow" size={16} />
-        Moje areály
-      </Link>
+        Zpět
+      </BackLink>
 
       <div className="venue-detail-header">
         <div className="venue-detail-heading">
@@ -133,29 +163,50 @@ export default function VenueDetail() {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="venue-detail-edit"
-          disabled
-          title="Úprava areálu bude doplněna"
-        >
-          <Icon name="edit" size={17} />
-          Upravit areál
-        </button>
+        <div className="venue-detail-actions">
+          <Link to={`/arealy/${id}/upravit`} className="venue-detail-edit">
+            <Icon name="edit" size={17} />
+            Upravit areál
+          </Link>
+
+          <button
+            type="button"
+            className="venue-detail-delete"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            <Icon name="trash" size={17} />
+            {deleting ? 'Odstraňuji…' : 'Odstranit areál'}
+          </button>
+        </div>
       </div>
 
-      {isCreated && (
-        <div className="venue-created-success" role="status">
-          <Icon name="check" size={20} />
+      {justSaved ? (
+        <div className="sg-alert" role="status">
+          <Icon name="info" size={20} />
 
           <div>
-            <strong>Areál byl úspěšně vytvořen.</strong>
+            <strong>Sportoviště uložena</strong>
             <p>
-              Teď přidej sportoviště, která chceš
-              nabízet k rezervaci.
+              Nastav jim otevírací dobu a ceník – teprve pak je sportovci
+              uvidí ve vyhledávání.
             </p>
           </div>
         </div>
+      ) : (
+        isCreated && (
+          <div className="venue-created-success" role="status">
+            <Icon name="check" size={20} />
+
+            <div>
+              <strong>Areál je vytvořený</strong>
+              <p>
+                Teď přidej sportoviště, která chceš
+                nabízet k rezervaci.
+              </p>
+            </div>
+          </div>
+        )
       )}
 
       <section className="venue-sports-section">
@@ -165,19 +216,19 @@ export default function VenueDetail() {
           <button
             type="button"
             className="venue-add-sport"
-            onClick={() => setShowForm(previous => !previous)}
+            onClick={() => setShowDialog(true)}
           >
             <Icon name="plus" size={18} />
             Přidat sportoviště
           </button>
         </div>
 
-        {showForm && (
-          <SportsGroundForm
-            submitLabel="Uložit sportoviště"
-            errorMessage="Sportoviště se nepodařilo vytvořit."
-            onSubmit={handleCreateSportsGround}
-            onCancel={() => setShowForm(false)}
+        {showDialog && (
+          <AddSportsGroundDialog
+            venueName={venue.name}
+            onCreate={handleCreateSportsGround}
+            onCreateAndNext={createAndReload}
+            onClose={() => setShowDialog(false)}
           />
         )}
 
@@ -195,26 +246,7 @@ export default function VenueDetail() {
             </p>
           </div>
         ) : (
-          <ul className="venue-sports-list">
-            {sportsGrounds.map(item => (
-              <li key={item.id} className="venue-sports-item">
-                <Link to={`/arealy/${id}/sportoviste/${item.id}`} className="venue-sports-link">
-                  <div>
-                    <strong>{item.name}</strong>
-                    <span>
-                      {item.sportName}
-                      {item.surface ? ` · ${item.surface}` : ''}
-                      {` · ${item.coverType === 'indoor' ? 'kryté' : 'venkovní'}`}
-                    </span>
-                  </div>
-                  <div className="venue-sports-meta">
-                    {item.regularPrice != null && <span>{item.regularPrice} Kč/h</span>}
-                    <span>{item.status === 'active' ? 'Aktivní' : 'Neaktivní – doplň otevírací dobu a ceník'}</span>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <SportsGroundList venueId={id} sportsGrounds={sportsGrounds} />
         )}
       </section>
     </div>
