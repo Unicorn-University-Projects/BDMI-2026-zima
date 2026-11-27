@@ -27,6 +27,7 @@ import SportsGroundDetail from './screens/operator/SportsGroundDetail';
 import OpeningHoursPricing from './screens/operator/OpeningHoursPricing';
 import SearchResults from './screens/athlete/SearchResults';
 import ReservationSummary from './screens/athlete/ReservationSummary';
+import AthleteSportsGroundDetail from './screens/athlete/AthleteSportsGroundDetail';
 
 // Styly
 import './style.css';
@@ -270,6 +271,17 @@ function Root() {
         element={
           <RequireAuth>
             <ReservationSummary />
+          </RequireAuth>
+        }
+      />
+
+      {/* Detail sportoviště (sportovec) – adresa /sportoviste/<uuid>?datum=2026-11-03.
+          Má horní lištu sportovce, ne boční panel provozovatele. */}
+      <Route
+        path="/sportoviste/:sportsGroundId"
+        element={
+          <RequireAuth>
+            <AthleteSportsGroundDetail />
           </RequireAuth>
         }
       />

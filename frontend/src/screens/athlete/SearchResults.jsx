@@ -62,7 +62,7 @@ function SearchResultsContent() {
 
             <ul className="search-results">
               {result.itemList.map(item => (
-                <SportsGroundResultCard key={item.id} item={item} />
+                <SportsGroundResultCard key={item.id} item={item} date={criteria.datum} />
               ))}
             </ul>
           </>
