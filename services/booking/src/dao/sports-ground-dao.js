@@ -3,6 +3,9 @@
 import pool, { useMemory } from "../db.js";
 import memoryStore from "./memory-store.js";
 
+const venueUrl = process.env.VENUE_URL;
+const gatewaySecret = process.env.GATEWAY_INTERNAL_SECRET;
+
 const SELECT_SPORTS_GROUND = `
   SELECT sg.id, sg.venueId, sg.name, sg.surface, sg.coverType, sg.status,
          s.code AS sportCode, s.name AS sportName,
@@ -13,6 +16,14 @@ const SELECT_SPORTS_GROUND = `
 
 function placeholders(list) {
   return list.map(() => "?").join(", ");
+}
+
+// "08:00:00" (sloupec TIME) -> "08:00"; "24:00" a "08:00" zůstávají
+function formatTime(value) {
+  if (value == null) return null;
+  const text = String(value);
+  if (/^\d{2}:\d{2}:\d{2}$/.test(text)) return text.slice(0, 5);
+  return text;
 }
 
 function parsePeakDays(value) {
@@ -31,8 +42,8 @@ function mapOpeningHour(row) {
   const isClosed = Boolean(Number(row.isClosed));
   return {
     dayOfWeek: Number(row.dayOfWeek),
-    openFrom: isClosed ? null : row.openFrom,
-    openTo: isClosed ? null : row.openTo,
+    openFrom: isClosed ? null : formatTime(row.openFrom),
+    openTo: isClosed ? null : formatTime(row.openTo),
     isClosed,
   };
 }
@@ -60,12 +71,13 @@ function mapPriceList(row, openingHourRows = []) {
   }
 
   return {
+    basePrice: Number(row.regularPrice),
     regularPrice: Number(row.regularPrice),
     hasPeak,
     peakPrice: hasPeak ? peakPrice : null,
     peakDays: hasPeak ? peakDays : [],
-    peakFrom: hasPeak ? peakFrom : null,
-    peakTo: hasPeak ? peakTo : null,
+    peakFrom: hasPeak ? formatTime(peakFrom) : null,
+    peakTo: hasPeak ? formatTime(peakTo) : null,
   };
 }
 
@@ -140,10 +152,40 @@ function memoryAttach(rows) {
   });
 }
 
+// Sportoviště, které není v ukázkových datech (např. ho test právě založil ve službě
+// venue), se v paměťovém režimu načte ze služby venue přes sportsGround/get.
+async function getFromVenue(id, { userId, role } = {}) {
+  if (!venueUrl) return null;
+
+  const url = new URL("/sportsGround/get", venueUrl);
+  url.searchParams.set("id", id);
+
+  const response = await fetch(url, {
+    headers: {
+      "X-Gateway-Secret": gatewaySecret,
+      ...(userId ? { "X-User-Id": userId } : {}),
+      ...(role ? { "X-User-Role": role } : {}),
+    },
+  });
+
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Venue sportsGround/get failed (${response.status}): ${body}`);
+  }
+
+  const { sportsGround } = await response.json();
+  return sportsGround;
+}
+
 // ---------- DAO metody (názvy podle Application Modelu) ----------
 
-async function get(id) {
-  if (useMemory) return memoryAttach(memoryRows((item) => item.id === id))[0] ?? null;
+// requestContext ({ userId, role }) se použije jen při načtení ze služby venue.
+async function get(id, requestContext = {}) {
+  if (useMemory) {
+    const seeded = memoryAttach(memoryRows((item) => item.id === id))[0];
+    return seeded ?? getFromVenue(id, requestContext);
+  }
   const [rows] = await pool.execute(`${SELECT_SPORTS_GROUND} WHERE sg.id = ?`, [id]);
   return (await attachSchedules(rows))[0] ?? null;
 }
@@ -168,7 +210,7 @@ async function listActiveByVenueListAndSport(venueIdList, sportCode) {
   return attachSchedules(rows);
 }
 
-export { mapPriceList, parsePeakDays };
+export { formatTime, mapPriceList, parsePeakDays };
 
 export default {
   get,

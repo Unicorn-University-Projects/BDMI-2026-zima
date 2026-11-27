@@ -51,7 +51,7 @@ cd BDMI-2026-zima
 | API Gateway | `gateway/` | 4000 | jediný vstupní bod pro frontend, ověřuje JWT a kontroluje oprávnění |
 | Auth service | `services/auth/` | 4001 | registrace, přihlášení, role, vydávání JWT |
 | Venue service | `services/venue/` | 4002 | areály a sportoviště |
-| Booking service | `services/booking/` | 4003 | volné sloty sportoviště (`sportsGround/getAvailability`) a vyhledávání (`sportsGround/search`); rezervace zatím ne |
+| Booking service | `services/booking/` | 4003 | volné sloty sportoviště (`sportsGround/getAvailability`), vyhledávání (`sportsGround/search`) a vytvoření rezervace (`reservation/create`) |
 | Review service | `services/review/` | 4004 | hodnocení (zatím jen kostra s `/health`) |
 | Audit service | `services/audit/` | 4005 | interní audit, volají ho jen jiné služby |
 | MySQL | (Docker image) | 3306 | databáze `rezervace_sportovist` |

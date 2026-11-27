@@ -92,6 +92,7 @@ export async function startGateway() {
   process.env.AUTH_URL = services.auth.url;
   process.env.VENUE_URL = services.venue.url;
   process.env.BOOKING_URL = services.booking.url;
+  process.env.GATEWAY_INTERNAL_SECRET ??= "test-gateway-secret";
   process.env.REVIEW_URL = await getUnusedUrl();
 
   const { default: app } = await import("../src/app.js");

@@ -139,3 +139,33 @@ describe("Sloty", () => {
     assert.deepEqual(operator.body.slotList, athlete.body.slotList);
   });
 });
+
+describe("Návaznost na reservation/create", () => {
+  // reservation/create kontroluje minulost podle skutečného času, proto datum daleko v budoucnu.
+  const FUTURE_MONDAY = "2099-06-01";
+
+  test("rezervace vytvořená přes reservation/create obsadí slot (stejná cena jako ve slotu)", async () => {
+    const before = await booking.call(path(GROUND.hradiskoA, FUTURE_MONDAY));
+    const slot = before.body.slotList.find((item) => item.startTime === "18:00");
+    assert.equal(slot.status, "free");
+
+    const created = await booking.call("/reservation/create", {
+      body: { sportsGroundId: GROUND.hradiskoA, date: FUTURE_MONDAY, startTime: "18:00" },
+    });
+    assert.equal(created.status, 201, JSON.stringify(created.body));
+    assert.equal(created.body.reservation.price, slot.price);
+    assert.equal(created.body.reservation.isPeak, slot.isPeak);
+
+    const after = await booking.call(path(GROUND.hradiskoA, FUTURE_MONDAY));
+    assert.equal(after.body.slotList.find((item) => item.startTime === "18:00").status, "occupied");
+  });
+
+  test("slot obsazený podle getAvailability nejde rezervovat znovu", async () => {
+    booking.reserve(GROUND.lipaCourt1, FUTURE_MONDAY, ["10:00"]);
+    const res = await booking.call("/reservation/create", {
+      body: { sportsGroundId: GROUND.lipaCourt1, date: FUTURE_MONDAY, startTime: "10:00" },
+    });
+    assert.equal(res.status, 409);
+    assert.equal(res.body.code, "reservation/create/slotUnavailable");
+  });
+});
