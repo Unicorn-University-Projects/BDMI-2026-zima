@@ -2,9 +2,9 @@
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import sportsGroundDao from "../../dao/sports-ground-dao.js";
-import reservationDao from "../../dao/reservation-dao.js";
 import clock from "../../utils/clock.js";
-import { generateSlots, getPragueNow } from "../../utils/slots.js";
+import availability from "../../utils/availability.js";
+import { getPragueNow } from "../../utils/slots.js";
 import {
   dateInPast,
   forbidden,
@@ -56,14 +56,8 @@ async function getAvailabilityAbl(req, res) {
       });
     }
 
-    const reservations = await reservationDao.listActiveBySportsGroundAndDate(sportsGround.id, dtoIn.date);
-    const { dayOfWeek, isClosed, slotList } = generateSlots({
-      openingHours: sportsGround.openingHours,
-      priceList: sportsGround.priceList,
-      date: dtoIn.date,
-      occupiedStartTimes: reservations.map((item) => item.startTime),
-      now,
-    });
+    const occupiedSlots = await availability.loadOccupiedSlots([sportsGround.id], dtoIn.date, dtoIn.date);
+    const { dayOfWeek, isClosed, slotList } = availability.getDaySlots(sportsGround, dtoIn.date, occupiedSlots, now);
 
     return res.json({
       sportsGround: {

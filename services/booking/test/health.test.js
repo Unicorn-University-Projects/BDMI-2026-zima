@@ -1,10 +1,10 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
+import { GATEWAY_SECRET } from "./helpers.js";
 
-// Middleware require-gateway vyžaduje GATEWAY_INTERNAL_SECRET už při načtení aplikace,
-// proto se proměnná nastaví před dynamickým importem.
-process.env.GATEWAY_INTERNAL_SECRET ??= "test-gateway-secret";
+process.env.GATEWAY_INTERNAL_SECRET = GATEWAY_SECRET;
+process.env.BOOKING_MEMORY_DB = "1";
 const { default: app } = await import("../src/app.js");
 
 const server = http.createServer(app);

@@ -5,10 +5,10 @@ import addFormats from "ajv-formats";
 import venueDao from "../../dao/venue-dao.js";
 import sportDao from "../../dao/sport-dao.js";
 import sportsGroundDao from "../../dao/sports-ground-dao.js";
-import reservationDao from "../../dao/reservation-dao.js";
 import ratingDao from "../../dao/rating-dao.js";
 import clock from "../../utils/clock.js";
-import { addDays, generateSlots, getFreeSlots, getPragueNow } from "../../utils/slots.js";
+import availability from "../../utils/availability.js";
+import { addDays, getPragueNow } from "../../utils/slots.js";
 import {
   dateInPast,
   forbidden,
@@ -37,25 +37,9 @@ const schema = {
 
 const validate = ajv.compile(schema);
 
-function groupByGroundAndDate(reservations) {
-  const map = new Map();
-  for (const item of reservations) {
-    const key = `${item.sportsGroundId}|${item.date}`;
-    if (!map.has(key)) map.set(key, []);
-    map.get(key).push(item.startTime);
-  }
-  return map;
-}
-
-function freeSlotsFor(sportsGround, date, occupiedByKey, now) {
-  const { slotList } = generateSlots({
-    openingHours: sportsGround.openingHours,
-    priceList: sportsGround.priceList,
-    date,
-    occupiedStartTimes: occupiedByKey.get(`${sportsGround.id}|${date}`) ?? [],
-    now,
-  });
-  return getFreeSlots(slotList);
+function summarizeDay(sportsGround, date, occupiedSlots, now) {
+  const { slotList } = availability.getDaySlots(sportsGround, date, occupiedSlots, now);
+  return availability.summarizeFreeSlots(slotList);
 }
 
 async function searchAbl(req, res) {
@@ -94,23 +78,20 @@ async function searchAbl(req, res) {
 
     const idList = sportsGrounds.map((item) => item.id);
     const lastDate = addDays(dtoIn.date, NEXT_AVAILABLE_DAYS);
-    // Jeden dotaz na rezervace pro hledaný den i pro dny, kdy se hledá náhradní termín.
-    const occupiedByKey = groupByGroundAndDate(
-      await reservationDao.listActiveBySportsGroundListAndDateRange(idList, dtoIn.date, lastDate),
-    );
+    const occupiedSlots = await availability.loadOccupiedSlots(idList, dtoIn.date, lastDate);
 
     const found = sportsGrounds
       .map((sportsGround) => ({
         sportsGround,
-        freeSlots: freeSlotsFor(sportsGround, dtoIn.date, occupiedByKey, now),
+        summary: summarizeDay(sportsGround, dtoIn.date, occupiedSlots, now),
       }))
-      .filter((item) => item.freeSlots.length > 0);
+      .filter((item) => item.summary.freeSlotCount > 0);
 
     if (found.length === 0) {
       // US-01 A1: nabídnout nejbližší den, kdy má některé sportoviště volno.
       for (let offset = 1; offset <= NEXT_AVAILABLE_DAYS; offset += 1) {
         const date = addDays(dtoIn.date, offset);
-        if (sportsGrounds.some((item) => freeSlotsFor(item, date, occupiedByKey, now).length > 0)) {
+        if (sportsGrounds.some((item) => summarizeDay(item, date, occupiedSlots, now).freeSlotCount > 0)) {
           dtoOut.nextAvailableDate = date;
           break;
         }
@@ -121,7 +102,7 @@ async function searchAbl(req, res) {
     const ratings = await ratingDao.getSummaryBySportsGroundList(found.map((item) => item.sportsGround.id));
 
     dtoOut.itemList = found
-      .map(({ sportsGround, freeSlots }) => {
+      .map(({ sportsGround, summary }) => {
         const rating = ratings.get(sportsGround.id);
         return {
           sportsGround: {
@@ -137,8 +118,8 @@ async function searchAbl(req, res) {
             street: sportsGround.venue.street,
             city: sportsGround.venue.city,
           },
-          freeSlotCount: freeSlots.length,
-          priceFrom: Math.min(...freeSlots.map((slot) => slot.price)),
+          freeSlotCount: summary.freeSlotCount,
+          priceFrom: summary.priceFrom,
           averageRating: rating?.averageRating ?? null,
           ratingCount: rating?.ratingCount ?? 0,
         };
