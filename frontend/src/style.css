@@ -23,6 +23,14 @@
   --color-bg-surface: #ffffff;
   --color-bg-muted: #e4e0f0;
   --color-border-default: #e4e0f0;
+  --color-border-strong: #d3d0e2;
+  --color-border-focus: #8966ff;
+  --color-border-input: #77728a;
+
+  /* Klikatelné karty (areály, sportoviště). Hodnoty podle komponenty
+     Sports ground card v návrhu – na hover se rámeček zesílí a karta
+     se nadzvedne stínem. */
+  --shadow-card-hover: 0 2px 4px rgba(23, 20, 41, 0.04), 0 12px 32px rgba(23, 20, 41, 0.1);
 
   /* Akce */
   --color-action-primary: #7447eb;
@@ -39,6 +47,8 @@
   --color-status-warning: #b27c07;
   --color-status-warning-subtle: #fef5e8;
   --color-status-danger: #c9263d;
+  --color-status-danger-hover: #a41f31;
+  --color-status-danger-subtle: #fef4f4;
 
   /* Hodinové sloty */
   --color-slot-available-bg: #e2fef9;
@@ -60,12 +70,18 @@
   --spacing-20: 20px;
   --spacing-24: 24px;
   --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
 
   --radius-md: 12px;
   --radius-control: 16px;
   --radius-card: 24px;
+  --radius-sheet: 32px;
   --radius-button: 9999px;
   --radius-full: 9999px;
+
+  /* Mezera mezi popiskem a polem formuláře */
+  --layout-field-gap: 6px;
 }
 
 /* ==========================================
@@ -492,7 +508,7 @@ button {
 
   background: #ffffff;
 
-  border: 1px solid #e4dcf6;
+  border: 1px solid var(--color-border-default);
   border-radius: 25px;
 
   transition:
@@ -501,8 +517,8 @@ button {
 }
 
 .venues-list-card:hover {
-  border-color: #c9b7f8;
-  box-shadow: 0 5px 18px #7447eb10;
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* Ikona areálu */
@@ -732,63 +748,6 @@ button {
 }
 
 /* ==========================================
-   15. KROKY FORMULÁŘE
-========================================== */
-
-.venue-steps,
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-
-  margin-bottom: 28px;
-}
-
-.venue-step,
-.step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  color: #a49caf;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-step span,
-.step b {
-  display: grid;
-  place-items: center;
-
-  width: 34px;
-  height: 34px;
-
-  border-radius: 50%;
-
-  background: #ebe7f0;
-  color: #928a9f;
-}
-
-.venue-step.active,
-.step.current {
-  color: #7447eb;
-}
-
-.venue-step.active span,
-.step.current b {
-  background: #7447eb;
-  color: #ffffff;
-}
-
-.venue-step-line,
-.step-line {
-  width: 65px;
-  height: 2px;
-  background: #e2dce9;
-}
-
-/* ==========================================
    16. KARTA FORMULÁŘE
 ========================================== */
 
@@ -986,18 +945,6 @@ textarea::placeholder {
 /* ==========================================
    19. TLAČÍTKA FORMULÁŘE
 ========================================== */
-
-.venue-form-actions,
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-
-  margin-top: 30px;
-  padding-top: 24px;
-
-  border-top: 1px solid #eee9f4;
-}
 
 .venue-button {
   display: inline-flex;
@@ -1254,8 +1201,7 @@ textarea::placeholder {
     gap: 0;
   }
 
-  .venue-form-actions,
-  .form-actions {
+  .venue-form-actions {
     flex-wrap: wrap;
   }
 }
@@ -1290,21 +1236,6 @@ textarea::placeholder {
     padding: 23px 18px;
   }
 
-  .venue-steps,
-  .steps {
-    gap: 9px;
-  }
-
-  .venue-step,
-  .step {
-    gap: 6px;
-    font-size: 11px;
-  }
-
-  .venue-step-line,
-  .step-line {
-    width: 25px;
-  }
 }
 
 /* ==========================================
@@ -1376,9 +1307,17 @@ textarea::placeholder {
   flex-shrink: 0;
 }
 
-/* Upravit areál */
+/* Upravit a odstranit areál – stejný tvar, liší se jen barvou */
 
-.venue-detail-edit {
+.venue-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.venue-detail-edit,
+.venue-detail-delete {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1388,17 +1327,39 @@ textarea::placeholder {
 
   padding: 10px 20px;
 
-  border: 2px solid #7447eb;
   border-radius: 30px;
 
   background: #ffffff;
-  color: #7447eb;
 
   font-size: 13px;
   font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.venue-detail-edit:disabled,
+/* Tloušťka 1.5px podle komponenty Button/Outline v návrhu, aby obě
+   tlačítka vedle sebe seděla. */
+.venue-detail-edit {
+  border: 1.5px solid var(--color-action-outline);
+  color: var(--color-action-on-outline);
+}
+
+.venue-detail-delete {
+  border: 1.5px solid var(--color-status-danger);
+  color: var(--color-status-danger);
+}
+
+.venue-detail-delete:hover {
+  border-color: var(--color-status-danger-hover);
+  background: var(--color-status-danger-subtle);
+  color: var(--color-status-danger-hover);
+}
+
+.venue-detail-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .venue-add-sport:disabled {
   cursor: not-allowed;
 }
@@ -1502,7 +1463,7 @@ textarea::placeholder {
   min-height: 320px;
   padding: 45px 25px;
 
-  border: 1px dashed #e4dcf6;
+  border: 1px dashed var(--color-border-default);
   border-radius: 22px;
 
   background: #ffffff;
@@ -1540,57 +1501,6 @@ textarea::placeholder {
   color: #77708d;
   font-size: 13px;
   line-height: 1.6;
-}
-
-.venue-sport-form {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 22px;
-  padding: 20px;
-  border: 1px solid #e4dcf6;
-  border-radius: 18px;
-  background: #ffffff;
-}
-
-.venue-sports-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-
-.venue-sports-item {
-  padding: 16px 18px;
-  border: 1px solid #e4dcf6;
-  border-radius: 16px;
-  background: #ffffff;
-}
-
-.venue-sports-item strong {
-  display: block;
-  margin-bottom: 4px;
-  color: #1d1735;
-  font-size: 15px;
-}
-
-.venue-sports-item span {
-  color: #77708d;
-  font-size: 13px;
-}
-
-.venue-sports-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.venue-sports-item p {
-  margin: 10px 0 0;
-  color: #5b5470;
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 /* ==========================================
@@ -1643,10 +1553,6 @@ textarea::placeholder {
   font-size: 28px;
   font-weight: 800;
   color: #1d1735;
-}
-
-.venue-form-page .steps {
-  margin-bottom: 28px;
 }
 
 .venue-form-page .form-card {
@@ -1742,64 +1648,6 @@ textarea::placeholder {
   color: #817a96;
   font-size: 14px;
   line-height: 1.6;
-}
-
-/* ==========================================
-   TŘI KROKY
-========================================== */
-
-.venue-form-steps {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-
-  margin-bottom: 32px;
-}
-
-.venue-form-step {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-
-  flex-shrink: 0;
-
-  color: #938da5;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-form-step .step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 29px;
-  height: 29px;
-
-  border-radius: 50%;
-
-  background: #e9e6ef;
-  color: #938da5;
-
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.venue-form-step.active {
-  color: #1d1735;
-}
-
-.venue-form-step.active .step-number {
-  background: #7445eb;
-  color: #ffffff;
-}
-
-.venue-step-line {
-  flex: 1;
-  min-width: 15px;
-  height: 1px;
-  background: #ddd7e9;
 }
 
 /* ==========================================
@@ -1999,16 +1847,6 @@ textarea::placeholder {
    SPODNÍ TLAČÍTKA
 ========================================== */
 
-.venue-form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 13px;
-
-  padding-top: 23px;
-  border-top: 1px solid #eeeaf3;
-}
-
 .venue-btn-cancel,
 .venue-btn-submit {
   display: inline-flex;
@@ -2083,26 +1921,6 @@ textarea::placeholder {
     border-radius: 18px;
   }
 
-  .venue-form-steps {
-    gap: 5px;
-  }
-
-  .venue-form-step {
-    gap: 4px;
-    font-size: 10px;
-    white-space: normal;
-  }
-
-  .venue-form-step .step-number {
-    width: 25px;
-    height: 25px;
-    flex-shrink: 0;
-  }
-
-  .venue-step-line {
-    min-width: 8px;
-  }
-
   .venue-fields-row {
     grid-template-columns: 1fr;
     gap: 0;
@@ -2162,61 +1980,6 @@ textarea::placeholder {
   color: #77718b;
   font-size: 13px;
   line-height: 1.5;
-}
-
-/* ==========================================
-   TŘI KROKY - NEPŘES CELOU ŠÍŘKU
-========================================== */
-
-.venue-form-steps {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 11px;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 0 26px;
-}
-
-.venue-form-step {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: #858097;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.venue-form-step .step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #e9e6ef;
-  color: #858097;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.venue-form-step.active {
-  color: #1c1735;
-}
-
-.venue-form-step.active .step-number {
-  background: #7444eb;
-  color: white;
-}
-
-.venue-step-line {
-  width: 36px;
-  height: 1px;
-  flex: 0 0 36px;
-  background: #ddd7e8;
 }
 
 /* ==========================================
@@ -2408,14 +2171,21 @@ textarea::placeholder {
    TLAČÍTKA
 ========================================== */
 
+/* Formulář je jen obal – bílou kartu dělá .venue-form-card uvnitř,
+   tlačítka stojí pod ní jako její sourozenec (návrh 4.2 a 4.6).
+   Mezera 24px odpovídá rozestupu v návrhu. */
+.venue-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
 .venue-form-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  margin-top: 25px;
-  padding-top: 0;
-  border-top: none;
 }
 
 .venue-btn-cancel,
@@ -2461,25 +2231,6 @@ textarea::placeholder {
     padding: 25px 20px;
   }
 
-  .venue-form-steps {
-    gap: 6px;
-  }
-
-  .venue-form-step {
-    gap: 5px;
-    font-size: 10px;
-    white-space: normal;
-  }
-
-  .venue-form-step .step-number {
-    width: 23px;
-    height: 23px;
-  }
-
-  .venue-step-line {
-    width: 15px;
-    flex-basis: 15px;
-  }
 }
 
 @media (max-width: 550px) {
@@ -2613,12 +2364,14 @@ textarea::placeholder {
 /* Smazat */
 
 .venue-action-btn.delete {
-  border: 1px solid #e8b0b6;
-  color: #d34857;
+  border: 1px solid var(--color-status-danger);
+  color: var(--color-status-danger);
 }
 
 .venue-action-btn.delete:hover {
-  background: #fff0f2;
+  border-color: var(--color-status-danger-hover);
+  background: var(--color-status-danger-subtle);
+  color: var(--color-status-danger-hover);
 }
 
 /* Spravovat sportoviště */
@@ -2647,15 +2400,6 @@ textarea::placeholder {
 /* ==========================================
    24. DETAIL SPORTOVIŠTĚ (BUC-08, obrazovky 5.1 a 5.3)
 ========================================== */
-
-/* Celá položka v seznamu sportovišť (detail areálu) vede na jeho detail */
-.venue-sports-link {
-  display: block;
-}
-
-.venue-sports-item:hover {
-  border-color: var(--color-action-primary);
-}
 
 .sports-ground-page {
   position: relative;
@@ -2752,7 +2496,8 @@ textarea::placeholder {
 
 .sports-ground-btn-outline,
 .sports-ground-btn-primary,
-.sports-ground-btn-ghost {
+.sports-ground-btn-ghost,
+.sports-ground-btn-danger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2764,6 +2509,14 @@ textarea::placeholder {
   font-weight: 600;
   line-height: 20px;
   white-space: nowrap;
+}
+
+/* Úprava a odstranění stojí v hlavičce vedle sebe. */
+.sports-ground-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  flex-shrink: 0;
 }
 
 .sports-ground-btn-outline {
@@ -2784,9 +2537,23 @@ textarea::placeholder {
   color: var(--color-action-ghost-text);
 }
 
+.sports-ground-btn-danger {
+  border: 1.5px solid var(--color-status-danger);
+  background: var(--color-bg-surface);
+  color: var(--color-status-danger);
+  cursor: pointer;
+}
+
+.sports-ground-btn-danger:hover {
+  border-color: var(--color-status-danger-hover);
+  background: var(--color-status-danger-subtle);
+  color: var(--color-status-danger-hover);
+}
+
 .sports-ground-btn-outline:disabled,
 .sports-ground-btn-primary:disabled,
-.sports-ground-btn-ghost:disabled {
+.sports-ground-btn-ghost:disabled,
+.sports-ground-btn-danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -2964,7 +2731,10 @@ textarea::placeholder {
   margin: 0;
 }
 
-.sports-ground-fact {
+/* Řádek popis–hodnota sdílí souhrn rezervace, detail rezervace i údaje
+   sportoviště – v návrhu je to jedna komponenta „Key value“.
+   Komponenta: components/common/KeyValueRow.jsx */
+.key-value {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2973,24 +2743,47 @@ textarea::placeholder {
   border-bottom: 1px solid var(--color-border-default);
 }
 
-.sports-ground-fact.last {
+.key-value:last-child {
   border-bottom: none;
 }
 
-.sports-ground-fact dt {
+.key-value dt {
   font-size: 15px;
   font-weight: 400;
   line-height: 22px;
   color: var(--color-text-secondary);
 }
 
-.sports-ground-fact dd {
+.key-value dd {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
   line-height: 20px;
   text-align: right;
   color: var(--color-text-primary);
+}
+
+/* Hlavní údaj obrazovky, v souhrnu rezervace cena. */
+.key-value.strong dd {
+  font-size: 17px;
+  line-height: 22px;
+}
+
+/* Velmi úzké displeje: popis a hodnota se nevejdou vedle sebe.
+   Hranice je schválně pod 390 px (iPhone), tam se podle návrhu
+   popis a hodnota drží na jednom řádku. */
+@media (max-width: 360px) {
+
+  .key-value {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+
+  .key-value dd {
+    text-align: left;
+  }
+
 }
 
 /* ---------- Responzivní zobrazení ---------- */
@@ -3107,12 +2900,15 @@ textarea::placeholder {
 
 .sports-ground-modal {
   width: 100%;
-  max-width: 560px;
+  max-width: 544px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: var(--spacing-24);
-  border-radius: var(--radius-card);
+  padding: var(--spacing-32);
+  border-radius: var(--radius-sheet);
   background: var(--color-bg-surface);
+  box-shadow:
+    0 24px 48px rgba(23, 20, 41, 0.16),
+    0 4px 8px rgba(23, 20, 41, 0.06);
 }
 
 .sports-ground-modal-header {
@@ -3120,14 +2916,14 @@ textarea::placeholder {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-16);
-  margin-bottom: var(--spacing-16);
+  margin-bottom: var(--spacing-24);
 }
 
 .sports-ground-modal-header h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 26px;
   color: var(--color-text-primary);
 }
 
@@ -3138,17 +2934,521 @@ textarea::placeholder {
   color: var(--color-text-secondary);
 }
 
+/* Dotyková plocha 44×44 podle popisu komponenty Icon button v návrhu */
 .sports-ground-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: none;
+  border-radius: var(--radius-full);
   background: none;
-  padding: 0 var(--spacing-4);
-  font-size: 26px;
-  line-height: 1;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
+  cursor: pointer;
 }
 
 .sports-ground-modal-close:hover {
+  background: var(--color-action-subtle);
+  color: var(--color-action-on-subtle);
+}
+
+/* ==========================================
+   FORMULÁŘ A SEZNAM SPORTOVIŠŤ (4.3–4.5)
+==========================================
+   Rozměry, barvy i mezery odpovídají návrhu – pole 48 px, zaoblení 16 px,
+   tlačítka 44 px. Hodnoty se berou z tokenů v hlavičce souboru. */
+
+.sg-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+
+.sg-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
+}
+
+.sg-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-field-gap);
+  min-width: 0;
+}
+
+.sg-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
   color: var(--color-text-primary);
 }
 
+.sg-required {
+  color: var(--color-action-primary);
+}
+
+/* Název a povrch stojí v návrhu vedle sebe */
+.sg-row {
+  display: flex;
+  gap: var(--spacing-16);
+}
+
+.sg-row > .sg-field {
+  flex: 1 0 0;
+}
+
+/* ---------- Textové pole ---------- */
+
+.sg-control {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.sg-control::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.sg-control:focus {
+  outline: none;
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 3px rgba(116, 71, 235, 0.12);
+}
+
+.sg-control.invalid {
+  border-color: var(--color-status-danger);
+}
+
+.sg-hint {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.sg-error {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color-status-danger);
+}
+
+/* ---------- Rozbalovací pole ---------- */
+
+.sg-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+}
+
+.sg-select:focus-within {
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 3px rgba(116, 71, 235, 0.12);
+}
+
+.sg-select.invalid {
+  border-color: var(--color-status-danger);
+}
+
+/* Vlastní šipka z návrhu, nativní se proto skrývá */
+.sg-select select {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 15px;
+  line-height: 22px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.sg-select-icon,
+.sg-select-chevron {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.sg-select-icon {
+  color: var(--color-action-primary);
+}
+
+.sg-select-chevron {
+  color: var(--color-text-secondary);
+}
+
+/* ---------- Přepínač krytí ---------- */
+
+.sg-segmented {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  height: 48px;
+  padding: var(--spacing-4);
+  border-radius: var(--radius-button);
+  background: #f1eefa;
+}
+
+.sg-segment {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--spacing-12);
+  border: 0;
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.sg-segment.selected {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  line-height: 20px;
+  box-shadow: 0 1px 1.5px rgba(15, 10, 33, 0.1);
+}
+
+/* ---------- Chyba uložení ---------- */
+
+.sg-submit-error {
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-control);
+  background: #fdecef;
+  color: var(--color-status-danger);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* ---------- Tlačítka dialogu ---------- */
+
+.sg-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+}
+
+.sg-actions-right {
+  display: flex;
+  gap: var(--spacing-12);
+}
+
+.sg-btn-ghost,
+.sg-btn-outline,
+.sg-btn-primary,
+.sg-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border: 0;
+  border-radius: var(--radius-button);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sg-btn-ghost {
+  background: none;
+  color: var(--color-action-ghost-text);
+}
+
+.sg-btn-ghost:hover {
+  background: var(--color-action-subtle);
+}
+
+.sg-btn-outline {
+  border: 1.5px solid var(--color-action-outline);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+}
+
+.sg-btn-outline:hover {
+  background: var(--color-action-subtle);
+}
+
+/* Tlačítko na kartě sportoviště nese stejnou barvu jako „Přidat
+   sportoviště“ a potvrzení v dialogu – světlejší odstín vypadal vypnutě. */
+.sg-btn-primary,
+.sg-btn-secondary {
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.sg-btn-primary:hover,
+.sg-btn-secondary:hover {
+  background: #6032d3;
+}
+
+.sg-btn-outline:disabled,
+.sg-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Leží nad odkazem roztaženým přes celou kartu, jinak by ho karta překryla. */
+.sg-btn-secondary {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* ---------- Hláška nad seznamem ---------- */
+
+.sg-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  width: 100%;
+  margin-bottom: 35px;
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-control);
+  background: var(--color-action-subtle);
+}
+
+.sg-alert > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-action-primary);
+}
+
+.sg-alert strong {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  color: var(--color-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.sg-alert p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* ---------- Seznam sportovišť ---------- */
+
+.sg-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg-list-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+  padding: var(--spacing-16) var(--spacing-20);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+
+/* Stejná odezva jako u karet areálů (.venues-list-card). Hover drží
+   položka, ne odkaz – zvýrazní se celá karta, i když myš míří na tlačítko. */
+.sg-list-item:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Karta je klikatelná přes roztažený odkaz, takže obrys při pohybu
+   klávesnicí patří celé kartě, ne jen textu názvu. Návrh má u stavu
+   Focus prstenec, ne jen jiný rámeček. */
+.sg-list-item:focus-within {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.sg-list-name:focus-visible {
+  outline: none;
+}
+
+.sg-list-info {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+.sg-list-top {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.sg-list-name {
+  color: var(--color-text-primary);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  text-decoration: none;
+}
+
+/* Klik kamkoli do karty vede na detail sportoviště. Odkaz se roztáhne
+   přes celou kartu, tlačítko nastavení pak leží nad ním (z-index). */
+.sg-list-name::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+}
+
+.sg-setup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  flex-shrink: 0;
+  padding: var(--spacing-2) var(--spacing-8);
+  border-radius: var(--radius-full);
+  background: var(--color-status-warning-subtle);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.sg-setup-badge > svg {
+  color: var(--color-status-warning);
+}
+
+.sg-list-meta {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* ---------- Mobil ---------- */
+
+@media (max-width: 700px) {
+
+  .sg-row {
+    flex-direction: column;
+    gap: var(--spacing-20);
+  }
+
+  .sg-list-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sg-btn-secondary {
+    width: 100%;
+  }
+
+  .sg-actions {
+    flex-wrap: wrap;
+  }
+
+  .sg-actions-right {
+    flex: 1 0 0;
+    justify-content: flex-end;
+  }
+
+}
+
 .sports-ground-saved{background:#211936;color:white;border-radius:14px;padding:14px 18px;margin-bottom:18px;font-size:13px}
+
+/* ==========================================
+   TLAČÍTKA
+==========================================
+   Sdílená rodina. V souboru jsou zatím i starší .venue-btn-*,
+   .sports-ground-btn-* a .sg-btn-*, které vznikly dřív a dělají totéž –
+   nové obrazovky ať používají .ps-btn, aby se daly postupně sjednotit. */
+
+.ps-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  box-sizing: border-box;
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Hlavní akce obrazovky – podle návrhu vyšší a přes celou šířku. */
+.ps-btn-block {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--spacing-24);
+  font-size: 16px;
+}
+
+.ps-btn-primary {
+  border-color: var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+}
+
+.ps-btn-primary:hover:not(:disabled):not(.disabled) {
+  border-color: var(--color-action-ghost-text);
+  background: var(--color-action-ghost-text);
+}
+
+.ps-btn-outline {
+  border-color: var(--color-action-outline);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+}
+
+.ps-btn-outline:hover:not(:disabled):not(.disabled) {
+  background: var(--color-action-subtle);
+}
+
+.ps-btn:disabled,
+.ps-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

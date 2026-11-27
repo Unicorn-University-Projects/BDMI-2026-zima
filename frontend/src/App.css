@@ -143,44 +143,33 @@
 
 /* ---------- Home (po přihlášení) ---------- */
 .ps-home { min-height: 100vh; background: linear-gradient(180deg, #efeaff 0%, #f8f6ff 220px, #fff 380px); }
-.ps-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 1px solid #e6e0fb; }
+.ps-nav { display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 40px; border-bottom: 1px solid #e6e0fb; }
 .ps-nav-left { display: flex; align-items: center; gap: 28px; height: 100%; }
 .ps-tabs { display: flex; gap: 22px; height: 100%; }
-.ps-tab { background: none; border: 0; height: 100%; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 0; }
+.ps-tab { background: none; border: 0; height: 100%; font-size: 15px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 0; }
 .ps-tab.active { color: var(--ink); font-weight: 600; border-bottom-color: var(--primary); }
 .ps-nav-right { display: flex; align-items: center; gap: 16px; }
 .ps-bell { background: none; border: 0; cursor: pointer; color: var(--ink); display: grid; place-items: center; }
-.ps-avatar { background: none; border: 0; font-size: 11px; font-weight: 700; color: var(--primary); cursor: pointer; letter-spacing: .5px; }
-.ps-logout { background: none; border: 0; font-size: 12px; color: var(--muted); cursor: pointer; }
+.ps-avatar { background: none; border: 0; font-size: 13px; font-weight: 700; color: var(--primary); cursor: pointer; letter-spacing: .5px; }
+.ps-logout { background: none; border: 0; font-size: 15px; color: var(--muted); cursor: pointer; }
 .ps-logout:hover { color: var(--ink); }
 
-.ps-hero { text-align: center; padding: 64px 24px 0; }
-.ps-hero small { display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-.ps-hero h1 { font-size: 36px; font-weight: 600; margin: 0 0 40px; letter-spacing: -.5px; }
+.ps-hero { text-align: center; padding: 96px 24px 0; }
+.ps-hero small { display: block; font-size: 15px; line-height: 22px; color: var(--muted); margin-bottom: 8px; }
+.ps-hero h1 { font-size: 40px; line-height: 48px; font-weight: 700; margin: 0 0 40px; letter-spacing: -.4px; }
 
-.ps-search {
-  max-width: 640px; margin: 0 auto; background: #fff; border-radius: 24px;
-  padding: 16px 20px 20px; box-shadow: 0 12px 32px rgba(60, 30, 140, .1);
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr) auto; gap: 12px; align-items: end; text-align: left;
-  box-sizing: border-box; width: calc(100% - 48px);
-}
-.ps-search > * { min-width: 0; }
-.ps-search .ps-btn { white-space: nowrap; flex: none; }
-.ps-search .ps-label { font-size: 10px; margin-bottom: 4px; }
-.ps-search .ps-input-wrap { height: 38px; border-radius: 12px; padding: 0 10px; }
-.ps-search .ps-input-wrap input, .ps-search select { font-size: 11px; }
-.ps-search select { flex: 1; border: 0; outline: 0; background: transparent; color: var(--ink); height: 100%; appearance: none; cursor: pointer; min-width: 0; }
-.ps-search .ps-btn { width: auto; height: 38px; padding: 0 20px; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+/* Formulář hledání převzal sdílený SearchCard (components/search),
+   proto tu původní .ps-search styly už nejsou. */
 
-.ps-chips { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 24px 0 0; flex-wrap: wrap; }
-.ps-chips > span { font-size: 11px; color: var(--muted); }
-.ps-chip { border: 1px solid #e3dff2; background: #fff; border-radius: 999px; padding: 6px 14px; font-size: 11px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.ps-chips { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 40px 0 0; flex-wrap: wrap; }
+.ps-chips > span { font-size: 15px; font-weight: 600; color: var(--muted); }
+.ps-chip { display: inline-flex; align-items: center; height: 40px; border: 1px solid #e3dff2; background: #fff; border-radius: 999px; padding: 0 16px; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; }
 .ps-chip:hover, .ps-chip.active { border-color: var(--primary); color: var(--primary); }
 
-.ps-steps { max-width: 640px; margin: 64px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 0 24px 80px; }
-.ps-step-ico { width: 30px; height: 30px; border-radius: 9px; background: var(--soft); color: var(--primary); display: grid; place-items: center; margin-bottom: 18px; }
-.ps-step h3 { font-size: 13px; font-weight: 600; margin: 0 0 6px; }
-.ps-step p { font-size: 10.5px; color: var(--muted); margin: 0; line-height: 1.5; }
+.ps-steps { max-width: 960px; margin: 88px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 0 24px 80px; text-align: left; }
+.ps-step-ico { width: 44px; height: 44px; border-radius: 12px; background: var(--soft); color: var(--primary); display: grid; place-items: center; margin-bottom: 12px; }
+.ps-step h3 { font-size: 17px; line-height: 22px; font-weight: 600; margin: 0 0 12px; }
+.ps-step p { font-size: 13px; line-height: 18px; color: var(--muted); margin: 0; }
 
 .ps-toast {
   position: fixed; right: 40px; bottom: 40px; background: var(--ink); color: #fff; font-size: 11px;
@@ -189,8 +178,7 @@
 }
 
 @media (max-width: 700px) {
-  .ps-search { grid-template-columns: minmax(0, 1fr); }
-  .ps-search .ps-btn { width: 100%; justify-content: center; }
+  /* Zalomení karty hledání řeší styles/search.css */
   .ps-steps { grid-template-columns: 1fr; }
   .ps-nav { padding: 0 16px; }
 }

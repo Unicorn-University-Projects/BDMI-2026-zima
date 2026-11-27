@@ -105,6 +105,12 @@ export async function updateSportsGround(id, data) {
   return mapSportsGround(dtoOut.sportsGround);
 }
 
+export async function deleteSportsGround(id) {
+  await apiFetch(`/venue/sportsGround/delete?id=${encodeURIComponent(id)}`, {
+    method: 'DELETE'
+  });
+}
+
 export async function setOpeningHoursAndPriceList(data) {
   const dtoOut = await apiFetch('/venue/sportsGround/setOpeningHoursAndPriceList', {
     method: 'POST',

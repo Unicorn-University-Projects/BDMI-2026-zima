@@ -1,0 +1,507 @@
+/* ==========================================
+   VYHLEDÁVÁNÍ SPORTOVIŠŤ (BUC-01, obrazovky 1.2 a 1.2-A1)
+==========================================
+   Barvy a rozměry berou designové tokeny z :root ve style.css.
+   Vlastní soubor proto, že style.css je velký a sahají do něj i ostatní
+   – nové styly tu nezpůsobí konflikt při slučování. */
+
+.search-page {
+  min-height: 100vh;
+  font-family: 'Outfit', Inter, Arial, sans-serif;
+  color: var(--color-text-primary);
+  background:
+    linear-gradient(
+      to bottom,
+      var(--color-gradient-hero-start) 0,
+      var(--color-gradient-hero-accent) 360px,
+      var(--color-gradient-hero-end) 560px
+    )
+    no-repeat;
+}
+
+.search-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-24) 80px;
+}
+
+.search-title {
+  margin: 48px 0 var(--spacing-32);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+/* ---------- Horní lišta sportovce ---------- */
+
+.athlete-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-24);
+  height: 64px;
+  padding: 0 var(--spacing-24);
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.athlete-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-32);
+  min-width: 0;
+}
+
+.athlete-topbar-logo img {
+  display: block;
+  width: 140px;
+  height: auto;
+}
+
+.athlete-topbar-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-24);
+}
+
+.athlete-topbar-tab {
+  position: relative;
+  padding: 20px 0;
+  border: none;
+  background: none;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.athlete-topbar-tab.active {
+  color: var(--color-text-primary);
+}
+
+.athlete-topbar-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-action-primary);
+}
+
+.athlete-topbar-tab.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.athlete-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+}
+
+.athlete-topbar-bell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text-secondary);
+}
+
+.athlete-topbar-bell:hover {
+  background: var(--color-action-subtle);
+}
+
+.athlete-topbar-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-action-subtle);
+  color: var(--color-action-on-subtle);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ---------- Karta vyhledávání ---------- */
+
+/* Úvodní obrazovka má obsah 960 px, výsledky 1200 px – jinak je karta
+   podle návrhu stejná. */
+.search-card.narrow {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.search-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  align-items: end;
+  gap: var(--spacing-16);
+  padding: var(--spacing-24);
+  border-radius: var(--radius-sheet);
+  background: var(--color-bg-surface);
+  box-shadow:
+    0 2px 4px rgba(23, 20, 41, 0.04),
+    0 12px 32px rgba(23, 20, 41, 0.1);
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-field-gap);
+  min-width: 0;
+}
+
+.search-field label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--color-text-primary);
+}
+
+.search-field .required {
+  color: var(--color-status-danger);
+}
+
+.search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-surface);
+  color: var(--color-text-tertiary);
+}
+
+.search-input:focus-within {
+  border-color: var(--color-action-primary);
+}
+
+.search-input input,
+.search-input select {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--color-text-primary);
+  appearance: none;
+}
+
+.search-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 52px;
+  padding: 0 var(--spacing-24);
+  border: none;
+  border-radius: var(--radius-button);
+  background: var(--color-action-primary);
+  color: var(--color-action-on-primary);
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.search-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Lišta nad výsledky ---------- */
+
+.search-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin: var(--spacing-32) 0 var(--spacing-24);
+}
+
+.search-count {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+.search-count strong {
+  color: var(--color-text-primary);
+}
+
+.search-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+
+.search-sort .search-input {
+  width: 220px;
+  height: 48px;
+}
+
+/* ---------- Výsledky ---------- */
+
+.search-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-24);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-result-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+}
+
+/* Fotky sportovišť backend neumí – zatím zástupná plocha, ne stock foto. */
+.search-result-photo {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  background: var(--color-bg-muted);
+  color: var(--color-text-tertiary);
+}
+
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-16);
+}
+
+.search-result-info h3 {
+  margin: 0 0 var(--spacing-4);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.search-result-venue {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+
+.search-result-address {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-tertiary);
+}
+
+.search-result-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+  margin-top: var(--spacing-12);
+}
+
+.search-result-price {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.search-result-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.search-result-rating svg {
+  color: var(--color-status-warning);
+}
+
+.search-result-rating span {
+  font-weight: 400;
+  color: var(--color-text-tertiary);
+}
+
+/* ---------- Stavy ---------- */
+
+.search-message {
+  padding: 80px var(--spacing-24);
+  text-align: center;
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+
+.search-error {
+  padding: var(--spacing-16) var(--spacing-20);
+  border-radius: var(--radius-control);
+  background: var(--color-status-warning-subtle);
+  color: var(--color-text-primary);
+}
+
+/* ---------- Prázdný stav (1.2-A1) ---------- */
+
+.search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-16);
+  padding: var(--spacing-32) var(--spacing-24) 64px;
+  text-align: center;
+}
+
+.search-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-action-subtle);
+  color: var(--color-action-on-subtle);
+}
+
+.search-empty h2 {
+  max-width: 420px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.search-empty p {
+  max-width: 420px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-secondary);
+}
+
+.search-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-12);
+  margin-top: var(--spacing-16);
+}
+
+.search-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border: 1.5px solid var(--color-action-outline);
+  border-radius: var(--radius-button);
+  background: var(--color-bg-surface);
+  color: var(--color-action-on-outline);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.search-empty-actions .search-submit {
+  height: 44px;
+}
+
+/* ---------- Responzivní zobrazení ---------- */
+
+@media (max-width: 1024px) {
+
+  .search-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .search-card .search-submit {
+    grid-column: 1 / -1;
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .search-results {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .search-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .search-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .athlete-topbar-left {
+    gap: var(--spacing-16);
+  }
+
+  .athlete-topbar-logo img {
+    width: 110px;
+  }
+
+}
+
+/* Na telefonu se logo, obě záložky, zvonek i avatar na jeden řádek
+   nevejdou – „Moje rezervace“ se lámalo na dva řádky a naráželo do
+   zvonku. Lišta se proto zmenší a názvy záložek se nelámou. */
+@media (max-width: 480px) {
+
+  .athlete-topbar {
+    gap: var(--spacing-12);
+    padding: 0 var(--spacing-16);
+  }
+
+  .athlete-topbar-left {
+    gap: var(--spacing-12);
+  }
+
+  .athlete-topbar-logo img {
+    width: 92px;
+  }
+
+  .athlete-topbar-tabs {
+    gap: var(--spacing-12);
+  }
+
+  .athlete-topbar-tab {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .athlete-topbar-right {
+    gap: var(--spacing-4);
+  }
+
+  .athlete-topbar-bell {
+    width: 36px;
+    height: 36px;
+  }
+
+  .athlete-topbar-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+}

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getSportsGround, getVenue, setOpeningHoursAndPriceList } from '../services/venues';
-import '../opening-hours-pricing.css';
+import BackLink from '../../components/common/BackLink';
+import { getSportsGround, getVenue, setOpeningHoursAndPriceList } from '../../calls/venues';
+import '../../styles/opening-hours-pricing.css';
 
 const DAY_NAMES = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
 const SHORT = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
@@ -94,7 +95,7 @@ export default function OpeningHoursPricing() {
 
   if (loading) return <div className="ohp-page">Načítám nastavení…</div>;
   return <div className="ohp-page">
-    <Link className="ohp-back" to={`/arealy/${id}`}>← &nbsp;{venue?.name || 'Zpět na areál'}</Link>
+    <BackLink className="ohp-back" to={`/arealy/${id}`}>← &nbsp;Zpět</BackLink>
     <h1>Otevírací doba a ceník</h1>
     <p className="ohp-subtitle">{ground?.name || 'Sportoviště'} · {venue?.name || 'Areál'}</p>
     {(serverError || Object.keys(errors).length > 0) && <div className="ohp-alert" role="alert">ⓘ &nbsp;{serverError || 'Nastavení nejde uložit. Oprav chyby níže.'}</div>}
